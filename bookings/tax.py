@@ -14,7 +14,6 @@ from decimal import ROUND_HALF_UP, Decimal
 
 from django.conf import settings
 
-
 TAX_RATES = {
     "AR": Decimal("0.21"),
     "CL": Decimal("0.19"),

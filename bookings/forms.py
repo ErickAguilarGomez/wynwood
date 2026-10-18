@@ -19,7 +19,6 @@ from .additional_services import (
     vehicle_choices,
 )
 
-
 PHONE_PREFIXES = ("+1", "+34", "+39", "+51", "+52", "+54", "+56", "+57", "+58", "+507", "+593")
 
 COUNTRY_PHONE_PREFIXES = {

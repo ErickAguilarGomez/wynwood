@@ -3,7 +3,6 @@ import json
 import random
 from datetime import timedelta
 from decimal import Decimal
-from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
