@@ -1,8 +1,6 @@
 Django==5.2.8
 Pillow==12.0.0
-boto3==1.40.55
 celery[redis]==5.5.3
-django-storages[s3]==1.14.6
 gunicorn==23.0.0
 psycopg[binary]==3.2.12
 sentry-sdk[django]==2.42.1

@@ -145,17 +145,6 @@ if env_bool("USE_CLOUDINARY") and not TESTING:
     }
     STORAGES["default"] = {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"}
 
-elif env_bool("USE_R2") and not TESTING:
-    STORAGES["default"] = {"BACKEND": "storages.backends.s3.S3Storage"}
-    AWS_ACCESS_KEY_ID = env("R2_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = env("R2_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = env("R2_BUCKET_NAME")
-    AWS_S3_ENDPOINT_URL = env("R2_ENDPOINT_URL")
-    AWS_S3_REGION_NAME = "auto"
-    AWS_QUERYSTRING_AUTH = True
-    AWS_DEFAULT_ACL = None
-    AWS_S3_FILE_OVERWRITE = False
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "accounts:login"
