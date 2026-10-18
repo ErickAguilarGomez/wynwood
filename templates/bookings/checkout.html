@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static i18n l10n %}
+{% block title %}{% trans 'Payment page' %} · Wynwood House{% endblock %}
+{% block body_class %}registro-page{% endblock %}
+{% block content %}
+<div class="registro-shell">
+    <nav class="detail-crumb registro-crumb" aria-label="{% trans 'Breadcrumb' %}">
+        <img src="{% static 'design/figma/detail/asterisk.png' %}" alt="" width="20" height="20">
+        <span>{{ property.destination.country }} &nbsp;|&nbsp; {{ property.destination.name }} &nbsp;|&nbsp; {{ property.title }} &nbsp;|&nbsp; <strong>{% trans 'Payment page' %}</strong></span>
+    </nav>
+
+    <form class="registro-form" method="post" data-registro-form novalidate>
+        {% csrf_token %}
+        {% if edit_reservation %}<input type="hidden" name="reservation_id" value="{{ edit_reservation.public_id }}">{% endif %}
+        {{ form.check_in.as_hidden }}{{ form.check_out.as_hidden }}{{ form.guests.as_hidden }}{{ form.booking_type.as_hidden }}
+        {% for service_key in selected_service_keys %}<input type="hidden" name="selected_services" value="{{ service_key }}">{% endfor %}
+        {% if form.non_field_errors %}<div class="registro-form-errors">{{ form.non_field_errors }}</div>{% endif %}
+
+        <h1 class="registro-heading">{% trans 'Registration' %}</h1>
+        <p class="registro-intro">{% trans 'We will email the confirmation of your reservation.' %}</p>
+
+        <div class="registro-field{% if form.email.errors %} is-invalid{% endif %}">
+            <label class="registro-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+            {{ form.email }}
+            {% for error in form.email.errors %}<p class="registro-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        {% if not hide_password %}
+        <div class="registro-field registro-password{% if form.password.errors %} is-invalid{% endif %}">
+            <label class="registro-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+            <span class="registro-password-wrap">
+                {{ form.password }}
+                <button class="registro-password-toggle" type="button" data-password-toggle data-label-show="{% trans 'Show password' %}" data-label-hide="{% trans 'Hide password' %}" aria-label="{% trans 'Show password' %}" aria-pressed="false" hidden>
+                    <img src="{% static 'design/figma/ui/icon-eye-off.svg' %}" alt="" width="22" height="22" data-eye-off>
+                    <img src="{% static 'design/figma/ui/icon-eye.svg' %}" alt="" width="22" height="22" data-eye-on hidden>
+                </button>
+            </span>
+            <ul class="registro-rules" data-password-rules data-label-strong="{% trans 'Strong' %}" data-label-weak="{% trans 'Weak' %}"{% if not form.password.errors %} hidden{% endif %}>
+                <li data-rule="strength"><span class="registro-rule-mark" aria-hidden="true">✓</span><span>{% trans 'Password strength:' %} <b data-strength-label>{% trans 'Weak' %}</b></span></li>
+                <li data-rule="name"><span class="registro-rule-mark" aria-hidden="true">✓</span><span>{% trans 'It cannot contain your name or email address' %}</span></li>
+                <li data-rule="length"><span class="registro-rule-mark" aria-hidden="true">✓</span><span>{% trans 'At least 8 characters' %}</span></li>
+                <li data-rule="symbol"><span class="registro-rule-mark" aria-hidden="true">✓</span><span>{% trans 'It does not contain a number or symbol' %}</span></li>
+            </ul>
+            {% for error in form.password.errors %}<p class="registro-error">{{ error }}</p>{% endfor %}
+        </div>
+        {% endif %}
+
+        {% if not hide_password %}
+        <p class="registro-login"><strong>{% trans 'Already have an account?' %}</strong> <a href="{% url 'accounts:login' %}?next={{ request.get_full_path|urlencode }}">{% trans 'Log in' %}</a></p>
+        {% endif %}
+
+        <h2 class="registro-heading registro-heading-personal">{% trans 'Personal information' %}</h2>
+        <div class="registro-row">
+            <div class="registro-field{% if form.full_name.errors %} is-invalid{% endif %}">
+                <label class="registro-label" for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                {{ form.full_name }}
+                {% for error in form.full_name.errors %}<p class="registro-error">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="registro-field{% if form.nationality.errors %} is-invalid{% endif %}">
+                <label class="registro-label" for="{{ form.nationality.id_for_label }}">{{ form.nationality.label }}</label>
+                <span class="registro-select-wrap">{{ form.nationality }}</span>
+                {% for error in form.nationality.errors %}<p class="registro-error">{{ error }}</p>{% endfor %}
+            </div>
+        </div>
+        <div class="registro-row">
+            <div class="registro-field registro-phone{% if form.phone.errors or form.phone_code.errors %} is-invalid{% endif %}">
+                <span class="registro-label registro-phone-labels">
+                    <label for="{{ form.phone_code.id_for_label }}">{{ form.phone_code.label }}</label>
+                    <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                </span>
+                <span class="registro-phone-fields"><span class="registro-select-wrap registro-code-wrap">{{ form.phone_code }}</span>{{ form.phone }}</span>
+                {% for error in form.phone_code.errors %}<p class="registro-error">{{ error }}</p>{% endfor %}
+                {% for error in form.phone.errors %}<p class="registro-error">{{ error }}</p>{% endfor %}
+            </div>
+            <div class="registro-field date-picker-field{% if form.birth_date.errors %} is-invalid{% endif %}" data-date-range data-date-single="true" data-date-start="birth_date" data-allow-past="true" data-min-date="1900-01-01" data-max-date="{{ local_today }}" data-date-format="numeric" data-year-label="{% trans 'Year' %}">
+                <label class="registro-label" for="{{ form.birth_date.id_for_label }}">{{ form.birth_date.label }}</label>
+                {{ form.birth_date }}
+                <span class="date-range">
+                    <button type="button" class="date-range-trigger" data-date-trigger aria-haspopup="dialog" aria-expanded="false">
+                        <span class="date-range-value" data-date-summary data-empty="{% trans 'Select date' %}"></span>
+                        <img src="{% static 'design/figma/ui/icon-calendar.svg' %}" alt="" width="20" height="20">
+                    </button>
+                </span>
+                {% for error in form.birth_date.errors %}<p class="registro-error">{{ error }}</p>{% endfor %}
+            </div>
+        </div>
+
+        <hr class="registro-rule">
+        <h2 class="registro-heading">{% trans 'Additional services' %}</h2>
+        <p class="registro-subtitle">{% trans 'Personalize your trip with additional services' %}</p>
+        <div class="registro-services">
+            <article class="registro-service">
+                <img src="{% static 'design/figma/checkout/service-checkin.jpg' %}" alt="" width="274" height="291">
+                <p>{% trans 'Flexible check-in & check-out' %}</p>
+                <span class="registro-service-price">USD 26</span>
+                <button class="registro-service-add{% if 'flexible-checkin' in selected_service_keys %} is-added{% endif %}" type="button" data-service-add data-service-key="flexible-checkin" data-service-label="{% trans 'Flexible check-in & check-out' %}" data-service-price="26" data-label-add="{% trans 'Add' %}" data-label-added="{% trans 'Added' %}" aria-pressed="{% if 'flexible-checkin' in selected_service_keys %}true{% else %}false{% endif %}">{% if 'flexible-checkin' in selected_service_keys %}{% trans 'Added' %}{% else %}+ {% trans 'Add' %}{% endif %}</button>
+            </article>
+            <article class="registro-service">
+                <img src="{% static 'design/figma/checkout/service-transport.jpg' %}" alt="" width="274" height="291">
+                <p>{% trans 'Transport service' %}</p>
+                <span class="registro-service-price">{% trans 'From' %} USD 13</span>
+                <button class="registro-service-add{% if 'transport' in selected_service_keys %} is-added{% endif %}" type="button" data-service-add data-service-key="transport" data-service-label="{% trans 'Transport service' %}" data-service-price="13" data-label-add="{% trans 'Add' %}" data-label-added="{% trans 'Added' %}" aria-pressed="{% if 'transport' in selected_service_keys %}true{% else %}false{% endif %}">{% if 'transport' in selected_service_keys %}{% trans 'Added' %}{% else %}+ {% trans 'Add' %}{% endif %}</button>
+            </article>
+            <article class="registro-service">
+                <img src="{% static 'design/figma/checkout/service-fridge.jpg' %}" alt="" width="274" height="291">
+                <p>{% trans 'Stock your fridge' %}</p>
+                <span class="registro-service-price">{% trans 'From' %} USD 18</span>
+                <button class="registro-service-add{% if 'groceries' in selected_service_keys %} is-added{% endif %}" type="button" data-service-add data-service-key="groceries" data-service-label="{% trans 'Stock your fridge' %}" data-service-price="18" data-label-add="{% trans 'Add' %}" data-label-added="{% trans 'Added' %}" aria-pressed="{% if 'groceries' in selected_service_keys %}true{% else %}false{% endif %}">{% if 'groceries' in selected_service_keys %}{% trans 'Added' %}{% else %}+ {% trans 'Add' %}{% endif %}</button>
+            </article>
+            <article class="registro-service">
+                <img src="{% static 'design/figma/checkout/service-crib.jpg' %}" alt="" width="274" height="291">
+                <p>{% trans 'Baby crib' %}</p>
+                <span class="registro-service-price">USD 15 / {% trans 'night' %}</span>
+                <button class="registro-service-add{% if 'baby-crib' in selected_service_keys %} is-added{% endif %}" type="button" data-service-add data-service-key="baby-crib" data-service-label="{% trans 'Baby crib' %}" data-service-price="15" data-service-unit="night" data-label-add="{% trans 'Add' %}" data-label-added="{% trans 'Added' %}" aria-pressed="{% if 'baby-crib' in selected_service_keys %}true{% else %}false{% endif %}">{% if 'baby-crib' in selected_service_keys %}{% trans 'Added' %}{% else %}+ {% trans 'Add' %}{% endif %}</button>
+            </article>
+        </div>
+
+        {% blocktrans with cancel_url="https://wynwood-house.com/cancellation-policy/" terms_url="https://wynwood-house.com/terms-of-service/" privacy_url="https://wynwood-house.com/privacy-policy/" %}By selecting continue, you accept the <a href="{{ cancel_url }}" target="_blank" rel="noopener">Cancellation Policy</a>, <a href="{{ terms_url }}" target="_blank" rel="noopener">Terms of Service</a> and <a href="{{ privacy_url }}" target="_blank" rel="noopener">Privacy Policies</a>. You also agree to pay the total amount shown.{% endblocktrans %}
+
+        <button class="registro-submit" type="submit" data-registro-submit>{% trans 'Continue' %}</button>
+
+        <hr class="registro-rule registro-rule-newsletter">
+        <p class="registro-newsletter">{% trans 'Wynwood will send you exclusive member offers, inspiring content, commercial emails and push notifications. You can opt out at any time from your account settings or directly from any notification you receive.' %}</p>
+        <label class="registro-optout">{{ form.newsletter }}<span>{{ form.newsletter.label }}</span></label>
+    </form>
+
+    <aside class="registro-summary">
+        <a class="registro-help" href="mailto:sales@wynwoodhouse.com">{% trans 'Do you need help completing your reservation?' %}</a>
+        <div class="registro-panel">
+            <div class="registro-property">
+                <span class="registro-thumb">
+                    {% with photo=property.primary_image %}
+                        {% if photo %}
+                            <img class="registro-thumb-img" src="{{ photo.image.url }}" alt="{{ photo.alt }}" width="140" height="128">
+                        {% else %}
+                            <img class="registro-thumb-icon" src="{% static 'design/figma/ui/icon-image.svg' %}" alt="" width="34" height="34">
+                        {% endif %}
+                    {% endwith %}
+                </span>
+                <div class="registro-property-copy">
+                    <h2>{{ property.title }}</h2>
+                    <p>{{ property.address }}, {{ property.destination.name }}, {{ property.destination.country }}</p>
+                </div>
+            </div>
+
+            <div class="registro-stay" data-checkout-dates data-date-range data-nightly-rate="{{ nightly_rate|unlocalize }}" data-cleaning-fee="{{ cleaning_fee|unlocalize }}" data-currency="{{ currency_symbol }}">
+                <span class="registro-stay-label">{% trans 'Dates' %}</span>
+                <button type="button" class="registro-stay-value" data-date-trigger aria-haspopup="dialog" aria-expanded="false">
+                    <span data-date-summary>{{ check_in|date:'j M Y' }} - {{ check_out|date:'j M Y' }}</span>
+                    <img src="{% static 'design/figma/ui/icon-pencil.svg' %}" alt="{% trans 'Change dates' %}" width="20" height="20">
+                </button>
+                <input type="hidden" name="check_in" value="{{ check_in|date:'Y-m-d' }}">
+                <input type="hidden" name="check_out" value="{{ check_out|date:'Y-m-d' }}">
+            </div>
+            <div class="registro-stay registro-stay-guests" data-checkout-guest-picker data-max-guests="{{ property.max_guests }}">
+                <span class="registro-stay-label">{% trans 'Guests' %}</span>
+                <button type="button" class="registro-stay-value" data-checkout-guest-trigger aria-expanded="false">
+                    <span data-checkout-guest-label>{% blocktrans count counter=guests %}{{ counter }} person{% plural %}{{ counter }} people{% endblocktrans %}</span>
+                    <img src="{% static 'design/figma/ui/icon-pencil.svg' %}" alt="{% trans 'Change guests' %}" width="20" height="20">
+                </button>
+                <div class="registro-guest-panel" data-checkout-guest-panel hidden>
+                    <div class="guest-stepper">
+                        <button type="button" data-checkout-guest-step="-1" aria-label="{% trans 'Remove guest' %}">−</button>
+                        <output data-checkout-guest-count>{{ guests }}</output>
+                        <button type="button" data-checkout-guest-step="1" aria-label="{% trans 'Add guest' %}">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <dl class="registro-lines">
+                {% if booking_type == 'monthly' and monthly_rate %}
+                <div><dt data-line-rate-label>{{ currency_symbol }} {{ monthly_rate|floatformat:0 }} / {% trans 'month' %} ({{ nights }} {% trans 'nights' %})</dt><dd data-line-subtotal>{{ currency_symbol }} {{ subtotal|floatformat:'0' }}</dd></div>
+                {% else %}
+                <div><dt data-line-rate-label>{{ currency_symbol }} {{ nightly_rate|floatformat:0 }} x {{ nights }}</dt><dd data-line-subtotal>{{ currency_symbol }} {{ subtotal|floatformat:'0' }}</dd></div>
+                {% endif %}
+                <div><dt>{% trans 'Cleaning fee' %}</dt><dd data-line-cleaning>{{ currency_symbol }} {{ cleaning_fee|floatformat:'0' }}</dd></div>
+            </dl>
+            <div class="registro-lines-service" data-service-lines aria-live="polite" hidden></div>
+            <hr class="registro-panel-rule">
+            {% if discount_amount %}
+            <dl class="registro-lines">
+                <div><dt>{% trans 'Wynwood Points discount' %}</dt><dd>{{ currency_symbol }} -{{ discount_amount|floatformat:'0' }}</dd></div>
+            </dl>
+            {% endif %}
+            <p class="registro-total"><span>{% trans 'Total' %}</span><span data-line-total>{{ currency_symbol }} {{ total|floatformat:'0' }}</span></p>
+        </div>
+
+        <p class="registro-points-label">{% trans 'With this reservation you are generating' %}</p>
+            <p class="registro-points" data-line-points data-points-rate="{{ points_rate|unlocalize }}">{% blocktrans with points=points %}{{ points }} Wynwood Points{% endblocktrans %}</p>
+        <a class="registro-points-link" href="https://wynwood-house.com/rewards-program/">{% trans 'Learn more about Wynwood Points' %}</a>
+    </aside>
+</div>
+{% endblock %}

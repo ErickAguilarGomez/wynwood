@@ -1,0 +1,8 @@
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+exclude = [".venv", "migrations", "media", "staticfiles"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "DJ"]
+ignore = ["E501", "DJ001", "DJ008"]

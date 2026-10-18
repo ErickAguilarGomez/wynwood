@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+{% block title %}Wynwood House{% endblock %}
+{% block body_class %}home-page{% endblock %}
+{% block content %}
+<section class="home-hero">
+    <div class="promo-ribbon" data-countdown-ribbon>
+        <span>Corre! 20% de descuento en todos los viajes</span>
+        <span>Quedan solo <b data-countdown-hours>00</b> h <b data-countdown-minutes>00</b> m <b data-countdown-seconds>00</b> s</span>
+    </div>
+    <img class="home-hero-image" src="{% static 'design/figma/home/hero.png' %}" alt="Wynwood House">
+    <div class="home-hero-shade"></div>
+    <div class="home-hero-copy">
+        <h1>HOME EXPERIENCE, HOTEL QUALITY</h1>
+        <p>BEST OF BOTH WORLDS</p>
+    </div>
+    <div class="home-search">{% include 'components/search_form.html' with variant='hero' %}</div>
+</section>
+
+<section id="destinations" class="figma-section destinations-section container-wide">
+    <div class="figma-heading">
+        <h2>DESCUBRE NUESTROS DESTINOS</h2>
+        <div class="carousel-arrows">
+            <button type="button" aria-label="Anterior" class="arrow-prev">
+                <svg width="14" height="22" viewBox="0 0 14 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L3 11L12 20" stroke="#D1D1D1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <button type="button" aria-label="Siguiente" class="arrow-next">
+                <svg width="14" height="22" viewBox="0 0 14 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 2L11 11L2 20" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div class="destination-track">
+        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-colombia.png' %}" alt="Colombia"></a>
+        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-mexico.png' %}" alt="México"></a>
+        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-peru.png' %}" alt="Perú"></a>
+        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-panama.png' %}" alt="Panamá"></a>
+        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-spain.png' %}" alt="España"></a>
+    </div>
+</section>
+
+<section id="stays" class="featured-section">
+    <div class="featured-copy">
+        <h2>{% trans "Featured homes" %}</h2>
+        <p>Descubre nuestra selección exclusiva de propiedades y conoce tu destino preferido a tu manera. Encuentra tu estadía ideal y empieza a vivir una experiencia única.</p>
+    </div>
+    <div class="featured-content">
+        <div class="featured-tabs">
+            <button class="active" type="button">Todas las propiedades</button>
+            <button type="button" class="tab-collection"><img src="{% static 'design/figma/ui/icon-star.svg' %}" alt="" class="tab-icon"> The Collection*</button>
+            <button type="button" class="tab-casa"><img src="{% static 'design/figma/ui/icon-house.svg' %}" alt="" class="tab-icon"> Casa Wynwood</button>
+        </div>
+        <div class="featured-track">
+            {% for property in featured_properties %}
+            <a class="featured-card" href="{{ property.get_absolute_url }}">
+                {% with photo=property.primary_image %}
+                {% if photo %}<img src="{{ photo.image.url }}" alt="{{ photo.alt }}" loading="lazy">
+                {% else %}<img src="{% static 'design/figma/home/featured-one.png' %}" alt="{{ property.title }}" loading="lazy">{% endif %}
+                {% endwith %}
+                <span class="featured-gradient" aria-hidden="true"></span>
+                <div>
+                    <div class="featured-card-header">
+                        <strong>{{ property.title }}</strong>
+                        <span class="guest-count"><img class="card-guest-icon" src="{% static 'design/figma/ui/icon-user.svg' %}" alt="" width="14" height="14">{{ property.max_guests }}</span>
+                    </div>
+                    <p class="featured-card-meta">
+                        <strong>{{ booking_currency }} {{ property.price_per_night|floatformat:0 }} {% trans 'night' %}</strong>
+                        <em>{{ property.destination.name }}</em>
+                    </p>
+                </div>
+            </a>
+            {% empty %}
+            <a class="featured-card" href="{% url 'properties:results' %}">
+                <img src="{% static 'design/figma/home/featured-one.png' %}" alt="Wynwood House" loading="lazy">
+            </a>
+            <a class="featured-card" href="{% url 'properties:results' %}">
+                <img src="{% static 'design/figma/home/featured-two.png' %}" alt="Wynwood House" loading="lazy">
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="services-section">
+    <div class="services-copy">
+        <h2>SERVICIOS EN WYNWOOD HOUSE</h2>
+        <p>Descubre los servicios que ofrecen nuestras propiedades para hacer de tu estadía la experiencia más cómoda y emocionante que puedas imaginar.</p>
+    </div>
+    <div class="services-grid">
+        <article><img src="{% static 'design/figma/home/service-checkin.png' %}" alt=""><span>CHECK IN SIN<br>CONTACTO</span></article>
+        <article><img src="{% static 'design/figma/home/service-cleaning.png' %}" alt=""><span>LIMPIEZA<br>PROFESIONAL</span></article>
+        <article><img src="{% static 'design/figma/home/service-wifi.png' %}" alt=""><span>WIFI</span></article>
+        <article><img src="{% static 'design/figma/home/service-bath.png' %}" alt=""><span>KIT DE BAÑO</span></article>
+        <article><img src="{% static 'design/figma/home/service-kitchen.png' %}" alt=""><span>COCINA<br>EQUIPADA</span></article>
+        <article><img src="{% static 'design/figma/home/service-pet.png' %}" alt=""><span>PET<br>FRIENDLY</span></article>
+        <article><img src="{% static 'design/figma/home/service-support.png' %}" alt=""><span>SOPORTE<br>24/7</span></article>
+        <article><img src="{% static 'design/figma/home/service-bed.png' %}" alt=""><span>CAMA<br>WYNWOOD</span></article>
+    </div>
+</section>
+
+<section id="events" class="events-section">
+    <div class="events-collage">
+        <img class="events-small" src="{% static 'design/figma/home/event-small.png' %}" alt="">
+        <img class="events-large" src="{% static 'design/figma/home/event-large.png' %}" alt="">
+    </div>
+    <div class="events-copy">
+        <h2>DISFRUTA DE NUESTROS EVENTOS!</h2>
+        <p>Vive tu experiencia al máximo mientras te sumerges en el vibrante mundo de los eventos Wynwood. Disfruta de arte, cultura e inspiración como nunca antes.</p>
+        <a class="pill-button" href="#">VER TODOS LOS EVENTOS</a>
+    </div>
+</section>
+
+<section class="benefits-section container-wide">
+    <h2>BENEFICIOS DE WYNWOOD HOUSE</h2>
+    <div class="benefits-grid">
+        <article class="benefit-info">
+            <h3>Guias de ciudades</h3>
+            <p>Lorem ipsum dolor sit amet consectetur. Congue volutpat pulvinar mattis enim tellus. Ac habitasse enim adipiscing vitae massa pretium nulla dui.</p>
+            <a class="pill-button outline" href="#">SABER MÁS</a>
+        </article>
+        <article class="benefit-image">
+            <img src="{% static 'design/figma/home/benefit-services.png' %}" alt="">
+            <strong>SERVICIOS<br>ADICIONALES</strong>
+        </article>
+        <article class="benefit-image">
+            <img src="{% static 'design/figma/home/benefit-rewards.png' %}" alt="">
+            <strong>PROGRAMA DE<br>REWARDS</strong>
+        </article>
+    </div>
+</section>
+
+<section class="houses-section container-wide">
+    <a id="casa-wynwood" href="#" class="house-panel">
+        <img src="{% static 'design/figma/home/casa-wynwood.png' %}" alt="Casa Wynwood">
+    </a>
+    <a id="collection" href="#" class="house-panel">
+        <img src="{% static 'design/figma/home/the-collection.png' %}" alt="The Collection">
+    </a>
+</section>
+
+<section id="long-stays" class="long-stays-section">
+    <img src="{% static 'design/figma/home/long-stay.png' %}" alt="Alquileres a largo plazo">
+    <div>
+        <h2>ALQUILERES A LARGO PLAZO</h2>
+        <p>Descubre el confort y la conveniencia de hospedarte con nosotros durante períodos prolongados. Aprovecha nuestras tarifas especiales diseñadas exclusivamente para estadías largas, ofreciéndote una experiencia continua de calidad y comodidad.</p>
+        <a class="pill-button" href="mailto:sales@wynwoodhouse.com">CONTÁCTANOS</a>
+    </div>
+</section>
+
+<section id="real-estate" class="real-estate-section">
+    <img class="real-estate-photo" src="{% static 'design/figma/home/real-estate.png' %}" alt="">
+    <div class="real-estate-brand">
+        <img src="{% static 'design/figma/home/real-estate-brand.svg' %}" alt="Wynwood Real Estate">
+        <small>REAL ESTATE</small>
+    </div>
+    <div class="real-estate-copy">
+        <div class="real-estate-text">
+            <h2>INVIERTE EN REAL ESTATE</h2>
+            <p>Compra o vende tu propiedad y obtén asesoramiento profesional y una experiencia sin estrés</p>
+        </div>
+        <a class="pill-button light-outline" href="mailto:sales@wynwoodhouse.com">SABER MÁS</a>
+    </div>
+</section>
+
+<section class="press-section" aria-label="{% trans 'Featured in' %}">
+    <div class="press-track">
+        {% for copy in "1234" %}
+        <div class="press-group"{% if not forloop.first %} aria-hidden="true"{% endif %}>
+            <img src="{% static 'design/figma/home/press-vogue.png' %}" alt="{% if forloop.first %}Vogue{% endif %}">
+            <img src="{% static 'design/figma/home/press-lbeaute.png' %}" alt="{% if forloop.first %}L'Beauté Homme{% endif %}">
+            <img src="{% static 'design/figma/home/press-forbes.png' %}" alt="{% if forloop.first %}Forbes{% endif %}">
+            <img src="{% static 'design/figma/home/press-portafolio.png' %}" alt="{% if forloop.first %}Portafolio{% endif %}">
+            <img src="{% static 'design/figma/home/press-republica.png' %}" alt="{% if forloop.first %}La República{% endif %}">
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

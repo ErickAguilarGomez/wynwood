@@ -1,0 +1,29 @@
+.git
+.gitignore
+.venv
+venv
+env
+.env
+.env.*
+.DS_Store
+__pycache__
+*.pyc
+.ruff_cache
+.mypy_cache
+.pytest_cache
+.tox
+.nox
+.coverage
+.coverage.*
+coverage.xml
+htmlcov
+media
+staticfiles
+node_modules
+playwright-report
+test-results
+blob-report
+playwright/.cache
+playwright/.auth
+Prueba técnica.pdf
+Prueba técnica.pdf

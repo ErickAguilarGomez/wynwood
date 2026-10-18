@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+{% block title %}{% trans 'Payment information' %} · Wynwood House{% endblock %}
+{% block body_class %}payment-page{% endblock %}
+{% block content %}
+<section class="payment-shell">
+    <a class="payment-crumb" href="{{ property.get_absolute_url }}">
+        <img src="{% static 'design/figma/detail/asterisk.png' %}" alt="" width="20" height="20">
+        <span>{{ property.destination.country }} &nbsp;|&nbsp; {{ property.destination.name }} &nbsp;|&nbsp; {{ property.title }} &nbsp;|&nbsp; <strong>{% trans 'Payment page' %}</strong></span>
+    </a>
+
+    <div class="payment-layout">
+        <main class="payment-main">
+            {% firstof user.first_name user.email as guest_name %}
+            <h1 class="payment-welcome">{% blocktrans with name=guest_name|upper %}WELCOME TO WYNWOOD HOUSE {{ name }}!{% endblocktrans %}</h1>
+            <p class="payment-intro">{% trans 'Select your additional services and payment method to continue with the reservation' %}</p>
+
+            <hr class="payment-rule">
+
+            <section class="payment-services">
+                <h2 class="payment-section-title">{% trans 'Additional services' %}</h2>
+                <p class="payment-services-intro">{% trans 'Enjoy a hassle-free stay with our additional services.' %}</p>
+                <div class="payment-services-grid">
+                    {% for entry in services %}
+                        <article class="payment-service-card{% if entry.charge %} is-added{% endif %}">
+                            <img class="payment-service-photo" src="{% static entry.checkout_image %}" alt="{{ entry.service.name }}">
+                            {% if entry.charge %}
+                                <a class="payment-service-name" href="{% url 'bookings:service_detail' reservation.public_id entry.service.key %}?next=payment">{{ entry.service.name }}</a>
+                                <form method="post" action="{% url 'bookings:service_detail' reservation.public_id entry.service.key %}?next=payment">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="remove">
+                                    <input type="hidden" name="next" value="payment">
+                                    <button class="payment-service-button is-added" type="submit">− {% trans 'Remove' %}</button>
+                                </form>
+                            {% else %}
+                                <h3 class="payment-service-name">{{ entry.service.name }}</h3>
+                                <a class="payment-service-button" href="{% url 'bookings:service_detail' reservation.public_id entry.service.key %}?next=payment">+ {% trans 'Add' %}</a>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <hr class="payment-rule payment-rule-after-services">
+
+            <section class="payment-method-picker" data-payment-method-picker {% if payment_form_open %}hidden{% endif %}>
+                <h2 class="payment-section-title">{% trans 'PAYMENT METHOD' %}</h2>
+                <button class="payment-method-option" type="button" data-payment-method-open aria-expanded="false">
+                    <svg class="payment-method-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18m-5 7h2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                    <span>{% trans 'Debit / credit card' %}</span>
+                </button>
+            </section>
+
+            <form method="post" class="payment-form" data-payment-form {% if not payment_form_open %}hidden{% endif %} novalidate>
+                {% csrf_token %}
+                <div class="payment-heading-row">
+                    <div>
+                        <h2 class="payment-section-title">{% trans 'PAYMENT INFORMATION' %}</h2>
+                        <p class="payment-form-intro">{% trans 'Review your reservation details to continue.' %}</p>
+                    </div>
+                    <button class="payment-change-method" type="button" data-payment-method-change>{% trans 'Change' %}</button>
+                </div>
+
+                <div class="payment-field{% if form.card_number.errors %} is-invalid{% endif %}">
+                    <div class="payment-label-row">
+                        <span class="payment-card-label"><label for="{{ form.card_number.id_for_label }}">{{ form.card_number.label }}</label><svg class="payment-card-lock" viewBox="0 0 16 18" aria-hidden="true"><rect x="2.5" y="7" width="11" height="9" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>
+                        <span class="payment-secure-note">🔒 {% trans 'Secure simulated payment' %}</span>
+                    </div>
+                    <span class="payment-card-input-wrap">
+                        {{ form.card_number }}
+                        <svg class="payment-card-icon" viewBox="0 0 24 18" aria-hidden="true"><rect x="2" y="2" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 6h18m-6 6h4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                    </span>
+                    {% for error in form.card_number.errors %}<p class="payment-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="payment-fields-row">
+                    {% include 'payments/_field.html' with field=form.expiration %}
+                    {% include 'payments/_field.html' with field=form.security_code %}
+                </div>
+                {% include 'payments/_field.html' with field=form.installments select_wrap=True %}
+
+                <h2 class="payment-section-title payment-billing-title">{% trans 'BILLING INFORMATION' %}</h2>
+                <div class="payment-fields-row">
+                    {% include 'payments/_field.html' with field=form.address %}
+                    {% include 'payments/_field.html' with field=form.address_2 %}
+                </div>
+                <div class="payment-fields-row">
+                    {% include 'payments/_field.html' with field=form.country select_wrap=True %}
+                    {% include 'payments/_field.html' with field=form.region %}
+                </div>
+                <div class="payment-fields-row">
+                    {% include 'payments/_field.html' with field=form.city %}
+                    {% include 'payments/_field.html' with field=form.postal_code %}
+                </div>
+
+                {% if form.cardholder_confirmation.errors %}<p class="payment-error">{{ form.cardholder_confirmation.errors.0 }}</p>{% endif %}
+                <label class="payment-confirmation">{{ form.cardholder_confirmation }}<span>{{ form.cardholder_confirmation.label }}</span></label>
+                <p class="payment-terms">{% blocktrans %}By selecting I agree and continue, you accept{% endblocktrans %} <a href="https://wynwood-house.com/cancellation-policy/" target="_blank" rel="noopener">{% trans 'Cancellation policy' %}</a>, <a href="https://wynwood-house.com/terms-of-service/" target="_blank" rel="noopener">{% trans 'Terms of service' %}</a> {% trans 'and' %} <a href="https://wynwood-house.com/privacy-policy/" target="_blank" rel="noopener">{% trans 'Privacy policy' %}</a>. {% blocktrans %}You also agree to pay the total amount shown.{% endblocktrans %}</p>
+                {% if form.non_field_errors %}{% for error in form.non_field_errors %}<p class="payment-error">{{ error }}</p>{% endfor %}{% endif %}
+                <button class="payment-submit" type="submit" data-payment-submit disabled>{% trans 'COMPLETE RESERVATION' %}</button>
+            </form>
+        </main>
+        <aside class="payment-sidebar">
+            <p class="svc-help-title"><a href="{{ whatsapp_url }}">{% trans 'Need help completing your reservation?' %}</a></p>
+            {% include 'bookings/_reservation_sidebar.html' %}
+        </aside>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% load static i18n %}
+<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}" data-currency="{{ booking_currency }}" data-today="{{ local_today }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% trans 'Curated homes for exceptional stays.' %}">
+    <title>{% block title %}Wynwood House{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    {% block extra_head %}{% endblock %}
+    <script src="{% static 'js/site.js' %}" defer></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    {% if detail_view %}
+    <header class="site-header detail-header">
+        <div class="site-header-inner detail-header-inner">
+            <button class="nav-toggle detail-menu-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">
+                <span>Menú</span><span class="detail-menu-plus" aria-hidden="true">+</span>
+            </button>
+            <a class="brand detail-brand" href="{% url 'core:home' %}" aria-label="Wynwood House">
+                <img src="{% static 'design/figma/ui/logo.svg' %}" alt="Wynwood House" width="156" height="41">
+            </a>
+            <div class="detail-header-actions">
+                <form action="{% url 'set_language' %}" method="post" class="language-switcher detail-language">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button name="language" value="en" type="submit" {% if LANGUAGE_CODE == 'en' %}aria-current="true"{% endif %}>EN</button><span>/</span>
+                    <button name="language" value="es" type="submit" {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}aria-current="true"{% endif %}>ES</button>
+                </form>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'bookings:list' %}">{% trans 'My bookings' %}</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">Iniciar sesión</a>
+                {% endif %}
+                <a class="reserve-now" href="#booking">Reservar Ahora</a>
+            </div>
+            <nav id="main-navigation" class="main-nav detail-nav" aria-label="{% trans 'Main navigation' %}">
+                {% include 'components/main_links.html' %}
+            </nav>
+        </div>
+    </header>
+    {% else %}
+    <header class="site-header">
+        <div class="site-header-inner">
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">
+                <img src="{% static 'design/figma/ui/menu.svg' %}" alt="{% trans 'Menu' %}" width="28" height="28">
+            </button>
+            <a class="brand" href="{% url 'core:home' %}" aria-label="Wynwood House">
+                <img src="{% static 'design/figma/ui/logo.svg' %}" alt="Wynwood House" width="162" height="43">
+            </a>
+            <nav id="main-navigation" class="main-nav" aria-label="{% trans 'Main navigation' %}">
+                {% include 'components/main_links.html' %}
+                <span class="nav-divider" aria-hidden="true"></span>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'bookings:list' %}">{% trans 'My bookings' %}</a>
+                    <form action="{% url 'accounts:logout' %}" method="post">{% csrf_token %}<button class="nav-link" type="submit">{% trans 'Log out' %}</button></form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">{% trans 'Iniciar sesión' %}</a>
+                {% endif %}
+                <span class="nav-divider" aria-hidden="true"></span>
+                <form action="{% url 'set_language' %}" method="post" class="language-switcher">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button name="language" value="en" type="submit" {% if LANGUAGE_CODE == 'en' %}aria-current="true"{% endif %}>EN</button><span>/</span>
+                    <button name="language" value="es" type="submit" {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}aria-current="true"{% endif %}>ES</button>
+                </form>
+            </nav>
+        </div>
+    </header>
+    {% endif %}
+    {% if messages %}
+        <div class="messages" aria-live="polite">
+            {% for message in messages %}<div class="message message-{{ message.tags }}">{{ message }}</div>{% endfor %}
+        </div>
+    {% endif %}
+    <main>{% block content %}{% endblock %}</main>
+    {% block footer %}
+    <footer class="site-footer">
+        <div class="footer-search container-wide">
+            {% block footer_search %}
+            <a class="footer-logo" href="{% url 'core:home' %}"><img src="{% static 'design/figma/ui/logo.svg' %}" alt="Wynwood House" width="161" height="43"></a>
+            {% include 'components/search_form.html' with search_form=footer_search_form variant='footer' %}
+            {% endblock %}
+        </div>
+        <div class="footer-rule"></div>
+        <div class="footer-grid container-wide">
+            <div><h3><a href="{% url 'properties:results' %}">{% trans 'Reservations' %}</a></h3></div>
+            <div><h3>{% trans 'Services' %}</h3><a href="{% url 'core:home' %}#long-stays">{% trans 'Groups & Long Stays' %}</a><a href="{% url 'core:home' %}#events">{% trans 'Events & Productions' %}</a></div>
+            <div><h3>{% trans 'About us' %}</h3><a href="https://wynwood-house.com/about-us/" target="_blank" rel="noopener">{% trans 'Who are we?' %}</a><a href="https://blog.wynwood-house.com/" target="_blank" rel="noopener">{% trans 'Blog & News' %}</a><a href="{% url 'core:home' %}#casa-wynwood">{% trans 'Casa Wynwood' %}</a><a href="https://wynwood-house.com/careers/" target="_blank" rel="noopener">{% trans 'Work with us' %}</a></div>
+            <div><h3>{% trans 'Owners & Investors' %}</h3><a href="{% url 'core:home' %}#real-estate">{% trans 'Wynwood Real Estate' %}</a><span>{% trans 'Owners' %}</span></div>
+            <div><h3>{% trans 'Benefits' %}</h3><span>{% trans 'Guides' %}</span><span>{% trans 'Rewards Program' %}</span></div>
+
+            <div><h3>{% trans 'Destinations' %}</h3><span>{% trans 'Peru' %}</span><span>{% trans 'Mexico' %}</span><span>{% trans 'Panama' %}</span><span>{% trans 'Colombia' %}</span></div>
+            <div><h3>{% trans 'Terms & Conditions' %}</h3><a href="https://wynwood-house.com/terms-of-service/" target="_blank" rel="noopener">{% trans 'Terms of service' %}</a><a href="https://wynwood-house.com/privacy-policy/" target="_blank" rel="noopener">{% trans 'Privacy policy' %}</a><a href="https://wynwood-house.com/cancellation-policy/" target="_blank" rel="noopener">{% trans 'Cancellation policy' %}</a></div>
+            <div><h3>{% trans 'Contact us' %}</h3><a href="https://wynwood-house.com/contact/" target="_blank" rel="noopener">{% trans 'Write to us' %}</a><a href="https://wynwood-house.com/faq/" target="_blank" rel="noopener">{% trans 'FAQ' %}</a><a href="tel:+12536423881" class="footer-contact-link"><img src="{% static 'design/figma/ui/icon-phone.svg' %}" alt="" class="footer-phone-icon"> +1 (253) 642-3881</a><a href="mailto:sales@wynwoodhouse.com">sales@wynwoodhouse.com</a></div>
+            <div><h3>{% trans 'WhatsApp' %}</h3>
+                <a class="wa-item" href="https://wa.me/51946964976" target="_blank" rel="noopener"><img src="{% static 'design/figma/ui/flag-co.svg' %}" alt="CO" class="footer-flag"> +51 946 964 976</a>
+                <a class="wa-item" href="https://wa.me/51989256806" target="_blank" rel="noopener"><img src="{% static 'design/figma/ui/flag-pa.svg' %}" alt="PA" class="footer-flag"> +51 989 256 806</a>
+                <a class="wa-item" href="https://wa.me/51969712480" target="_blank" rel="noopener"><img src="{% static 'design/figma/ui/flag-mx.svg' %}" alt="MX" class="footer-flag"> +51 969-712-480</a>
+                <a class="wa-item" href="https://wa.me/51989256807" target="_blank" rel="noopener"><img src="{% static 'design/figma/ui/flag-pe.svg' %}" alt="PE" class="footer-flag"> +51 989 256 807</a>
+            </div>
+            <div class="footer-app">
+                <div class="social-links">
+                    <a href="https://www.facebook.com/Wynwoodhouseofficial/" target="_blank" rel="noopener"><img src="{% static 'design/figma/ui/social-facebook.svg' %}" alt="Facebook" width="30" height="30"></a>
+                    <a href="https://www.instagram.com/wynwood.house/" target="_blank" rel="noopener"><img src="{% static 'design/figma/ui/social-instagram.svg' %}" alt="Instagram" width="30" height="30"></a>
+                    <a href="https://www.linkedin.com/company/wynwood-house/" target="_blank" rel="noopener"><img src="{% static 'design/figma/ui/social-linkedin.svg' %}" alt="LinkedIn" width="30" height="30"></a>
+                </div>
+                <span class="download-app-text">{% trans 'Download our app for free' %}</span>
+                <div class="app-badges">
+                    <a href="https://apps.apple.com/us/app/wynwood-house/id1631763744" target="_blank" rel="noopener"><img src="{% static 'design/figma/ui/app-store.png' %}" alt="{% trans 'Download on the App Store' %}" height="34"></a>
+                    <a href="https://play.google.com/store/apps/details?id=com.wynwoodhouse.wynwood" target="_blank" rel="noopener"><img src="{% static 'design/figma/ui/google-play.png' %}" alt="{% trans 'Get it on Google Play' %}" height="34"></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endblock %}
+    {% block floating_actions %}{% endblock %}
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

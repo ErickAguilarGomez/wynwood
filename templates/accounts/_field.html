@@ -1,0 +1,6 @@
+
+<div class="auth-field{% if field.errors %} auth-field-invalid{% endif %}">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+    {% for error in field.errors %}<small class="auth-error">{{ error }}</small>{% endfor %}
+</div>

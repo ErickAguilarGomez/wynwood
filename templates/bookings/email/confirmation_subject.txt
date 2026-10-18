@@ -1,0 +1,1 @@
+{% load i18n %}{% trans "Your Wynwood House booking is confirmed" %}

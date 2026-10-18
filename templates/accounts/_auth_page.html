@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+
+{% block body_class %}auth-body{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="container-wide">
+        <h1 class="auth-title">{% block auth_title %}{% endblock %}</h1>
+        <div class="auth-panel">{% block auth_body %}{% endblock %}</div>
+    </div>
+</section>
+{% endblock %}
+
+{% block floating_actions %}
+<a class="wa-float" href="{{ whatsapp_url }}" target="_blank" rel="noopener" aria-label="{% trans 'Chat on WhatsApp' %}">
+    <img src="{% static 'design/figma/ui/whatsapp-float.svg' %}" alt="WhatsApp" width="52" height="52">
+</a>
+{% endblock %}

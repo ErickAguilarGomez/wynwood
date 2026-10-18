@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+body{margin:0;background:#eae7e2;font-family:-apple-system,Helvetica,Arial,sans-serif;padding:24px}
+.tabs{display:flex;gap:14px;align-items:center}
+button{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 18px;border:0;border-radius:10px;background:#d2e3e8;font-size:14px;color:#000}
+button.active{background:#000;color:#fff}
+img.tab-icon{width:16px;height:16px;object-fit:contain}
+.zoom{margin-top:18px;display:flex;gap:24px;align-items:flex-end}
+.zoom img.z1{width:16px;height:16px}
+.zoom img.z2{width:32px;height:32px}
+.zoom img.z3{width:64px;height:64px}
+.zoom img.z4{width:128px;height:128px}
+.onblue{background:#d2e3e8;padding:6px;border-radius:10px}
+</style></head>
+<body>
+  <div class="tabs">
+    <button class="active" type="button">Todas las propiedades</button>
+    <button type="button"><img class="tab-icon" src="icon-star.svg" alt=""> The Collection*</button>
+    <button type="button"><img class="tab-icon" src="icon-house.svg" alt=""> Casa Wynwood</button>
+  </div>
+  <div class="zoom">
+    <span class="onblue"><img class="z1" src="icon-house.svg" alt=""></span>
+    <span class="onblue"><img class="z2" src="icon-house.svg" alt=""></span>
+    <span class="onblue"><img class="z3" src="icon-house.svg" alt=""></span>
+    <span class="onblue"><img class="z4" src="icon-house.svg" alt=""></span>
+  </div>
+</body></html>

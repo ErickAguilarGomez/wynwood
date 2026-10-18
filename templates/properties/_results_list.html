@@ -1,0 +1,32 @@
+{% load static i18n %}
+<div class="results-list">
+    {% for property in properties %}
+        <article class="result-card" data-property-id="{{ property.pk }}">
+            <a class="result-image" href="{{ property.get_absolute_url }}{% if requested_check_in and requested_check_out %}?check_in={{ requested_check_in }}&check_out={{ requested_check_out }}&guests={{ current_guests }}{% elif search_data.check_in and search_data.check_out %}?check_in={{ search_data.check_in|date:'Y-m-d' }}&check_out={{ search_data.check_out|date:'Y-m-d' }}&guests={{ current_guests }}{% endif %}">
+                {% with photo=property.primary_image %}{% if photo %}<img src="{{ photo.image.url }}" alt="{{ photo.alt }}" loading="lazy" width="600" height="400">{% else %}<img src="{% static 'design/figma/results/property-1.png' %}" alt="" width="600" height="400">{% endif %}{% endwith %}
+            </a>
+            <h2><a href="{{ property.get_absolute_url }}{% if requested_check_in and requested_check_out %}?check_in={{ requested_check_in }}&check_out={{ requested_check_out }}&guests={{ current_guests }}{% elif search_data.check_in and search_data.check_out %}?check_in={{ search_data.check_in|date:'Y-m-d' }}&check_out={{ search_data.check_out|date:'Y-m-d' }}&guests={{ current_guests }}{% endif %}">{{ property.title }}</a></h2>
+            <p class="result-location">{{ property.district|default:property.destination.name }}, {{ property.destination.name }}</p>
+            <div class="result-meta">
+                <strong>{{ booking_currency }} {{ property.price_per_night|floatformat:0 }} / <em>{% trans 'night' %}</em></strong>
+                <span class="result-fact"><img src="{% static 'design/figma/results/icon-guests.svg' %}" alt="{% trans 'Guests' %}" width="15" height="15">{{ property.max_guests }}</span>
+                <span class="result-fact"><img src="{% static 'design/figma/results/icon-beds.svg' %}" alt="{% trans 'beds' %}" width="15" height="15">{{ property.beds }}</span>
+            </div>
+        </article>
+    {% empty %}
+        <div class="empty-state"><h2>{% trans 'No homes match this search' %}</h2><p>{% trans 'Try different dates, fewer guests or another destination.' %}</p><a class="pill-button" href="{% url 'core:home' %}">{% trans 'Start a new search' %}</a></div>
+    {% endfor %}
+</div>
+{% if page_obj.paginator.num_pages > 1 %}
+    <nav class="results-pager" aria-label="{% trans 'Pagination' %}">
+        {% for number in page_obj.paginator.page_range %}
+            {% if number == page_obj.number %}
+                <span class="pager-dot is-active" aria-current="page" aria-label="{% blocktrans %}Page {{ number }}{% endblocktrans %}"></span>
+            {% else %}
+                <a class="pager-dot" href="{% querystring page=number %}" aria-label="{% blocktrans %}Page {{ number }}{% endblocktrans %}"></a>
+            {% endif %}
+        {% endfor %}
+    </nav>
+{% endif %}
+{{ properties_map_data|json_script:"properties-map-data" }}
+

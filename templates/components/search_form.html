@@ -1,0 +1,122 @@
+{% load static i18n %}
+{% if variant == 'footer' %}
+<form class="search-bar search-bar-footer" action="{% url 'properties:results' %}" method="get">
+    <div class="search-destination" data-city-picker>
+        <img src="{% static 'design/figma/ui/icon-search.svg' %}" alt="" class="field-icon">
+        <span>{% trans 'Destination' %}</span>
+        <input type="hidden" name="country" value="{{ footer_destination.country|default:'' }}" data-city-country>
+        <input type="hidden" name="destination" value="{{ footer_destination.pk|default:'' }}" data-city-input>
+        <button type="button" class="city-trigger" data-city-trigger aria-haspopup="listbox" aria-expanded="false"><span data-city-label>{% if footer_destination %}{{ footer_destination.name }}, {{ footer_destination.country }}{% else %}{% trans 'City or destination' %}{% endif %}</span></button>
+        <div class="city-panel" data-city-panel hidden role="listbox" aria-label="{% trans 'City or destination' %}">
+            {% for country, destinations in footer_destinations_by_country.items %}
+                <p class="city-country">{{ country }}</p>
+                {% for destination in destinations %}
+                    <button type="button" data-city-option data-city-id="{{ destination.pk }}" data-city-country="{{ country }}" data-city-name="{{ destination.name }}">{{ destination.name }}</button>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        <i class="filter-plus" aria-hidden="true">+</i>
+        {% for error in search_form.destination.errors %}<small>{{ error }}</small>{% endfor %}
+    </div>
+    <div class="search-dates" data-date-range>
+        <img src="{% static 'design/figma/ui/icon-calendar.svg' %}" alt="" class="field-icon">
+        <span>{% trans 'Arrival - Departure' %}</span>
+        <span class="field-display" data-date-summary data-empty="{% trans 'Add dates' %}">
+            {% if search_form.check_in.value and search_form.check_out.value %}
+                {{ search_form.check_in.value|date:'d M Y' }} - {{ search_form.check_out.value|date:'d M Y' }}
+            {% else %}
+                {% trans 'Add dates' %}
+            {% endif %}
+        </span>
+        <button type="button" class="field-overlay" data-date-trigger aria-haspopup="dialog" aria-expanded="false" aria-label="{% trans 'Arrival - Departure' %}"></button>
+        <input type="hidden" name="check_in" value="{{ search_form.check_in.value|date:'Y-m-d'|default:'' }}">
+        <input type="hidden" name="check_out" value="{{ search_form.check_out.value|date:'Y-m-d'|default:'' }}">
+        <i class="filter-plus" aria-hidden="true">+</i>
+        {% for error in search_form.check_in.errors %}<small>{{ error }}</small>{% endfor %}
+        {% for error in search_form.check_out.errors %}<small>{{ error }}</small>{% endfor %}
+    </div>
+    <div class="search-guests" data-guest-picker>
+        <img src="{% static 'design/figma/ui/icon-user.svg' %}" alt="" class="field-icon">
+        <span>{% trans 'Guests' %}</span>
+        {% with guests=search_form.guests.value|default:2 %}
+        <input type="hidden" name="guests" value="{{ guests }}" data-guest-input>
+        <button type="button" class="guest-trigger" data-guest-trigger aria-expanded="false"><span data-guest-label>{{ guests }} {% trans 'Guests' %}</span></button>
+        <div class="guest-panel" data-guest-panel hidden>
+            <p class="guest-panel-title">{% trans 'Guests' %}</p>
+            <div class="guest-stepper">
+                <button type="button" data-guest-step="-1" aria-label="{% trans 'Remove guest' %}">−</button>
+                <output data-guest-count>{{ guests }}</output>
+                <button type="button" data-guest-step="1" aria-label="{% trans 'Add guest' %}">+</button>
+            </div>
+        </div>
+        {% endwith %}
+        <i class="filter-plus" aria-hidden="true">+</i>
+        {% for error in search_form.guests.errors %}<small>{{ error }}</small>{% endfor %}
+    </div>
+    <button class="search-button" type="submit">{% trans 'Search' %}</button>
+</form>
+{% else %}
+<form class="search-bar search-bar-hero" action="{% url 'properties:results' %}" method="get">
+    <div class="search-col search-destination" data-city-picker>
+        <img src="{% static 'design/figma/ui/icon-search.svg' %}" alt="" class="field-icon">
+        <input type="hidden" name="country" value="{{ search_form.country.value|default:'' }}" data-city-country>
+        <input type="hidden" name="destination" value="{{ search_form.destination.value|default:'' }}" data-city-input>
+        <button type="button" class="city-trigger" data-city-trigger aria-haspopup="listbox" aria-expanded="false"><span data-city-label>{% if search_form.destination.value %}{{ search_form.destination.value }}{% else %}{% trans 'City or destination' %}{% endif %}</span></button>
+        <div class="city-panel" data-city-panel hidden role="listbox" aria-label="{% trans 'City or destination' %}">
+            {% for country, destinations in destinations_by_country.items %}
+                <p class="city-country">{{ country }}</p>
+                {% for destination in destinations %}
+                    <button type="button" data-city-option data-city-id="{{ destination.pk }}" data-city-country="{{ country }}" data-city-name="{{ destination.name }}">{{ destination.name }}</button>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% for error in search_form.destination.errors %}<small>{{ error }}</small>{% endfor %}
+    </div>
+    <div class="search-col search-district" data-district-picker>
+        <img src="{% static 'design/figma/ui/icon-flag.svg' %}" alt="" class="field-icon">
+        <button type="button" class="district-trigger" data-district-trigger aria-haspopup="dialog" aria-expanded="false"><span data-district-label>{% trans 'Districts' %}</span></button>
+        <div class="district-panel" data-district-panel hidden>
+            <p class="district-empty" data-district-empty>{% trans 'Select a city first' %}</p>
+            <div data-district-options></div>
+        </div>
+        {% for error in search_form.district.errors %}<small>{{ error }}</small>{% endfor %}
+    </div>
+    <div class="search-col search-dates" data-date-range>
+        <img src="{% static 'design/figma/ui/icon-calendar.svg' %}" alt="" class="field-icon">
+        <button type="button" class="date-trigger" data-date-trigger aria-haspopup="dialog" aria-expanded="false">
+            <span class="field-display" data-date-summary data-empty="{% trans 'Arrival - Departure' %}">
+                {% if search_form.check_in.value and search_form.check_out.value %}
+                    {{ search_form.check_in.value|date:'d M Y' }} - {{ search_form.check_out.value|date:'d M Y' }}
+                {% else %}
+                    {% trans 'Arrival - Departure' %}
+                {% endif %}
+            </span>
+        </button>
+        <input type="hidden" name="check_in" value="{{ search_form.check_in.value|date:'Y-m-d'|default:'' }}">
+        <input type="hidden" name="check_out" value="{{ search_form.check_out.value|date:'Y-m-d'|default:'' }}">
+        {% for error in search_form.check_in.errors %}<small>{{ error }}</small>{% endfor %}
+        {% for error in search_form.check_out.errors %}<small>{{ error }}</small>{% endfor %}
+    </div>
+    <div class="search-col search-guests">
+        <img src="{% static 'design/figma/ui/icon-user.svg' %}" alt="" class="field-icon">
+        {% with guests=search_form.guests.value|default:2 %}
+        <div class="guest-picker" data-guest-picker>
+            <input type="hidden" name="guests" value="{{ guests }}" data-guest-input>
+            <button type="button" class="guest-trigger" aria-expanded="false" aria-controls="guest-panel" data-guest-trigger>
+                <span data-guest-label>{% trans 'Number of guests' %}</span>
+            </button>
+            <div class="guest-panel" id="guest-panel" data-guest-panel hidden>
+                <p class="guest-panel-title">{% trans 'Guests' %}</p>
+                <div class="guest-stepper">
+                    <button type="button" data-guest-step="-1" aria-label="{% trans 'Remove guest' %}">−</button>
+                    <output data-guest-count>{{ guests }}</output>
+                    <button type="button" data-guest-step="1" aria-label="{% trans 'Add guest' %}">+</button>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% for error in search_form.guests.errors %}<small>{{ error }}</small>{% endfor %}
+    </div>
+    <button class="search-button" type="submit">{% trans 'Search' %}</button>
+</form>
+{% endif %}

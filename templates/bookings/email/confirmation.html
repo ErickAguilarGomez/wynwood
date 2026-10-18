@@ -1,0 +1,221 @@
+{% load i18n static %}<!doctype html>
+<html lang="{{ language_code }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<title>{% trans "Your Wynwood House booking is confirmed" %}</title>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">{% trans "Your reservation is confirmed." %}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
+  <tr>
+    <td align="center" style="padding:0 12px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#ffffff;font-family:Helvetica,Arial,sans-serif;color:#000000;">
+
+        
+        <tr>
+          <td align="center" style="padding:30px 24px 14px;">
+            <img src="{{ site_url }}{% static 'design/figma/ui/logo.png' %}" width="174" height="47" alt="Wynwood House" style="display:block;border:0;width:174px;height:47px;">
+          </td>
+        </tr>
+
+        
+        <tr>
+          <td align="center" style="padding:26px 24px 8px;">
+            <div style="font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:42px;line-height:1.05;color:#000000;">{% blocktrans with name=first_name %}Hi {{ name }}!{% endblocktrans %}</div>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding:0 24px 24px;">
+            <div style="font-size:12px;letter-spacing:4px;color:#8c8c8c;text-transform:uppercase;">{% trans "Thank you for choosing Wynwood House" %}</div>
+          </td>
+        </tr>
+
+        {% if hero_image_url %}
+        <tr>
+          <td style="padding:0;"><img src="{{ hero_image_url }}" alt="{{ reservation.property.title }}" width="600" style="display:block;width:100%;height:auto;border:0;"></td>
+        </tr>
+        {% endif %}
+
+        
+        <tr>
+          <td align="center" style="padding:30px 56px 8px;">
+            <p style="margin:0 0 14px;font-size:14px;line-height:1.6;color:#3f3f3f;">{% trans "You are ready to begin your Wynwood Experience!" %}</p>
+            <p style="margin:0;font-size:13px;line-height:1.7;color:#5c5c5c;">
+              {% trans "Your reservation is confirmed and we look forward to welcoming you soon." %}<br>
+              {% trans "Before your arrival you will receive all the check-in information by email." %}<br>
+              {% trans "If you have any questions, do not hesitate to contact us." %}
+            </p>
+          </td>
+        </tr>
+
+        
+        <tr>
+          <td align="center" style="padding:24px 24px 34px;">
+            <a href="{{ support_url }}" style="display:inline-block;background:#000000;color:#ffffff;text-decoration:none;border-radius:100px;padding:15px 36px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;">{% trans "Talk to us 24/7" %}</a>
+          </td>
+        </tr>
+
+        <tr><td style="padding:0 56px;"><div style="height:1px;line-height:1px;font-size:0;background:#ececec;">&nbsp;</div></td></tr>
+
+        
+        <tr>
+          <td align="center" style="padding:26px 24px 6px;">
+            <div style="font-size:11px;letter-spacing:4px;color:#8c8c8c;text-transform:uppercase;">{% trans "With this reservation you are earning" %}</div>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding:0 24px 6px;">
+            <div style="font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:28px;color:#000000;">{% blocktrans with count=points %}{{ count }} Wynwood Points!{% endblocktrans %}</div>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding:0 24px 26px;">
+            <a href="{{ benefits_url }}" style="color:#000000;font-size:13px;text-decoration:underline;">{% trans "Discover your benefits" %}</a>
+          </td>
+        </tr>
+
+        <tr><td style="padding:0 56px;"><div style="height:1px;line-height:1px;font-size:0;background:#ececec;">&nbsp;</div></td></tr>
+
+        
+        <tr>
+          <td style="padding:28px 56px 0;">
+            <div style="font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:22px;color:#000000;">{% trans "Your reservation summary" %}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 56px 0;">
+            <div style="font-size:14px;font-weight:bold;color:#000000;">{{ reservation.property.title }}</div>
+            <div style="font-size:12.5px;color:#8c8c8c;line-height:1.6;padding-top:2px;">{{ reservation.property.address }}{% if reservation.property.destination %}, {{ reservation.property.destination.name }}{% endif %}</div>
+            <div style="font-size:12.5px;color:#8c8c8c;line-height:1.6;">{{ reservation.check_in|date:"F j, Y"|capfirst }} &ndash; {{ reservation.check_out|date:"F j, Y"|capfirst }}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 56px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size:13.5px;color:#3f3f3f;">
+              <tr>
+                <td style="padding:4px 0;text-transform:capitalize;">{{ reservation.nights }} {% trans "Nights" %}</td>
+                <td align="right" style="padding:4px 0;">{{ currency_symbol }} {{ reservation.subtotal|floatformat:"-2" }}</td>
+              </tr>
+              <tr>
+                <td style="padding:4px 0;">{% trans "Cleaning fee" %}</td>
+                <td align="right" style="padding:4px 0;">{{ currency_symbol }} {{ reservation.cleaning_fee|floatformat:"-2" }}</td>
+              </tr>
+              {% for charge in charges %}
+              <tr>
+                <td style="padding:4px 0;">{{ charge.get_kind_display }}</td>
+                <td align="right" style="padding:4px 0;">{{ currency_symbol }} {{ charge.amount|floatformat:"-2" }}</td>
+              </tr>
+              {% endfor %}
+              {% if reservation.discount_amount %}
+              <tr>
+                <td style="padding:4px 0;">{% trans "Wynwood Points discount" %}</td>
+                <td align="right" style="padding:4px 0;">{{ currency_symbol }} -{{ reservation.discount_amount|floatformat:"-2" }}</td>
+              </tr>
+              {% endif %}
+              <tr>
+                <td style="padding:4px 0;color:#8c8c8c;">{% trans "Amount invoiced" %}</td>
+                <td align="right" style="padding:4px 0;color:#8c8c8c;">{{ currency_symbol }} {{ reservation.total|floatformat:"-2" }}</td>
+              </tr>
+              {% if reservation.tax_amount %}
+              <tr>
+                <td style="padding:4px 0;color:#8c8c8c;">{% trans "VAT" %} ({{ tax_percent }}%)</td>
+                <td align="right" style="padding:4px 0;color:#8c8c8c;">{{ currency_symbol }} {{ reservation.tax_amount|floatformat:"-2" }}</td>
+              </tr>
+              {% endif %}
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:12px 56px 0;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="font-size:14px;font-weight:bold;color:#000000;">{% trans "Total" %}</td>
+                <td align="right" style="font-size:14px;font-weight:bold;color:#000000;">{{ currency_symbol }} {{ reservation.total|floatformat:"-2" }}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr><td style="padding:28px 56px 0;"><div style="height:1px;line-height:1px;font-size:0;background:#ececec;">&nbsp;</div></td></tr>
+
+        
+        <tr>
+          <td style="padding:24px 56px 0;">
+            <div style="font-family:Helvetica,Arial,sans-serif;font-weight:bold;font-size:20px;color:#000000;">{% trans "Other destinations" %}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:14px 56px 34px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td width="25%" align="center" valign="top" style="padding:0 4px;">
+                  <img src="{{ site_url }}{% static 'design/figma/home/destination-mexico.png' %}" alt="{% trans 'Mexico' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
+                  <div style="font-size:12px;color:#000000;padding-top:8px;">{% trans "Mexico" %}</div>
+                </td>
+                <td width="25%" align="center" valign="top" style="padding:0 4px;">
+                  <img src="{{ site_url }}{% static 'design/figma/home/destination-peru.png' %}" alt="{% trans 'Peru' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
+                  <div style="font-size:12px;color:#000000;padding-top:8px;">{% trans "Peru" %}</div>
+                </td>
+                <td width="25%" align="center" valign="top" style="padding:0 4px;">
+                  <img src="{{ site_url }}{% static 'design/figma/home/destination-panama.png' %}" alt="{% trans 'Panama' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
+                  <div style="font-size:12px;color:#000000;padding-top:8px;">{% trans "Panama" %}</div>
+                </td>
+                <td width="25%" align="center" valign="top" style="padding:0 4px;">
+                  <img src="{{ site_url }}{% static 'design/figma/home/destination-spain.png' %}" alt="{% trans 'Spain' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
+                  <div style="font-size:12px;color:#000000;padding-top:8px;">{% trans "Spain" %}</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        
+        <tr>
+          <td style="background:#ffa500;padding:38px 32px 42px;">
+            <div style="font-size:34px;line-height:1;color:#1f1a0e;font-weight:bold;">&#10035;</div>
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:23px;line-height:1.35;color:#1f1a0e;padding:22px 0 16px;max-width:430px;">{% trans "Explore your destination with confidence with our city guides." %}</div>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td valign="top" style="padding-right:14px;">
+                  <p style="margin:0;font-size:13px;line-height:1.65;color:#1f1a0e;">{% blocktrans %}Do not settle for the basics. Download <strong>our app</strong>, personalize your stay with <strong>additional services</strong> and enjoy a new way to travel.{% endblocktrans %}</p>
+                </td>
+                <td width="270" align="right" valign="top" style="padding-top:2px;">
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="right">
+                    <tr>
+                      <td style="padding-right:8px;">
+                        <a href="{{ site_url }}"><img src="{{ site_url }}{% static 'design/figma/ui/badge-app-store.png' %}" width="119" height="40" alt="App Store" style="display:block;border:0;width:119px;height:40px;"></a>
+                      </td>
+                      <td>
+                        <a href="{{ site_url }}"><img src="{{ site_url }}{% static 'design/figma/ui/badge-google-play.png' %}" width="134" height="40" alt="Google Play" style="display:block;border:0;width:134px;height:40px;"></a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <div align="center" style="padding-top:36px;">
+              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ site_url }}{% static 'design/figma/ui/social-facebook.png' %}" width="46" height="46" alt="Facebook" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
+              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ site_url }}{% static 'design/figma/ui/social-instagram.png' %}" width="46" height="46" alt="Instagram" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
+              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ site_url }}{% static 'design/figma/ui/social-whatsapp.png' %}" width="46" height="46" alt="WhatsApp" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
+              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ site_url }}{% static 'design/figma/ui/social-linkedin.png' %}" width="46" height="46" alt="LinkedIn" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
+            </div>
+
+            <div align="center" style="padding-top:32px;">
+              <div style="font-size:13px;letter-spacing:4px;color:#1f1a0e;text-transform:uppercase;font-family:Helvetica,Arial,sans-serif;">Home experience, hotel quality</div>
+              <div style="padding-top:20px;"><a href="{{ site_url }}" style="font-size:14px;color:#1f1a0e;text-decoration:underline;">{% trans "Support 24/7" %}</a></div>
+              <div style="padding-top:12px;"><a href="{{ site_url }}" style="font-size:14px;color:#1f1a0e;text-decoration:underline;">{% trans "Cancellation policies" %}</a></div>
+              <div style="padding-top:24px;"><img src="{{ site_url }}{% static 'design/figma/ui/logo.png' %}" width="150" height="41" alt="Wynwood House" style="display:inline-block;border:0;width:150px;height:41px;"></div>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

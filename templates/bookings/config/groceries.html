@@ -1,0 +1,39 @@
+{% load i18n l10n %}
+<form method="post" class="svc-form" data-service="groceries" data-reservation-total="{{ reservation.total|unlocalize }}" data-existing-service-amount="{{ existing_service_amount|unlocalize }}">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p class="svc-detail-copy">{{ service.detail_description }}</p>
+
+    <div class="svc-option-row svc-service-dates" data-date-range data-date-single="true" data-date-start="delivery_date" data-min-date="{{ reservation.check_in|date:'Y-m-d' }}" data-max-date="{{ reservation.check_out|date:'Y-m-d' }}">
+        <span class="svc-option-label">{% trans 'Delivery date' %}</span>
+        <span class="date-range">
+            <button type="button" class="date-range-trigger" data-date-trigger aria-haspopup="dialog" aria-expanded="false">
+                <span class="date-range-value" data-date-summary data-empty="{% trans 'Select a date' %}"></span>
+            </button>
+            {{ form.delivery_date }}
+        </span>
+        {% for error in form.delivery_date.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-packs">
+        {% for pack in grocery_packs %}
+            <label class="svc-pack">
+                <input type="radio" name="pack" value="{{ pack.key }}" data-price="{{ pack.price|unlocalize }}"
+                       {% if form.pack.value == pack.key or not form.pack.value and forloop.first %}checked{% endif %}>
+                <span class="svc-pack-body">
+                    <span class="svc-pack-name">{{ pack.name }}</span>
+                    <span class="svc-pack-text">{{ pack.description }}</span>
+                </span>
+                <strong class="svc-pack-price">{{ currency_symbol }} {{ pack.price|floatformat:0 }}</strong>
+            </label>
+        {% endfor %}
+        {% for error in form.pack.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-summary-row">
+        <span class="svc-summary-total-label">{% trans 'TOTAL:' %}</span>
+        <strong class="svc-summary-total">{{ currency_symbol }} <span data-quote-total>{{ quote.amount|floatformat:0 }}</span></strong>
+    </div>
+
+    {% include 'bookings/config/_actions.html' %}
+</form>

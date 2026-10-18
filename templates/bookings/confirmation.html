@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block title %}{% trans 'Booking confirmed' %} · Wynwood House{% endblock %}
+{% block body_class %}confirmation-page{% endblock %}
+{% block content %}
+<section class="confirm-page">
+    <div class="confirm-inner">
+        <h1 class="confirm-hello">{% trans 'Hello!' %}</h1>
+        <p class="confirm-eyebrow">{% trans 'Thank you for choosing Wynwood House' %}<br>{% trans 'for your next stay' %}</p>
+
+        {% with photo=reservation.property.primary_image %}
+            {% if photo %}<img class="confirm-hero" src="{{ photo.image.url }}" alt="{{ reservation.property.title }}">{% endif %}
+        {% endwith %}
+
+        <p class="confirm-intro">{% trans 'We are delighted to accompany you on this new adventure. Get ready to live a unique experience in one of our exclusive destinations, where every detail is designed to make you feel at home.' %}</p>
+        <a class="confirm-cta" href="{{ whatsapp_url }}" target="_blank" rel="noopener">{% trans 'Chat with us 24/7' %}</a>
+
+        <hr class="confirm-rule">
+
+        <p class="confirm-points-label">{% trans 'With this booking you are earning' %}</p>
+        <p class="confirm-points">{% blocktrans with points=points %}{{ points }} Wynwood Points!{% endblocktrans %}</p>
+        <a class="confirm-link" href="{% url 'core:home' %}">{% trans 'Discover your benefits' %}</a>
+
+        <hr class="confirm-rule">
+
+        <div class="confirm-summary">
+            <h2>{{ reservation.property.title }}</h2>
+            <p class="confirm-address">{{ reservation.property.address }}</p>
+            <p class="confirm-dates">{{ reservation.check_in|date:'j M Y' }} - {{ reservation.check_out|date:'j M Y' }}</p>
+            <dl class="confirm-lines">
+                <div class="confirm-line">
+                    <dt>{{ reservation.nights }} {% trans 'Nights' %}</dt>
+                    <dd>{{ currency_symbol }} {{ reservation.subtotal|floatformat:'-2' }}</dd>
+                </div>
+                <div class="confirm-line">
+                    <dt>{% trans 'Cleaning fee' %}</dt>
+                    <dd>{{ currency_symbol }} {{ reservation.cleaning_fee|floatformat:'-2' }}</dd>
+                </div>
+                {% for charge in charges %}
+                <div class="confirm-line">
+                    <dt>{{ charge.get_kind_display }}</dt>
+                    <dd>{{ currency_symbol }} {{ charge.amount|floatformat:'-2' }}</dd>
+                </div>
+                {% endfor %}
+                {% if reservation.discount_amount %}
+                <div class="confirm-line">
+                    <dt>{% trans 'Wynwood Points discount' %}</dt>
+                    <dd>{{ currency_symbol }} -{{ reservation.discount_amount|floatformat:'-2' }}</dd>
+                </div>
+                {% endif %}
+                <div class="confirm-line confirm-total">
+                    <dt>{% trans 'Total' %}</dt>
+                    <dd>{{ currency_symbol }} {{ reservation.total|floatformat:'-2' }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <hr class="confirm-rule">
+
+        <p class="confirm-services-intro">{% trans 'To make the most of your Wynwood experience, we invite you to explore our additional services to maximise and personalise your stay:' %}</p>
+        <div class="confirm-services">
+            <figure>
+                <img src="{% static 'design/figma/confirmation/service-cleaning.jpg' %}" alt="">
+                <figcaption>{% trans 'Additional cleaning' %}</figcaption>
+            </figure>
+            <figure>
+                <img src="{% static 'design/figma/confirmation/service-transport.jpg' %}" alt="">
+                <figcaption>{% trans 'Private transport' %}</figcaption>
+            </figure>
+            <figure>
+                <img src="{% static 'design/figma/confirmation/service-late-checkout.jpg' %}" alt="">
+                <figcaption>{% trans 'Late check-out' %}</figcaption>
+            </figure>
+            <figure>
+                <img src="{% static 'design/figma/confirmation/service-insurance.jpg' %}" alt="">
+                <figcaption>{% trans 'Travel insurance' %}</figcaption>
+            </figure>
+        </div>
+        <a class="confirm-link" href="https://wynwood-house.com/cancellation-policy/" target="_blank" rel="noopener">{% trans 'Cancellation policies' %}</a>
+
+        <p class="confirm-tagline">HOME EXPERIENCE, HOTEL QUALITY</p>
+        <p class="confirm-social">
+            <a href="https://www.instagram.com/wynwood.house/" target="_blank" rel="noopener">@wynwood.house</a>
+            <span>#WYNWOOD</span>
+        </p>
+    </div>
+</section>
+{% endblock %}

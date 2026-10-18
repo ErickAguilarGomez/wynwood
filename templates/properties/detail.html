@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static i18n l10n %}
+{% block title %}{{ property.title }} · Wynwood House{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}">
+<script src="{% static 'vendor/leaflet/leaflet.js' %}" defer></script>
+{% endblock %}
+{% block body_class %}detail-page{% endblock %}
+{% block content %}
+<div class="detail-shell">
+    <a class="detail-crumb" href="{% url 'properties:results' %}"><img src="{% static 'design/figma/detail/asterisk.png' %}" alt="" width="20" height="20"><span>{{ property.destination.country }} &nbsp;|&nbsp; {{ property.destination.name }} &nbsp;|&nbsp; <strong>{{ property.title }}</strong></span></a>
+    <section class="detail-gallery" aria-label="{% trans 'Property photos' %}">
+        {% for photo in property.images.all|slice:":3" %}
+            <img class="detail-photo-{{ forloop.counter }}" src="{{ photo.image.url }}" alt="{{ photo.alt }}" width="900" height="600">
+        {% empty %}
+            <img class="detail-photo-1" src="{% static 'design/figma/detail/gallery-main.png' %}" alt="">
+            <img class="detail-photo-2" src="{% static 'design/figma/detail/gallery-top.png' %}" alt="">
+            <img class="detail-photo-3" src="{% static 'design/figma/detail/gallery-bottom.png' %}" alt="">
+        {% endfor %}
+    </section>
+    <div class="detail-main">
+        <article class="detail-copy">
+            <h1>{{ property.title }}</h1>
+            <p class="detail-location">{{ property.address|upper }}, {{ property.destination.name|upper }}, {{ property.destination.country|upper }}</p>
+            <p class="detail-facts">{{ property.max_guests }} {% translate "guests" context "property detail facts" %} &nbsp;|&nbsp; {{ property.bedrooms }} {% trans 'bedroom' %} &nbsp;|&nbsp; {{ property.beds }} {% trans 'bed' %} &nbsp;|&nbsp; {{ property.bathrooms|floatformat:0 }} {% trans 'bathroom' %}</p>
+            <hr>
+            <p class="detail-description">{{ property.description }}</p>
+            <hr>
+            <h2>AMENITIES</h2>
+            <div class="detail-amenities">
+                {% for amenity in property.amenities.all %}
+                <span><img src="{% static 'design/figma/detail/icons/' %}{{ amenity.icon }}.svg" alt="" width="50" height="50"><small>{{ amenity.name }}</small></span>
+                {% empty %}
+                <p class="detail-amenities-empty">No hay comodidades registradas para esta propiedad.</p>
+                {% endfor %}
+            </div>
+            <hr>
+            <h2 class="bedrooms-title">BEDROOMS</h2>
+            <div class="bedroom-item">
+                <small class="bedroom-name">Bedroom 1</small>
+                <img src="{% static 'design/figma/detail/icons/bed.svg' %}" alt="" width="40" height="40">
+                <small class="bedroom-bed">1 Queen Bed</small>
+            </div>
+        </article>
+        <aside class="figma-booking-card" id="booking" data-booking-card>
+            <div class="booking-tabs" data-booking-tabs>
+                <button class="active" type="button" data-booking-tab="daily">DIARIO</button>
+                <button type="button" data-booking-tab="monthly">MENSUAL</button>
+            </div>
+            <p class="booking-rate" data-booking-rate>
+                <span data-rate-daily>{{ booking_currency }} {{ property.price_per_night|floatformat:0 }} {% trans 'per night' %}</span>
+                <span data-rate-monthly hidden>{{ booking_currency }} {{ property.effective_price_per_month|floatformat:0 }} {% trans 'per month' %}</span>
+            </p>
+            <form action="{% url 'bookings:checkout' property.slug %}" method="get" data-booking-daily-form novalidate>
+                <input type="hidden" name="booking_type" value="daily" data-booking-type-input>
+                <div class="booking-validation-errors" data-booking-errors role="alert" aria-live="assertive"
+                    data-email-missing="{% trans 'Email address is missing' %}"
+                    data-email-invalid="{% trans 'Enter a valid email address' %}"
+                    data-phone-missing="{% trans 'Your phone number is missing' %}"
+                    data-phone-invalid="{% trans 'Your phone number is invalid' %}"
+                    data-check-in-missing="{% trans 'Arrival date is missing' %}"
+                    data-check-out-missing="{% trans 'Departure date is missing' %}"
+                    data-date-order-invalid="{% trans 'Departure date must be after arrival date' %}" hidden></div>
+                <div class="booking-field booking-dates" data-date-range data-booking-quote data-nightly-rate="{{ property.price_per_night|unlocalize }}" data-monthly-rate="{{ property.effective_price_per_month|unlocalize }}" data-currency="{{ booking_currency }}">
+                    <span class="field-label">{% trans 'Arrival - Departure' %}</span>
+                    <span class="date-range">
+                        <button type="button" class="date-range-trigger" data-date-trigger aria-haspopup="dialog" aria-expanded="false">
+                            <span class="date-range-value" data-date-summary data-empty="{% trans 'Arrival - Departure' %}">{% if date_range_label %}{{ date_range_label }}{% else %}{% trans 'Arrival - Departure' %}{% endif %}</span>
+                        </button>
+                        <input type="hidden" name="check_in" value="{{ reservation_form.initial.check_in|date:'Y-m-d'|default:'' }}">
+                        <input type="hidden" name="check_out" value="{{ reservation_form.initial.check_out|date:'Y-m-d'|default:'' }}">
+                        <i class="date-range-plus" aria-hidden="true">+</i>
+                    </span>
+                    <p class="booking-live-summary" data-booking-summary aria-live="polite"></p>
+                </div>
+                <label class="booking-field booking-email">
+                    <span class="field-label">{% trans 'Email address' %}</span>
+                    <input type="email" name="email" autocomplete="email"{% if request.user.is_authenticated and request.user.email %} value="{{ request.user.email }}"{% endif %}>
+                </label>
+                <label class="booking-field phone-row">
+                    <span class="field-label">{% trans 'Phone' %}</span>
+                    <span class="phone-fields">
+                        <input aria-label="{% trans 'Country code' %}" name="phone_code" value="{% if user_phone_code %}{{ user_phone_code }}{% else %}+57{% endif %}" class="phone-prefix">
+                        <input aria-label="{% trans 'Phone number' %}" type="tel" name="phone" class="phone-number"{% if user_phone_number %} value="{{ user_phone_number }}"{% endif %}>
+                    </span>
+                </label>
+                <label class="booking-field booking-discount">
+                    <span class="field-label">{% trans 'Discount code' %}</span>
+                    <input name="discount_code">
+                </label>
+                <input type="hidden" name="guests" value="{{ reservation_form.initial.guests|default:2 }}">
+                <button class="pill-button" type="submit">{% trans 'Book now' %}</button>
+            </form>
+            <form action="{% url 'bookings:monthly_inquiry' property.slug %}" method="post" data-booking-monthly-form novalidate hidden>
+                {% csrf_token %}
+                <div class="booking-validation-errors" data-booking-errors role="alert" aria-live="assertive"
+                    data-email-missing="{% trans 'Email address is missing' %}"
+                    data-email-invalid="{% trans 'Enter a valid email address' %}"
+                    data-name-missing="{% trans 'Your name is missing' %}"
+                    data-phone-missing="{% trans 'Your phone number is missing' %}"
+                    data-phone-invalid="{% trans 'Your phone number is invalid' %}" hidden></div>
+                <label class="booking-field">
+                    <span class="field-label">{% trans 'Email address' %}</span>
+                    <input type="email" name="email" autocomplete="email"{% if request.user.is_authenticated and request.user.email %} value="{{ request.user.email }}"{% endif %}>
+                </label>
+                <label class="booking-field">
+                    <span class="field-label">{% trans 'Full name' %}</span>
+                    <input type="text" name="full_name" autocomplete="name"{% if user_full_name %} value="{{ user_full_name }}"{% endif %}>
+                </label>
+                <label class="booking-field phone-row">
+                    <span class="field-label">{% trans 'Phone' %}</span>
+                    <span class="phone-fields">
+                        <input aria-label="{% trans 'Country code' %}" name="phone_code" value="{% if user_phone_code %}{{ user_phone_code }}{% else %}+57{% endif %}" class="phone-prefix">
+                        <input aria-label="{% trans 'Phone number' %}" type="tel" name="phone" class="phone-number" autocomplete="tel-national"{% if user_phone_number %} value="{{ user_phone_number }}"{% endif %}>
+                    </span>
+                </label>
+                <button class="pill-button" type="submit">{% trans 'Send request' %}</button>
+            </form>
+        </aside>
+    </div>
+    <section class="detail-location-section">
+        <h2>{% trans 'Location' %}</h2>
+        {% if property.latitude and property.longitude %}
+        <div id="detail-map" class="detail-map-canvas" data-detail-map data-lat="{{ property.latitude|unlocalize }}" data-lng="{{ property.longitude|unlocalize }}" data-title="{{ property.title }}" data-price="{{ property.price_per_night|floatformat:0 }}" data-currency="{{ booking_currency }}"></div>
+        {% else %}
+        <img src="{% static 'design/figma/detail/map.png' %}" alt="{% trans 'Property location map' %}">
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

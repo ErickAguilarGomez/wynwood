@@ -1,0 +1,30 @@
+{% extends 'accounts/_auth_page.html' %}
+{% load static i18n %}
+{% block title %}{% trans 'Log in' %} · Wynwood House{% endblock %}
+{% block auth_title %}{% trans 'Log in' %}{% endblock %}
+{% block auth_body %}
+<form method="post" class="auth-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <div class="auth-field">
+        <label for="{{ form.username.id_for_label }}">{% trans 'Email' %}</label>
+        {{ form.username }}
+        {% for error in form.username.errors %}<small class="auth-error">{{ error }}</small>{% endfor %}
+    </div>
+    <div class="auth-field auth-field-password">
+        <label for="{{ form.password.id_for_label }}">{% trans 'Password' %}</label>
+        {{ form.password }}
+        <button class="password-toggle" type="button" data-password-toggle data-label-show="{% trans 'Show password' %}" data-label-hide="{% trans 'Hide password' %}" aria-label="{% trans 'Show password' %}" aria-pressed="false">
+            <img src="{% static 'design/figma/ui/icon-eye.svg' %}" alt="" width="22" height="22" data-eye-open>
+            <img src="{% static 'design/figma/ui/icon-eye-off.svg' %}" alt="" width="22" height="22" data-eye-closed hidden>
+        </button>
+        {% for error in form.password.errors %}<small class="auth-error">{{ error }}</small>{% endfor %}
+    </div>
+    <button class="button auth-submit" type="submit">{% trans 'Log in' %}</button>
+</form>
+<div class="auth-links">
+    <a href="{% url 'accounts:register' %}{% if next %}?next={{ next|urlencode }}{% endif %}">{% trans 'Don’t have an account? Sign up' %}</a>
+    <a href="{% url 'accounts:password_reset' %}">{% trans 'Forgot your password?' %}</a>
+</div>
+{% endblock %}

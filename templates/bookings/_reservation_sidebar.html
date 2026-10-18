@@ -1,0 +1,91 @@
+{% load i18n %}
+<aside class="svc-help">
+    <p class="svc-help-title">
+        {% if payment_checkout %}<a href="{{ whatsapp_url }}">{% trans 'Need help completing your reservation?' %}</a>{% else %}{% trans 'Do you need help completing your reservation?' %}{% endif %}
+    </p>
+    <div class="svc-stay">
+        <div class="svc-stay-property{% if payment_checkout %} payment-stay-property{% endif %}">
+            {% with photo=property.primary_image %}
+                {% if photo %}<img class="svc-stay-photo" src="{{ photo.image.url }}" alt="{{ property.title }}">{% endif %}
+            {% endwith %}
+            <div class="svc-stay-property-copy">
+                <h2 class="svc-stay-title">{{ property.title }}</h2>
+                <p class="svc-stay-location">{{ property.address }}, {{ property.destination.name }}, {{ property.destination.country }}</p>
+            </div>
+        </div>
+
+        <form method="post" action="{% url 'bookings:services' reservation.public_id %}" class="svc-stay-edit-form" data-reservation-edit>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_stay">
+            <input type="hidden" name="booking_type" value="{{ reservation.booking_type }}">
+            {% for entry in services %}{% if entry.charge %}<input type="hidden" name="selected_services" value="{{ entry.service.key }}">{% endif %}{% endfor %}
+            <div class="svc-stay-field" data-date-range>
+                <span>{% trans 'Dates' %}</span>
+                <button type="button" class="svc-stay-val-link" data-date-trigger aria-haspopup="dialog" aria-expanded="false" title="{% trans 'Edit dates' %}">
+                    <strong data-date-summary>{{ reservation.check_in|date:'j M Y' }} - {{ reservation.check_out|date:'j M Y' }}</strong>
+                    <svg class="svc-pencil" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4zm16.7-12.7a1 1 0 0 0 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0L15 4.6l4 4 1.7-1.7z"/></svg>
+                </button>
+                <input type="hidden" name="check_in" value="{{ reservation.check_in|date:'Y-m-d' }}">
+                <input type="hidden" name="check_out" value="{{ reservation.check_out|date:'Y-m-d' }}">
+            </div>
+            <div class="svc-stay-field svc-stay-guest-edit" data-reservation-guest-picker data-max-guests="{{ property.max_guests }}">
+                <span>{% trans 'Guests' %}</span>
+                <button type="button" class="svc-stay-val-link" data-reservation-guest-trigger aria-expanded="false" title="{% trans 'Edit guests' %}">
+                    <strong data-reservation-guest-label>{% blocktrans count guests=reservation.guests %}{{ guests }} person{% plural %}{{ guests }} people{% endblocktrans %}</strong>
+                    <svg class="svc-pencil" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4zm16.7-12.7a1 1 0 0 0 0-1.4l-2.6-2.6a1 1 0 0 0-1.4 0L15 4.6l4 4 1.7-1.7z"/></svg>
+                </button>
+                <div class="svc-guest-panel" data-reservation-guest-panel hidden>
+                    <button type="button" data-reservation-guest-step="-1" aria-label="{% trans 'Remove guest' %}">−</button>
+                    <output data-reservation-guest-count>{{ reservation.guests }}</output>
+                    <button type="button" data-reservation-guest-step="1" aria-label="{% trans 'Add guest' %}">+</button>
+                </div>
+                <input type="hidden" name="guests" value="{{ reservation.guests }}">
+            </div>
+            <button class="svc-stay-update" type="submit" hidden>{% trans 'Update stay' %}</button>
+        </form>
+
+        <div class="svc-stay-lines">
+            <div class="svc-stay-line">
+                {% if reservation.booking_type == 'monthly' and reservation.monthly_rate %}
+                <span>{{ currency_symbol }} {{ reservation.monthly_rate|floatformat:0 }} / {% trans 'month' %} ({{ reservation.nights }} {% trans 'nights' %})</span>
+                {% else %}
+                <span>{{ currency_symbol }} {{ reservation.nightly_rate|floatformat:0 }} x {{ reservation.nights }}</span>
+                {% endif %}
+                <strong>{{ currency_symbol }} {{ reservation.subtotal|floatformat:0 }}</strong>
+            </div>
+            <div class="svc-stay-line">
+                <span>{% trans 'Cleaning fee' %}</span>
+                <strong>{{ currency_symbol }} {{ reservation.cleaning_fee|floatformat:0 }}</strong>
+            </div>
+            {% for charge in charges %}
+                <div class="svc-stay-line">
+                    <span>{{ charge.label }}</span>
+                    <strong>{{ currency_symbol }} {{ charge.amount|floatformat:0 }}</strong>
+                </div>
+            {% endfor %}
+            {% if payment_checkout and reservation.tax_amount %}
+                <div class="payment-tax-group">
+                    <p>{% trans 'Taxes included' %}</p>
+                    <div class="svc-stay-line">
+                        <span>{{ tax_label }} ({{ tax_percent|floatformat:2 }}%)</span>
+                        <strong>{{ currency_symbol }} {{ reservation.tax_amount|floatformat:0 }}</strong>
+                    </div>
+                </div>
+            {% endif %}
+            {% if reservation.discount_amount %}
+                <div class="svc-stay-line svc-stay-discount">
+                    <span>{% trans 'Wynwood Points discount' %}</span>
+                    <strong>{{ currency_symbol }} -{{ reservation.discount_amount|floatformat:0 }}</strong>
+                </div>
+            {% endif %}
+            <div class="svc-stay-line svc-stay-total">
+                <span>{% trans 'Total' %}</span>
+                <strong>{{ currency_symbol }} <span data-reservation-total-display>{{ reservation.total|floatformat:0 }}</span></strong>
+            </div>
+        </div>
+
+        <p class="svc-stay-points-note">{% trans 'With this booking you are earning' %}</p>
+        <p class="svc-stay-points-pill">{% blocktrans with points=points %}{{ points }} Wynwood Points{% endblocktrans %}</p>
+        <a class="svc-stay-points-link" href="{% url 'core:home' %}">{% trans 'Learn more about Wynwood Points' %}</a>
+    </div>
+</aside>

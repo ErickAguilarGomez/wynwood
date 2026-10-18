@@ -1,0 +1,111 @@
+{% load i18n l10n %}
+<form method="post" class="svc-form" data-service="transport" data-reservation-total="{{ reservation.total|unlocalize }}" data-existing-service-amount="{{ existing_service_amount|unlocalize }}">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p class="svc-detail-copy">{{ service.detail_description }}</p>
+    <p class="svc-detail-copy">{% trans 'Book your transport to and from the airport according to your preferences:' %}</p>
+
+    <div class="svc-option-row">
+        <span class="svc-option-label">{% trans 'Trip type' %}</span>
+        <label class="svc-radio">
+            <input type="radio" name="trip_type" value="one_way" {% if form.trip_type.value != 'round_trip' %}checked{% endif %}>
+            <span>{% trans 'One way' %}</span>
+        </label>
+        <label class="svc-radio">
+            <input type="radio" name="trip_type" value="round_trip" {% if form.trip_type.value == 'round_trip' %}checked{% endif %}>
+            <span>{% trans 'Round trip' %}</span>
+        </label>
+        {% for error in form.trip_type.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-option-row svc-service-dates" data-date-range data-date-start="departure_date" data-date-end="return_date" data-min-date="{{ form.date_min }}" data-max-date="{{ form.date_max }}">
+        <span class="svc-option-label">{% trans 'Service dates' %}</span>
+        <span class="date-range">
+            <button type="button" class="date-range-trigger" data-date-trigger aria-haspopup="dialog" aria-expanded="false">
+                <span class="date-range-value" data-date-summary data-empty="{% trans 'Select dates' %}"></span>
+            </button>
+            {{ form.departure_date }}{{ form.return_date }}
+        </span>
+        {% for error in form.departure_date.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+        {% for error in form.return_date.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-schedule">
+        <div class="svc-schedule-row" data-trip-row="outbound">
+            <span class="svc-schedule-name">{% trans 'One way' %}</span>
+            {{ form.departure_time }}
+            <span class="svc-schedule-dash">-</span>
+            {{ form.departure_time_end }}
+        </div>
+        <div class="svc-schedule-row" data-trip-row="return">
+            <span class="svc-schedule-name">{% trans 'Return' %}</span>
+            {{ form.return_time }}
+            <span class="svc-schedule-dash">-</span>
+            {{ form.return_time_end }}
+        </div>
+        {% for error in form.departure_time_end.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-option-row svc-airport-row">
+        <label class="svc-option-label" for="{{ form.airport.id_for_label }}">{% trans 'Airport' %}</label>
+        {{ form.airport }}
+        {% for error in form.airport.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-option-row">
+        <span class="svc-option-label">{% trans 'Vehicle type' %}</span>
+        {% for vehicle in vehicles %}
+            <label class="svc-radio">
+                <input type="radio" name="vehicle" value="{{ vehicle.key }}"
+                       data-name="{{ vehicle.name }}"
+                       data-one-way="{{ vehicle.one_way_price }}"
+                       data-passengers="{{ vehicle.passengers }}"
+                       data-bags="{{ vehicle.bags }}"
+                       {% if form.vehicle.value == vehicle.key or not form.vehicle.value and forloop.first %}checked{% endif %}>
+                <span>{{ vehicle.name }}</span>
+            </label>
+        {% endfor %}
+        {% for error in form.vehicle.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-option-row svc-stepper-row">
+        <span class="svc-option-label">{% trans 'Vehicles' %}</span>
+        <div class="svc-stepper">
+            <button type="button" data-step="-1" aria-label="{% trans 'Remove vehicle' %}">-</button>
+            {{ form.quantity }}
+            <button type="button" data-step="1" aria-label="{% trans 'Add vehicle' %}">+</button>
+        </div>
+        {% for error in form.quantity.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-quote" data-quote>
+        <h3 class="svc-quote-title">{% trans 'Service summary' %}</h3>
+        <div class="svc-quote-line">
+            <span class="svc-quote-key">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11m-14 0h14a2 2 0 0 1 2 2v4h-2a2 2 0 0 1-4 0H9a2 2 0 0 1-4 0H3v-4a2 2 0 0 1 2-2zm2.5 5a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm9 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+                <span data-quote-vehicle>{{ quote.vehicle_name|default:'Suv' }}</span>
+            </span>
+            <strong data-quote-quantity>{{ quote.quantity|default:1 }}</strong>
+        </div>
+        <div class="svc-quote-line">
+            <span class="svc-quote-key">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-8 2-8 4.5V21h16v-2.5C20 16 16 14 12 14z"/></svg>
+                {% trans 'Passengers' %}
+            </span>
+            <strong data-quote-passengers>{{ quote.passengers|default:4 }}</strong>
+        </div>
+        <div class="svc-quote-line">
+            <span class="svc-quote-key">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l1 2h3v14H5V6h3l1-2zm3 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
+                {% trans 'Suitcases' %}
+            </span>
+            <strong data-quote-bags>{{ quote.bags|default:3 }}</strong>
+        </div>
+        <div class="svc-quote-line svc-quote-total">
+            <span>{% trans 'TOTAL:' %}</span>
+            <strong>{{ currency_symbol }} <span data-quote-total>{{ quote.amount|floatformat:0 }}</span></strong>
+        </div>
+    </div>
+
+    {% include 'bookings/config/_actions.html' %}
+</form>

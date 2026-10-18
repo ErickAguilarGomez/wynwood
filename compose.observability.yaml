@@ -1,0 +1,83 @@
+services:
+  glitchtip:
+    image: glitchtip/glitchtip:6
+    restart: unless-stopped
+    depends_on:
+      glitchtip-db:
+        condition: service_healthy
+      glitchtip-valkey:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://glitchtip:${GLITCHTIP_DB_PASSWORD:?Set GLITCHTIP_DB_PASSWORD in .env}@glitchtip-db:5432/glitchtip
+      VALKEY_URL: redis://glitchtip-valkey:6379/0
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:?Set GLITCHTIP_SECRET_KEY in .env}
+      EMAIL_URL: consolemail://
+      GLITCHTIP_DOMAIN: ${GLITCHTIP_DOMAIN:-http://localhost:8080}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-bookings@example.com}
+      ENABLE_USER_REGISTRATION: ${GLITCHTIP_ENABLE_REGISTRATION:-True}
+      ENABLE_ORGANIZATION_CREATION: "False"
+      GLITCHTIP_RETENTION_DAYS: ${GLITCHTIP_RETENTION_DAYS:-30}
+      GLITCHTIP_ENABLE_LOGS: "False"
+      GLITCHTIP_ENABLE_UPTIME: "True"
+      SERVER_ROLE: all_in_one
+      SECURE_HSTS_SECONDS: ${GLITCHTIP_HSTS_SECONDS:-0}
+      ALLOWED_HOSTS: ${GLITCHTIP_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      CSRF_TRUSTED_ORIGINS: ${GLITCHTIP_CSRF_TRUSTED_ORIGINS:-http://localhost:8080}
+    ports:
+      - "127.0.0.1:8080:8000"
+    volumes:
+      - glitchtip_uploads:/code/uploads
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=5)"]
+      interval: 30s
+      timeout: 8s
+      retries: 5
+      start_period: 90s
+
+  glitchtip-db:
+    image: postgres:17-alpine
+    user: "70:70"
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: glitchtip
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: ${GLITCHTIP_DB_PASSWORD:?Set GLITCHTIP_DB_PASSWORD in .env}
+    volumes:
+      - glitchtip_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchtip -d glitchtip"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  glitchtip-valkey:
+    image: valkey/valkey:9-alpine
+    user: "999:1000"
+    restart: unless-stopped
+    volumes:
+      - glitchtip_valkey_data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  glitchtip_postgres_data:
+  glitchtip_valkey_data:
+  glitchtip_uploads:

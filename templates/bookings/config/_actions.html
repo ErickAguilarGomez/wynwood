@@ -1,0 +1,7 @@
+{% load i18n %}
+<div class="svc-actions">
+    <a class="svc-btn svc-btn-outline" href="{% if return_to_payment %}{% url 'payments:checkout' reservation.public_id %}{% else %}{% url 'bookings:services' reservation.public_id %}{% endif %}">{% trans 'Back' %}</a>
+    <button class="svc-btn svc-btn-solid" type="submit">
+        {% if service_configured %}{% trans 'Update' %}{% else %}{% trans 'Add' %}{% endif %}
+    </button>
+</div>

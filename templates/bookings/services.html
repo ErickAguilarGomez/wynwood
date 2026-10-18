@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+{% block title %}{% trans 'Payment page' %} · Wynwood House{% endblock %}
+{% block content %}
+<div class="svc-shell">
+    <a class="detail-crumb" href="{{ property.get_absolute_url }}">
+        <img src="{% static 'design/figma/detail/asterisk.png' %}" alt="" width="20" height="20">
+        <span>{{ property.destination.country }} &nbsp;|&nbsp; {{ property.destination.name }} &nbsp;|&nbsp; {{ property.title }} &nbsp;|&nbsp; <strong>{% trans 'Payment page' %}</strong></span>
+    </a>
+
+    <div class="svc-layout">
+        <div class="svc-main">
+            {% firstof user.first_name user.email as guest_name %}
+            <h1 class="svc-welcome">{% blocktrans with name=guest_name|upper %}WELCOME TO WYNWOOD HOUSE {{ name }}!{% endblocktrans %}</h1>
+            <p class="svc-welcome-sub">{% trans 'Select your additional services and payment method to continue with the reservation' %}</p>
+
+            <hr class="svc-rule">
+
+            <h2 class="svc-section-title">{% trans 'ELEVA TU ESTADÍA CON SERVICIOS ADICIONALES' %}</h2>
+
+            <div class="svc-list">
+                {% for entry in services %}
+                    <article class="svc-card{% if entry.charge %} is-added{% endif %}">
+                        <img class="svc-card-photo" src="{% static entry.service.image %}" alt="{{ entry.service.name }}">
+                        <div class="svc-card-body">
+                            <h3 class="svc-card-name">{{ entry.service.name }}</h3>
+                            <p class="svc-card-text">{{ entry.service.description }}</p>
+                            {% if entry.charge %}
+                                <div class="svc-card-actions">
+                                    <span class="svc-added">✓ {% trans 'Added' %} · {{ currency_symbol }} {{ entry.charge.amount|floatformat:0 }}</span>
+                                    <a class="svc-remove" href="{% url 'bookings:service_detail' reservation.public_id entry.service.key %}">{% trans 'Configure' %}</a>
+                                    <form method="post" action="{% url 'bookings:service_detail' reservation.public_id entry.service.key %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="remove">
+                                        <button class="svc-remove" type="submit">{% trans 'Remove' %}</button>
+                                    </form>
+                                </div>
+                            {% else %}
+                                <div class="svc-card-actions">
+                                    <span class="svc-price-badge">{{ entry.service.price_label }}</span>
+                                    <form method="post" action="{% url 'bookings:service_detail' reservation.public_id entry.service.key %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="configure">
+                                        <button class="svc-add" type="submit">+ {% trans 'Add' %}</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <form method="post" action="{% url 'bookings:services' reservation.public_id %}" class="svc-continue-form">{% csrf_token %}
+                <button class="svc-continue" type="submit">{% trans 'Continue to payment' %}</button>
+            </form>
+        </div>
+
+        {% include 'bookings/_reservation_sidebar.html' %}
+    </div>
+</div>
+{% endblock %}

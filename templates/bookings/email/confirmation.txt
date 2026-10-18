@@ -1,0 +1,12 @@
+{% load i18n %}{% blocktrans with name=reservation.user.first_name %}Hello {{ name }},{% endblocktrans %}
+
+{% trans "Your reservation is confirmed." %}
+
+{{ reservation.property.title }}
+{% trans "Check-in" %}: {{ reservation.check_in }}
+{% trans "Check-out" %}: {{ reservation.check_out }}
+{% trans "Guests" %}: {{ reservation.guests }}
+{% trans "Total" %}: {{ reservation.total }}
+{% trans "Confirmation" %}: {{ reservation.public_id }}
+
+{% trans "Thank you for choosing Wynwood House." %}

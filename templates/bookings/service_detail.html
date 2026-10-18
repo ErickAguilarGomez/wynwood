@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+{% block title %}{{ service.name }} · Wynwood House{% endblock %}
+{% block content %}
+<div class="svc-shell">
+    <a class="detail-crumb" href="{{ property.get_absolute_url }}">
+        <img src="{% static 'design/figma/detail/asterisk.png' %}" alt="" width="20" height="20">
+        <span>{{ property.destination.country }} &nbsp;|&nbsp; {{ property.destination.name }} &nbsp;|&nbsp; {{ property.title }} &nbsp;|&nbsp; <strong>{% trans 'Payment page' %}</strong></span>
+    </a>
+
+    <div class="svc-layout">
+        <div class="svc-detail-main">
+            <h1 class="svc-detail-title">{{ service.name|upper }}</h1>
+            {% include config_template %}
+        </div>
+
+        {% include 'bookings/_reservation_sidebar.html' %}
+    </div>
+</div>
+{% endblock %}
+{% block extra_scripts %}<script src="{% static 'js/services.js' %}" defer></script>{% endblock %}

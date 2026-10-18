@@ -1,0 +1,43 @@
+{% extends 'accounts/_auth_page.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Create account' %} · Wynwood House{% endblock %}
+{% block auth_title %}{% trans 'Sign up' %}{% endblock %}
+{% block auth_body %}
+<form method="post" class="auth-form auth-form-wide">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
+    <div class="auth-grid">
+        {% include 'accounts/_field.html' with field=form.first_name %}
+        {% include 'accounts/_field.html' with field=form.last_name %}
+        <div class="auth-field{% if form.birth_date.errors %} auth-field-invalid{% endif %} date-picker-field" data-date-range data-date-single="true" data-date-start="birth_date" data-allow-past="true" data-min-date="1900-01-01" data-max-date="{{ local_today }}" data-date-format="numeric" data-year-label="{% trans 'Year' %}">
+            <label for="{{ form.birth_date.id_for_label }}">{{ form.birth_date.label }}</label>
+            {{ form.birth_date }}
+            <span class="date-range">
+                <button type="button" class="date-range-trigger" data-date-trigger aria-haspopup="dialog" aria-expanded="false">
+                    <span class="date-range-value" data-date-summary data-empty="{% trans 'Select date' %}"></span>
+                </button>
+            </span>
+            {% for error in form.birth_date.errors %}<small class="auth-error">{{ error }}</small>{% endfor %}
+        </div>
+        {% include 'accounts/_field.html' with field=form.phone %}
+        {% include 'accounts/_field.html' with field=form.email %}
+        {% include 'accounts/_field.html' with field=form.country %}
+        {% include 'accounts/_field.html' with field=form.password1 %}
+        {% include 'accounts/_field.html' with field=form.password2 %}
+    </div>
+    <div class="auth-grid auth-register-foot">
+        <div class="auth-have-account">
+            <p>{% trans 'Already have an account?' %}</p>
+            <a href="{% url 'accounts:login' %}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}">{% trans 'Sign in here' %}</a>
+        </div>
+        <div class="auth-register-actions">
+            <button class="button auth-submit" type="submit">{% trans 'Create account' %}</button>
+            <p class="auth-legal">{% blocktrans %}* By clicking CREATE ACCOUNT you accept the policies of Wynwood-house.com, you can review them in the following links:{% endblocktrans %}</p>
+            <a href="{% url 'core:home' %}#terms">{% trans 'Terms of service' %}</a>
+            <a href="{% url 'core:home' %}#privacy">{% trans 'Privacy policy' %}</a>
+            <a href="{% url 'core:home' %}#cancellation">{% trans 'Cancellation policy' %}</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

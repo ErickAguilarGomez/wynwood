@@ -1,0 +1,35 @@
+{% load i18n l10n %}
+<form method="post" class="svc-form" data-service="crib" data-unit-price="{{ service.base_price|unlocalize }}" data-nights="{{ reservation.nights }}" data-reservation-total="{{ reservation.total|unlocalize }}" data-existing-service-amount="{{ existing_service_amount|unlocalize }}">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p class="svc-detail-copy">{{ service.detail_description }}</p>
+
+    <div class="svc-option-row svc-service-dates" data-service-period data-date-range data-date-start="start_date" data-date-end="end_date" data-min-date="{{ reservation.check_in|date:'Y-m-d' }}" data-max-date="{{ reservation.check_out|date:'Y-m-d' }}">
+        <span class="svc-option-label">{% trans 'Service dates' %}</span>
+        <span class="date-range">
+            <button type="button" class="date-range-trigger" data-date-trigger aria-haspopup="dialog" aria-expanded="false">
+                <span class="date-range-value" data-date-summary data-empty="{% trans 'Select dates' %}"></span>
+            </button>
+            {{ form.start_date }}{{ form.end_date }}
+        </span>
+        {% for error in form.start_date.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+        {% for error in form.end_date.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-option-row svc-stepper-row">
+        <span class="svc-option-label">{% trans 'Cribs' %}</span>
+        <div class="svc-stepper">
+            <button type="button" data-step="-1" aria-label="{% trans 'Remove crib' %}">-</button>
+            {{ form.quantity }}
+            <button type="button" data-step="1" aria-label="{% trans 'Add crib' %}">+</button>
+        </div>
+        {% for error in form.quantity.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
+    </div>
+
+    <div class="svc-summary-row">
+        <span class="svc-summary-total-label">{% trans 'TOTAL:' %}</span>
+        <strong class="svc-summary-total">{{ currency_symbol }} <span data-quote-total>{{ quote.amount|floatformat:0 }}</span></strong>
+    </div>
+
+    {% include 'bookings/config/_actions.html' %}
+</form>

@@ -1,0 +1,4 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{{ status }} · Wynwood House{% endblock %}
+{% block content %}<section class="status-page error-page container-narrow"><p class="error-code">{{ status }}</p><h1>{{ title }}</h1><p>{% trans 'Your information is safe. Return to the home page and try again.' %}</p><a class="button button-dark" href="{% url 'core:home' %}">{% trans 'Go home' %}</a></section>{% endblock %}
