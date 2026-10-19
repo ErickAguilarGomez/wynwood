@@ -110,12 +110,12 @@ Configura Resend en los servicios web y worker con una clave de API de envío y 
 
 ```dotenv
 EMAIL_BACKEND=bookings.email_backends.ResendEmailBackend
-RESEND_API_KEY=
+RESEND_API_KEY=replace-with-your-resend-api-key
 EMAIL_FROM_EMAIL=reservas@erickaguilargomez.me
 EMAIL_FROM_NAME=Wynwood House
 ```
 
-El backend envía mediante HTTPS. `EMAIL_FROM_EMAIL` debe pertenecer a un dominio verificado en Resend.
+El valor de `RESEND_API_KEY` es un marcador de ejemplo, no una clave oficial ni funcional. Crea tu propia clave de envío en Resend y reemplázalo. `EMAIL_FROM_EMAIL` debe pertenecer a un dominio verificado en esa cuenta. Configura estas variables en los servicios web y worker.
 
 
 ### Imágenes con Cloudinary
@@ -124,12 +124,12 @@ Completa las credenciales desde el panel de Cloudinary:
 
 ```dotenv
 USE_CLOUDINARY=True
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=replace-with-your-cloudinary-api-secret
 ```
 
-Si Cloudinary no está habilitado, los medios se guardan en el volumen local `media`.
+Los valores son marcadores de ejemplo, no credenciales oficiales ni funcionales. Reemplázalos con las credenciales de tu cuenta de Cloudinary. Las cuotas de almacenamiento y transformaciones dependen del plan y la cuenta. Si Cloudinary no está habilitado, los medios se guardan en el volumen local `media`.
 
 ### GlitchTip
 
