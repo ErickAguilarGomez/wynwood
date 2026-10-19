@@ -1,9 +1,17 @@
 # Wynwood House
 
+## Entrega
+
+- Repositorio: [github.com/ErickAguilarGomez/wynwood](https://github.com/ErickAguilarGomez/wynwood)
+- Aplicación: [wynwood-production-e22b.up.railway.app](https://wynwood-production-e22b.up.railway.app/)
+
 ## Requisitos
 
 - Docker Desktop con Docker Compose
 - OpenSSL para generar los secretos
+- Git (solo para clonar el proyecto)
+
+El proyecto usa PostgreSQL porque la base de datos aplica una restricción de exclusión para impedir reservas solapadas incluso ante solicitudes simultáneas. SQLite no soporta esa restricción; no se debe usar para ejecutar ni validar el flujo de reservas.
 
 ## Configuración
 
@@ -50,6 +58,8 @@ docker compose up --build
 
 Espera a que termine el inicio y abre [http://localhost:8000](http://localhost:8000). Para iniciar en segundo plano, usa `make up`. La aplicación migra la base de datos y recopila los archivos estáticos al arrancar. Con `DJANGO_DEBUG=True`, carga alojamientos e imágenes de demostración si la base de datos todavía no tiene alojamientos.
 
+Para trabajar sin Docker, instala Python 3.14, crea un entorno virtual, instala `requirements.txt` y configura una instancia de PostgreSQL 17. Define `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST` y `POSTGRES_PORT` (o `DATABASE_URL`), además de `DJANGO_SECRET_KEY`. Luego ejecuta `python manage.py migrate`, `python manage.py seed_demo` y `python manage.py runserver`. Redis y Celery son necesarios para procesar los correos de confirmación en segundo plano; el servidor puede iniciar sin ellos, pero el envío de tareas no funcionará.
+
 Para actualizar las imágenes de demostración:
 
 ```bash
@@ -57,6 +67,9 @@ make seed
 ```
 
 ## Verificar el proyecto
+
+`make test` usa PostgreSQL real y no SQLite. `make lint` revisa estilo y errores estáticos; `make check` ejecuta las comprobaciones de despliegue con `DEBUG=False` y redirección HTTPS activa.
+
 ```bash
 make test
 make lint

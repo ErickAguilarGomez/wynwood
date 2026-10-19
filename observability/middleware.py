@@ -1,5 +1,6 @@
 import contextvars
 import logging
+import re
 import time
 import uuid
 
@@ -14,6 +15,7 @@ class ContentSecurityPolicyMiddleware:
             "base-uri 'self'",
             "form-action 'self'",
             "frame-ancestors 'none'",
+            "object-src 'none'",
             "img-src 'self' data: https:",
             "font-src 'self'",
             "style-src 'self'",
@@ -36,7 +38,9 @@ class RequestIdMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        request_id = request.headers.get("X-Request-ID", uuid.uuid4().hex)[:64]
+        request_id = request.headers.get("X-Request-ID", "")
+        if not re.fullmatch(r"[A-Za-z0-9._-]{1,64}", request_id):
+            request_id = uuid.uuid4().hex
         request.request_id = request_id
         token = request_id_context.set(request_id)
         started = time.monotonic()

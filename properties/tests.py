@@ -2,6 +2,7 @@ import io
 import tempfile
 from datetime import timedelta
 
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -110,5 +111,29 @@ class PropertyImageTests(TestCase):
             alt_en="Interior",
         )
         self.assertTrue(image.image.name.endswith(".webp"))
+        self.assertLessEqual(image.width, 1200)
+        self.assertLessEqual(image.height, 1200)
+
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    def test_rejects_oversized_image_without_form_validation(self):
+        property = create_property()
+        upload = SimpleUploadedFile("large.webp", b"0" * (12 * 1024 * 1024 + 1), content_type="image/webp")
+        image = PropertyImage(property=property, image=upload, alt_es="Interior", alt_en="Interior")
+        with self.assertRaises(ValidationError):
+            image.save()
+
+    @override_settings(MEDIA_ROOT=tempfile.gettempdir())
+    def test_resizes_uploaded_webp_images(self):
+        property = create_property()
+        source = Image.new("RGB", (1600, 1400), "#a98b72")
+        data = io.BytesIO()
+        source.save(data, "WEBP")
+        upload = SimpleUploadedFile("room.webp", data.getvalue(), content_type="image/webp")
+        image = PropertyImage.objects.create(
+            property=property,
+            image=upload,
+            alt_es="Interior",
+            alt_en="Interior",
+        )
         self.assertLessEqual(image.width, 1200)
         self.assertLessEqual(image.height, 1200)

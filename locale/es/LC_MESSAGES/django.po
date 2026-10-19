@@ -1674,6 +1674,114 @@ msgstr "Número de huéspedes"
 msgid "Search"
 msgstr "Buscar"
 
+msgid "Image files cannot exceed 12 MB."
+msgstr "Las imágenes no pueden superar los 12 MB."
+
+msgid "The uploaded file is not a valid image."
+msgstr "El archivo cargado no es una imagen válida."
+
+msgid "Hurry! 20% off all stays"
+msgstr "¡Corre! 20% de descuento en todas las estadías"
+
+msgid "Only"
+msgstr "Quedan solo"
+
+msgid "Discover our destinations"
+msgstr "Descubre nuestros destinos"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Siguiente"
+
+msgid "Explore our exclusive homes and discover your preferred destination your way. Find your ideal stay and start a unique experience."
+msgstr "Descubre nuestra selección exclusiva de propiedades y conoce tu destino preferido a tu manera. Encuentra tu estadía ideal y empieza a vivir una experiencia única."
+
+msgid "All properties"
+msgstr "Todas las propiedades"
+
+msgid "Services at Wynwood House"
+msgstr "Servicios en Wynwood House"
+
+msgid "Discover the services at our homes and enjoy a comfortable, memorable stay."
+msgstr "Descubre los servicios que ofrecen nuestras propiedades para disfrutar una estadía cómoda e inolvidable."
+
+msgid "CONTACTLESS CHECK-IN"
+msgstr "CHECK-IN SIN CONTACTO"
+
+msgid "PROFESSIONAL CLEANING"
+msgstr "LIMPIEZA PROFESIONAL"
+
+msgid "BATHROOM KIT"
+msgstr "KIT DE BAÑO"
+
+msgid "FULLY EQUIPPED KITCHEN"
+msgstr "COCINA EQUIPADA"
+
+msgid "PET FRIENDLY"
+msgstr "PET FRIENDLY"
+
+msgid "24/7 SUPPORT"
+msgstr "SOPORTE 24/7"
+
+msgid "WYNWOOD BED"
+msgstr "CAMA WYNWOOD"
+
+msgid "Enjoy our events!"
+msgstr "¡Disfruta de nuestros eventos!"
+
+msgid "Make the most of your stay with Wynwood events, art, culture and inspiration."
+msgstr "Vive tu experiencia al máximo con los eventos Wynwood, arte, cultura e inspiración."
+
+msgid "Explore our homes"
+msgstr "Explora nuestros alojamientos"
+
+msgid "Benefits of Wynwood House"
+msgstr "Beneficios de Wynwood House"
+
+msgid "City guides"
+msgstr "Guías de ciudades"
+
+msgid "Get to know each destination with local recommendations for places to visit, eat and explore."
+msgstr "Conoce cada destino con recomendaciones locales de lugares para visitar, comer y explorar."
+
+msgid "Explore destinations"
+msgstr "Explora los destinos"
+
+msgid "EXTRA SERVICES"
+msgstr "SERVICIOS ADICIONALES"
+
+msgid "REWARDS PROGRAM"
+msgstr "PROGRAMA DE REWARDS"
+
+msgid "Long-term rentals"
+msgstr "Alquileres a largo plazo"
+
+msgid "LONG STAYS"
+msgstr "ALQUILERES A LARGO PLAZO"
+
+msgid "Enjoy the comfort of an extended stay and special rates designed for longer visits."
+msgstr "Disfruta del confort de una estadía prolongada y de tarifas especiales diseñadas para visitas largas."
+
+msgid "CONTACT US"
+msgstr "CONTÁCTANOS"
+
+msgid "INVEST IN REAL ESTATE"
+msgstr "INVIERTE EN BIENES RAÍCES"
+
+msgid "Buy or sell your property with professional guidance and a smooth experience."
+msgstr "Compra o vende tu propiedad con asesoramiento profesional y una experiencia sencilla."
+
+msgid "LEARN MORE"
+msgstr "SABER MÁS"
+
+msgid "HOME EXPERIENCE, HOTEL QUALITY"
+msgstr "EXPERIENCIA DE HOGAR, CALIDAD DE HOTEL"
+
+msgid "BEST OF BOTH WORLDS"
+msgstr "LO MEJOR DE DOS MUNDOS"
+
 msgid "Remove guest"
 msgstr "Quitar huésped"
 

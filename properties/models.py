@@ -10,6 +10,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import get_language
+from django.utils.translation import gettext_lazy as _
 from PIL import Image, UnidentifiedImageError
 
 
@@ -33,7 +34,7 @@ COUNTRY_NAMES = {
 
 def validate_image_size(image):
     if image.size > 12 * 1024 * 1024:
-        raise ValidationError("Image files cannot exceed 12 MB.")
+        raise ValidationError(_("Image files cannot exceed 12 MB."))
 
 
 class Destination(models.Model):
@@ -176,17 +177,14 @@ class PropertyImage(models.Model):
         return f"{self.property} · {self.sort_order}"
 
     def save(self, *args, **kwargs):
-        if (
-            self.image
-            and not self.image.name.lower().endswith(".webp")
-            and not self.image.name.startswith("media/")
-            and not self.image.name.startswith("http")
-        ):
+        uploaded_file = getattr(self.image, "_file", None)
+        if uploaded_file:
+            validate_image_size(uploaded_file)
             try:
-                source = Image.open(self.image)
+                source = Image.open(uploaded_file)
                 source.verify()
-                self.image.seek(0)
-                source = Image.open(self.image)
+                uploaded_file.seek(0)
+                source = Image.open(uploaded_file)
                 source.thumbnail((1200, 1200), Image.Resampling.LANCZOS)
                 if source.mode not in ("RGB", "RGBA"):
                     source = source.convert("RGB")
@@ -195,7 +193,7 @@ class PropertyImage(models.Model):
                 name = f"{Path(self.image.name).stem}.webp"
                 self.image = ContentFile(output.getvalue(), name=name)
             except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as error:
-                raise ValidationError({"image": "The uploaded file is not a valid image."}) from error
+                raise ValidationError({"image": _("The uploaded file is not a valid image.")}) from error
         super().save(*args, **kwargs)
 
     @builtins.property

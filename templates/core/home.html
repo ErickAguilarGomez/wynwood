@@ -5,28 +5,28 @@
 {% block content %}
 <section class="home-hero">
     <div class="promo-ribbon" data-countdown-ribbon>
-        <span>Corre! 20% de descuento en todos los viajes</span>
-        <span>Quedan solo <b data-countdown-hours>00</b> h <b data-countdown-minutes>00</b> m <b data-countdown-seconds>00</b> s</span>
+        <span>{% trans "Hurry! 20% off all stays" %}</span>
+        <span>{% trans "Only" %} <b data-countdown-hours>00</b> h <b data-countdown-minutes>00</b> m <b data-countdown-seconds>00</b> s</span>
     </div>
     <img class="home-hero-image" src="{% static 'design/figma/home/hero.png' %}" alt="Wynwood House">
     <div class="home-hero-shade"></div>
     <div class="home-hero-copy">
-        <h1>HOME EXPERIENCE, HOTEL QUALITY</h1>
-        <p>BEST OF BOTH WORLDS</p>
+        <h1>{% trans "HOME EXPERIENCE, HOTEL QUALITY" %}</h1>
+        <p>{% trans "BEST OF BOTH WORLDS" %}</p>
     </div>
     <div class="home-search">{% include 'components/search_form.html' with variant='hero' %}</div>
 </section>
 
 <section id="destinations" class="figma-section destinations-section container-wide">
     <div class="figma-heading">
-        <h2>DESCUBRE NUESTROS DESTINOS</h2>
+        <h2>{% trans "Discover our destinations" %}</h2>
         <div class="carousel-arrows">
-            <button type="button" aria-label="Anterior" class="arrow-prev">
+            <button type="button" aria-label="{% trans 'Previous' %}" class="arrow-prev">
                 <svg width="14" height="22" viewBox="0 0 14 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2L3 11L12 20" stroke="#D1D1D1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
-            <button type="button" aria-label="Siguiente" class="arrow-next">
+            <button type="button" aria-label="{% trans 'Next' %}" class="arrow-next">
                 <svg width="14" height="22" viewBox="0 0 14 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M2 2L11 11L2 20" stroke="#000000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -34,22 +34,22 @@
         </div>
     </div>
     <div class="destination-track">
-        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-colombia.png' %}" alt="Colombia"></a>
-        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-mexico.png' %}" alt="México"></a>
-        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-peru.png' %}" alt="Perú"></a>
-        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-panama.png' %}" alt="Panamá"></a>
-        <a class="destination-tile" href="#stays"><img src="{% static 'design/figma/home/destination-spain.png' %}" alt="España"></a>
+        <a class="destination-tile" href="{% url 'properties:results' %}?country=CO"><img src="{% static 'design/figma/home/destination-colombia.png' %}" alt="{% trans 'Colombia' %}"></a>
+        <a class="destination-tile" href="{% url 'properties:results' %}?country=MX"><img src="{% static 'design/figma/home/destination-mexico.png' %}" alt="{% trans 'Mexico' %}"></a>
+        <a class="destination-tile" href="{% url 'properties:results' %}?country=PE"><img src="{% static 'design/figma/home/destination-peru.png' %}" alt="{% trans 'Peru' %}"></a>
+        <a class="destination-tile" href="{% url 'properties:results' %}?country=PA"><img src="{% static 'design/figma/home/destination-panama.png' %}" alt="{% trans 'Panama' %}"></a>
+        <a class="destination-tile" href="{% url 'properties:results' %}?country=ES"><img src="{% static 'design/figma/home/destination-spain.png' %}" alt="{% trans 'Spain' %}"></a>
     </div>
 </section>
 
 <section id="stays" class="featured-section">
     <div class="featured-copy">
         <h2>{% trans "Featured homes" %}</h2>
-        <p>Descubre nuestra selección exclusiva de propiedades y conoce tu destino preferido a tu manera. Encuentra tu estadía ideal y empieza a vivir una experiencia única.</p>
+        <p>{% trans "Explore our exclusive homes and discover your preferred destination your way. Find your ideal stay and start a unique experience." %}</p>
     </div>
     <div class="featured-content">
         <div class="featured-tabs">
-            <button class="active" type="button">Todas las propiedades</button>
+            <button class="active" type="button">{% trans "All properties" %}</button>
             <button type="button" class="tab-collection"><img src="{% static 'design/figma/ui/icon-star.svg' %}" alt="" class="tab-icon"> The Collection*</button>
             <button type="button" class="tab-casa"><img src="{% static 'design/figma/ui/icon-house.svg' %}" alt="" class="tab-icon"> Casa Wynwood</button>
         </div>
@@ -86,18 +86,18 @@
 
 <section class="services-section">
     <div class="services-copy">
-        <h2>SERVICIOS EN WYNWOOD HOUSE</h2>
-        <p>Descubre los servicios que ofrecen nuestras propiedades para hacer de tu estadía la experiencia más cómoda y emocionante que puedas imaginar.</p>
+        <h2>{% trans "Services at Wynwood House" %}</h2>
+        <p>{% trans "Discover the services at our homes and enjoy a comfortable, memorable stay." %}</p>
     </div>
     <div class="services-grid">
-        <article><img src="{% static 'design/figma/home/service-checkin.png' %}" alt=""><span>CHECK IN SIN<br>CONTACTO</span></article>
-        <article><img src="{% static 'design/figma/home/service-cleaning.png' %}" alt=""><span>LIMPIEZA<br>PROFESIONAL</span></article>
+        <article><img src="{% static 'design/figma/home/service-checkin.png' %}" alt=""><span>{% trans "CONTACTLESS CHECK-IN" %}</span></article>
+        <article><img src="{% static 'design/figma/home/service-cleaning.png' %}" alt=""><span>{% trans "PROFESSIONAL CLEANING" %}</span></article>
         <article><img src="{% static 'design/figma/home/service-wifi.png' %}" alt=""><span>WIFI</span></article>
-        <article><img src="{% static 'design/figma/home/service-bath.png' %}" alt=""><span>KIT DE BAÑO</span></article>
-        <article><img src="{% static 'design/figma/home/service-kitchen.png' %}" alt=""><span>COCINA<br>EQUIPADA</span></article>
-        <article><img src="{% static 'design/figma/home/service-pet.png' %}" alt=""><span>PET<br>FRIENDLY</span></article>
-        <article><img src="{% static 'design/figma/home/service-support.png' %}" alt=""><span>SOPORTE<br>24/7</span></article>
-        <article><img src="{% static 'design/figma/home/service-bed.png' %}" alt=""><span>CAMA<br>WYNWOOD</span></article>
+        <article><img src="{% static 'design/figma/home/service-bath.png' %}" alt=""><span>{% trans "BATHROOM KIT" %}</span></article>
+        <article><img src="{% static 'design/figma/home/service-kitchen.png' %}" alt=""><span>{% trans "FULLY EQUIPPED KITCHEN" %}</span></article>
+        <article><img src="{% static 'design/figma/home/service-pet.png' %}" alt=""><span>{% trans "PET FRIENDLY" %}</span></article>
+        <article><img src="{% static 'design/figma/home/service-support.png' %}" alt=""><span>{% trans "24/7 SUPPORT" %}</span></article>
+        <article><img src="{% static 'design/figma/home/service-bed.png' %}" alt=""><span>{% trans "WYNWOOD BED" %}</span></article>
     </div>
 </section>
 
@@ -107,46 +107,46 @@
         <img class="events-large" src="{% static 'design/figma/home/event-large.png' %}" alt="">
     </div>
     <div class="events-copy">
-        <h2>DISFRUTA DE NUESTROS EVENTOS!</h2>
-        <p>Vive tu experiencia al máximo mientras te sumerges en el vibrante mundo de los eventos Wynwood. Disfruta de arte, cultura e inspiración como nunca antes.</p>
-        <a class="pill-button" href="#">VER TODOS LOS EVENTOS</a>
+        <h2>{% trans "Enjoy our events!" %}</h2>
+        <p>{% trans "Make the most of your stay with Wynwood events, art, culture and inspiration." %}</p>
+        <a class="pill-button" href="{% url 'properties:results' %}">{% trans "Explore our homes" %}</a>
     </div>
 </section>
 
 <section class="benefits-section container-wide">
-    <h2>BENEFICIOS DE WYNWOOD HOUSE</h2>
+    <h2>{% trans "Benefits of Wynwood House" %}</h2>
     <div class="benefits-grid">
         <article class="benefit-info">
-            <h3>Guias de ciudades</h3>
-            <p>Lorem ipsum dolor sit amet consectetur. Congue volutpat pulvinar mattis enim tellus. Ac habitasse enim adipiscing vitae massa pretium nulla dui.</p>
-            <a class="pill-button outline" href="#">SABER MÁS</a>
+            <h3>{% trans "City guides" %}</h3>
+            <p>{% trans "Get to know each destination with local recommendations for places to visit, eat and explore." %}</p>
+            <a class="pill-button outline" href="#destinations">{% trans "Explore destinations" %}</a>
         </article>
         <article class="benefit-image">
             <img src="{% static 'design/figma/home/benefit-services.png' %}" alt="">
-            <strong>SERVICIOS<br>ADICIONALES</strong>
+            <strong>{% trans "EXTRA SERVICES" %}</strong>
         </article>
         <article class="benefit-image">
             <img src="{% static 'design/figma/home/benefit-rewards.png' %}" alt="">
-            <strong>PROGRAMA DE<br>REWARDS</strong>
+            <strong>{% trans "REWARDS PROGRAM" %}</strong>
         </article>
     </div>
 </section>
 
 <section class="houses-section container-wide">
-    <a id="casa-wynwood" href="#" class="house-panel">
+    <a id="casa-wynwood" href="{% url 'properties:results' %}" class="house-panel">
         <img src="{% static 'design/figma/home/casa-wynwood.png' %}" alt="Casa Wynwood">
     </a>
-    <a id="collection" href="#" class="house-panel">
+    <a id="collection" href="{% url 'properties:results' %}" class="house-panel">
         <img src="{% static 'design/figma/home/the-collection.png' %}" alt="The Collection">
     </a>
 </section>
 
 <section id="long-stays" class="long-stays-section">
-    <img src="{% static 'design/figma/home/long-stay.png' %}" alt="Alquileres a largo plazo">
+    <img src="{% static 'design/figma/home/long-stay.png' %}" alt="{% trans 'Long-term rentals' %}">
     <div>
-        <h2>ALQUILERES A LARGO PLAZO</h2>
-        <p>Descubre el confort y la conveniencia de hospedarte con nosotros durante períodos prolongados. Aprovecha nuestras tarifas especiales diseñadas exclusivamente para estadías largas, ofreciéndote una experiencia continua de calidad y comodidad.</p>
-        <a class="pill-button" href="mailto:sales@wynwoodhouse.com">CONTÁCTANOS</a>
+        <h2>{% trans "LONG STAYS" %}</h2>
+        <p>{% trans "Enjoy the comfort of an extended stay and special rates designed for longer visits." %}</p>
+        <a class="pill-button" href="mailto:sales@wynwoodhouse.com">{% trans "CONTACT US" %}</a>
     </div>
 </section>
 
@@ -158,10 +158,10 @@
     </div>
     <div class="real-estate-copy">
         <div class="real-estate-text">
-            <h2>INVIERTE EN REAL ESTATE</h2>
-            <p>Compra o vende tu propiedad y obtén asesoramiento profesional y una experiencia sin estrés</p>
+            <h2>{% trans "INVEST IN REAL ESTATE" %}</h2>
+            <p>{% trans "Buy or sell your property with professional guidance and a smooth experience." %}</p>
         </div>
-        <a class="pill-button light-outline" href="mailto:sales@wynwoodhouse.com">SABER MÁS</a>
+        <a class="pill-button light-outline" href="mailto:sales@wynwoodhouse.com">{% trans "LEARN MORE" %}</a>
     </div>
 </section>
 
