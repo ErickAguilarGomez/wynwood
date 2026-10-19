@@ -169,9 +169,12 @@ EMAIL_HOST = env("SMTP_HOST", env("EMAIL_HOST", "localhost"))
 EMAIL_PORT = int(env("SMTP_PORT", env("EMAIL_PORT", "587")))
 EMAIL_HOST_USER = env("SMTP_USER", env("EMAIL_HOST_USER", ""))
 EMAIL_HOST_PASSWORD = env("SMTP_PASSWORD", env("EMAIL_HOST_PASSWORD", ""))
+if EMAIL_HOST.lower() in {"smtp.gmail.com", "smtp.googlemail.com"}:
+    EMAIL_HOST_PASSWORD = "".join(EMAIL_HOST_PASSWORD.split())
 EMAIL_USE_TLS = env_bool("SMTP_USE_TLS", env_bool("EMAIL_USE_TLS"))
 SMTP_FROM_EMAIL = env("SMTP_FROM_EMAIL", "")
 SMTP_FROM_NAME = env("SMTP_FROM_NAME", "Wynwood House")
+EMAIL_LOGO_URL = env("EMAIL_LOGO_URL", "")
 DEFAULT_FROM_EMAIL = (
     f"{SMTP_FROM_NAME} <{SMTP_FROM_EMAIL}>"
     if SMTP_FROM_EMAIL

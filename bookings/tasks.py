@@ -49,6 +49,8 @@ def _email_context(reservation):
         "first_name": reservation.user.first_name or reservation.user.email.split("@")[0],
         "hero_image_url": _hero_image_url(reservation),
         "site_url": settings.PUBLIC_BASE_URL,
+        "email_static_url": _absolute_url(settings.STATIC_URL),
+        "logo_url": settings.EMAIL_LOGO_URL or f"{_absolute_url(settings.STATIC_URL)}design/figma/ui/logo.svg",
         "support_url": f"mailto:{SUPPORT_EMAIL}",
         "benefits_url": settings.PUBLIC_BASE_URL,
         "language_code": reservation.language_code,

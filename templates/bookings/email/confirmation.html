@@ -1,4 +1,4 @@
-{% load i18n static %}<!doctype html>
+{% load i18n %}<!doctype html>
 <html lang="{{ language_code }}">
 <head>
 <meta charset="utf-8">
@@ -16,7 +16,7 @@
         
         <tr>
           <td align="center" style="padding:30px 24px 14px;">
-            <img src="{{ site_url }}{% static 'design/figma/ui/logo.png' %}" width="174" height="47" alt="Wynwood House" style="display:block;border:0;width:174px;height:47px;">
+            {% if logo_url %}<img src="{{ logo_url }}" width="174" height="47" alt="Wynwood House" style="display:block;border:0;width:174px;height:47px;">{% endif %}
           </td>
         </tr>
 
@@ -151,19 +151,19 @@
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td width="25%" align="center" valign="top" style="padding:0 4px;">
-                  <img src="{{ site_url }}{% static 'design/figma/home/destination-mexico.png' %}" alt="{% trans 'Mexico' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
+                  <img src="{{ email_static_url }}design/figma/home/destination-mexico.png" alt="{% trans 'Mexico' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
                   <div style="font-size:12px;color:#000000;padding-top:8px;">{% trans "Mexico" %}</div>
                 </td>
                 <td width="25%" align="center" valign="top" style="padding:0 4px;">
-                  <img src="{{ site_url }}{% static 'design/figma/home/destination-peru.png' %}" alt="{% trans 'Peru' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
+                  <img src="{{ email_static_url }}design/figma/home/destination-peru.png" alt="{% trans 'Peru' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
                   <div style="font-size:12px;color:#000000;padding-top:8px;">{% trans "Peru" %}</div>
                 </td>
                 <td width="25%" align="center" valign="top" style="padding:0 4px;">
-                  <img src="{{ site_url }}{% static 'design/figma/home/destination-panama.png' %}" alt="{% trans 'Panama' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
+                  <img src="{{ email_static_url }}design/figma/home/destination-panama.png" alt="{% trans 'Panama' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
                   <div style="font-size:12px;color:#000000;padding-top:8px;">{% trans "Panama" %}</div>
                 </td>
                 <td width="25%" align="center" valign="top" style="padding:0 4px;">
-                  <img src="{{ site_url }}{% static 'design/figma/home/destination-spain.png' %}" alt="{% trans 'Spain' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
+                  <img src="{{ email_static_url }}design/figma/home/destination-spain.png" alt="{% trans 'Spain' %}" width="120" style="display:block;width:100%;height:auto;border:0;">
                   <div style="font-size:12px;color:#000000;padding-top:8px;">{% trans "Spain" %}</div>
                 </td>
               </tr>
@@ -186,10 +186,10 @@
                   <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="right">
                     <tr>
                       <td style="padding-right:8px;">
-                        <a href="{{ site_url }}"><img src="{{ site_url }}{% static 'design/figma/ui/badge-app-store.png' %}" width="119" height="40" alt="App Store" style="display:block;border:0;width:119px;height:40px;"></a>
+                        <a href="{{ site_url }}"><img src="{{ email_static_url }}design/figma/ui/badge-app-store.png" width="119" height="40" alt="App Store" style="display:block;border:0;width:119px;height:40px;"></a>
                       </td>
                       <td>
-                        <a href="{{ site_url }}"><img src="{{ site_url }}{% static 'design/figma/ui/badge-google-play.png' %}" width="134" height="40" alt="Google Play" style="display:block;border:0;width:134px;height:40px;"></a>
+                        <a href="{{ site_url }}"><img src="{{ email_static_url }}design/figma/ui/badge-google-play.png" width="134" height="40" alt="Google Play" style="display:block;border:0;width:134px;height:40px;"></a>
                       </td>
                     </tr>
                   </table>
@@ -198,17 +198,17 @@
             </table>
 
             <div align="center" style="padding-top:36px;">
-              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ site_url }}{% static 'design/figma/ui/social-facebook.png' %}" width="46" height="46" alt="Facebook" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
-              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ site_url }}{% static 'design/figma/ui/social-instagram.png' %}" width="46" height="46" alt="Instagram" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
-              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ site_url }}{% static 'design/figma/ui/social-whatsapp.png' %}" width="46" height="46" alt="WhatsApp" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
-              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ site_url }}{% static 'design/figma/ui/social-linkedin.png' %}" width="46" height="46" alt="LinkedIn" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
+              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ email_static_url }}design/figma/ui/social-facebook.png" width="46" height="46" alt="Facebook" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
+              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ email_static_url }}design/figma/ui/social-instagram.png" width="46" height="46" alt="Instagram" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
+              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ email_static_url }}design/figma/ui/social-whatsapp.png" width="46" height="46" alt="WhatsApp" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
+              <a href="{{ site_url }}" style="text-decoration:none;"><img src="{{ email_static_url }}design/figma/ui/social-linkedin.png" width="46" height="46" alt="LinkedIn" style="display:inline-block;border:0;margin:0 6px;vertical-align:middle;"></a>
             </div>
 
             <div align="center" style="padding-top:32px;">
               <div style="font-size:13px;letter-spacing:4px;color:#1f1a0e;text-transform:uppercase;font-family:Helvetica,Arial,sans-serif;">Home experience, hotel quality</div>
               <div style="padding-top:20px;"><a href="{{ site_url }}" style="font-size:14px;color:#1f1a0e;text-decoration:underline;">{% trans "Support 24/7" %}</a></div>
               <div style="padding-top:12px;"><a href="{{ site_url }}" style="font-size:14px;color:#1f1a0e;text-decoration:underline;">{% trans "Cancellation policies" %}</a></div>
-              <div style="padding-top:24px;"><img src="{{ site_url }}{% static 'design/figma/ui/logo.png' %}" width="150" height="41" alt="Wynwood House" style="display:inline-block;border:0;width:150px;height:41px;"></div>
+              {% if logo_url %}<div style="padding-top:24px;"><img src="{{ logo_url }}" width="150" height="41" alt="Wynwood House" style="display:inline-block;border:0;width:150px;height:41px;"></div>{% endif %}
             </div>
           </td>
         </tr>
