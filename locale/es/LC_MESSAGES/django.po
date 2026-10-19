@@ -1689,11 +1689,8 @@ msgstr "Las imágenes no pueden superar los 12 MB."
 msgid "The uploaded file is not a valid image."
 msgstr "El archivo cargado no es una imagen válida."
 
-msgid "Hurry! 20% off all stays"
-msgstr "¡Corre! 20% de descuento en todas las estadías"
-
-msgid "Only"
-msgstr "Quedan solo"
+msgid "Hurry! 20% off all stays. Only"
+msgstr "¡Aprovecha el 20% de descuento en todas las estadías! Quedan solo"
 
 msgid "Discover our destinations"
 msgstr "Descubre nuestros destinos"
