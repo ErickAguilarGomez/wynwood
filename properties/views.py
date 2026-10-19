@@ -33,36 +33,33 @@ class PropertyListView(ListView):
         query_params = self.request.GET.copy()
         raw_check_in = (query_params.get("check_in") or "").strip()
         raw_check_out = (query_params.get("check_out") or "").strip()
-        raw_guests = (query_params.get("guests") or "").strip()
 
-        if raw_check_in and raw_check_out:
-            self.request.session["search_check_in"] = raw_check_in
-            self.request.session["search_check_out"] = raw_check_out
-        elif not raw_check_in and not raw_check_out:
+        if not raw_check_in and not raw_check_out:
             saved_in = self.request.session.get("search_check_in")
             saved_out = self.request.session.get("search_check_out")
             if saved_in and saved_out:
                 query_params["check_in"] = saved_in
                 query_params["check_out"] = saved_out
 
-        if raw_guests:
-            self.request.session["search_guests"] = raw_guests
-        elif self.request.session.get("search_guests"):
+        if not query_params.get("guests") and self.request.session.get("search_guests"):
             query_params["guests"] = str(self.request.session.get("search_guests"))
 
         self.query_params = query_params
         self.form = PropertySearchForm(query_params or None)
         if not self.form.is_valid():
-            if "check_in" in self.form.errors or "check_out" in self.form.errors:
-                return queryset.none()
-        data = self.form.cleaned_data if self.form.is_valid() else {}
+            return queryset.none()
+        data = self.form.cleaned_data
+
+        if data.get("check_in") and data.get("check_out"):
+            self.request.session["search_check_in"] = data["check_in"].isoformat()
+            self.request.session["search_check_out"] = data["check_out"].isoformat()
+        if data.get("guests"):
+            self.request.session["search_guests"] = str(data["guests"])
 
 
-        dest_val = data.get("destination") or self.request.GET.get("destination")
+        dest_val = data.get("destination")
         if dest_val:
-            if isinstance(dest_val, Destination):
-                queryset = queryset.filter(destination=dest_val)
-            elif str(dest_val).isdigit():
+            if str(dest_val).isdecimal():
                 queryset = queryset.filter(destination_id=int(dest_val))
             else:
                 queryset = queryset.filter(
@@ -75,12 +72,12 @@ class PropertyListView(ListView):
                 )
 
 
-        country = data.get("country") or self.request.GET.get("country")
+        country = data.get("country")
         if country:
             queryset = queryset.filter(Q(country__iexact=country) | Q(destination__country_code__iexact=country))
 
 
-        province = data.get("province") or self.request.GET.get("province")
+        province = data.get("province")
         if province:
             queryset = queryset.filter(province__icontains=province)
 
@@ -88,6 +85,8 @@ class PropertyListView(ListView):
         districts = [d.strip() for d in self.request.GET.getlist("district") if d.strip()]
         if not districts and data.get("district"):
             districts = [data["district"].strip()]
+        if len(districts) > 20 or any(len(district) > 120 for district in districts):
+            return queryset.none()
         if districts:
             district_q = Q()
             for d in districts:
@@ -95,35 +94,21 @@ class PropertyListView(ListView):
             queryset = queryset.filter(district_q)
 
 
-        guests = data.get("guests") or self.request.GET.get("guests")
+        guests = data.get("guests")
         if guests:
-            try:
-                queryset = queryset.filter(max_guests__gte=int(guests))
-            except (ValueError, TypeError):
-                pass
+            queryset = queryset.filter(max_guests__gte=guests)
 
 
-        min_price = data.get("min_price") or self.request.GET.get("min_price")
+        min_price = data.get("min_price")
         if min_price is not None:
-            try:
-                queryset = queryset.filter(price_per_night__gte=Decimal(min_price))
-            except Exception:
-                pass
-        max_price = data.get("max_price") or self.request.GET.get("max_price")
+            queryset = queryset.filter(price_per_night__gte=min_price)
+        max_price = data.get("max_price")
         if max_price is not None:
-            try:
-                queryset = queryset.filter(price_per_night__lte=Decimal(max_price))
-            except Exception:
-                pass
+            queryset = queryset.filter(price_per_night__lte=max_price)
 
 
-        amenities = self.request.GET.getlist("amenities")
-        if amenities:
-            for a_id in amenities:
-                try:
-                    queryset = queryset.filter(amenities__id=int(a_id))
-                except (ValueError, TypeError):
-                    pass
+        for amenity in data.get("amenities", ()):
+            queryset = queryset.filter(amenities=amenity)
 
 
         check_in = data.get("check_in")
@@ -161,10 +146,11 @@ class PropertyListView(ListView):
 
 
         selected_dest = data.get("destination")
-        if not selected_dest and self.request.GET.get("destination"):
-            val = self.request.GET["destination"]
+        if selected_dest:
             selected_dest = Destination.objects.filter(
-                Q(pk=val) if val.isdigit() else Q(slug=val) | Q(name_es__iexact=val)
+                Q(pk=selected_dest) if str(selected_dest).isdecimal() else Q(slug__iexact=selected_dest)
+                | Q(name_es__iexact=selected_dest)
+                | Q(name_en__iexact=selected_dest)
             ).first()
         context["current_destination"] = selected_dest
         context["current_districts"] = [d for d in self.request.GET.getlist("district") if d] or ([data.get("district")] if data.get("district") else [])

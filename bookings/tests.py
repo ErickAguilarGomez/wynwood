@@ -11,6 +11,7 @@ from accounts.models import User
 from core.tests.factories import create_property, create_user, future_dates
 from properties.models import Destination
 
+from .forms import TransportForm
 from .models import Reservation
 from .services import PropertyUnavailable, ReservationService, ReservationValidationError
 from .tasks import send_confirmation_email
@@ -326,3 +327,111 @@ class CheckoutFlowTests(TestCase):
         self.assertEqual(user.country, "PE")
         self.assertEqual(user.phone, "+51 987654321")
         self.assertEqual(user.birth_date, date(1995, 10, 12))
+
+    def test_checkout_rejects_passwords_shorter_than_the_account_policy(self):
+        url = reverse("bookings:checkout", kwargs={"slug": self.property.slug})
+        response = self.client.post(
+            url,
+            {
+                "email": "weak-password@example.com",
+                "password": "1234567!",
+                "full_name": "Laura Gomez",
+                "nationality": "PE",
+                "phone_code": "+51",
+                "phone": "987654321",
+                "birth_date": "1995-10-12",
+                "check_in": self.check_in.isoformat(),
+                "check_out": self.check_out.isoformat(),
+                "guests": 2,
+                "booking_type": "daily",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].errors["password"])
+        self.assertFalse(User.objects.filter(email="weak-password@example.com").exists())
+
+
+class ServiceConfigurationInputTests(TestCase):
+    def setUp(self):
+        self.user = create_user()
+        self.property = create_property()
+        check_in, check_out = future_dates()
+        self.reservation = ReservationService.create(
+            user=self.user,
+            property_id=self.property.pk,
+            check_in=check_in,
+            check_out=check_out,
+            guests=2,
+        )
+        self.client.force_login(self.user)
+
+    def test_invalid_transport_values_render_validation_errors(self):
+        url = reverse(
+            "bookings:service_detail",
+            kwargs={"public_id": self.reservation.public_id, "service_key": "transport"},
+        )
+        response = self.client.post(url, {"quantity": "not-a-number", "vehicle": "invalid"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].errors)
+
+    def test_invalid_grocery_pack_renders_validation_errors(self):
+        url = reverse(
+            "bookings:service_detail",
+            kwargs={"public_id": self.reservation.public_id, "service_key": "groceries"},
+        )
+        response = self.client.post(url, {"pack": "invalid"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].errors)
+
+    def test_invalid_crib_quantity_renders_validation_errors(self):
+        url = reverse(
+            "bookings:service_detail",
+            kwargs={"public_id": self.reservation.public_id, "service_key": "baby-crib"},
+        )
+        response = self.client.post(url, {"quantity": "not-a-number"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].errors)
+
+    def test_round_trip_requires_return_time_range(self):
+        form = TransportForm(
+            data={
+                "trip_type": "round_trip",
+                "departure_date": self.reservation.check_in.isoformat(),
+                "departure_time": "10:00",
+                "departure_time_end": "11:00",
+                "airport": "MAD",
+                "vehicle": "suv",
+                "quantity": "1",
+                "return_date": self.reservation.check_in.isoformat(),
+                "return_time": "12:00",
+                "return_time_end": "",
+            },
+            reservation=self.reservation,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("return_time_end", form.errors)
+
+    def test_round_trip_cannot_return_before_departure_on_same_day(self):
+        form = TransportForm(
+            data={
+                "trip_type": "round_trip",
+                "departure_date": self.reservation.check_in.isoformat(),
+                "departure_time": "12:00",
+                "departure_time_end": "13:00",
+                "airport": "MAD",
+                "vehicle": "suv",
+                "quantity": "1",
+                "return_date": self.reservation.check_in.isoformat(),
+                "return_time": "10:00",
+                "return_time_end": "11:00",
+            },
+            reservation=self.reservation,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("return_time", form.errors)

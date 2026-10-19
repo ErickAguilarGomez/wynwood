@@ -12,6 +12,9 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        category = self.request.GET.get("category", "all")
+        if category not in {"all", Property.Brand.COLLECTION, Property.Brand.CASA_WYNWOOD}:
+            category = "all"
         destinations = Destination.objects.all().order_by("country_code", "sort_order", "name_es")
         by_country = {}
         for d in destinations:
@@ -32,9 +35,14 @@ class HomeView(TemplateView):
                 initial["check_in"] = parsed_in
                 initial["check_out"] = parsed_out
 
+        featured_properties = Property.objects.filter(is_active=True, is_featured=True)
+        if category != "all":
+            featured_properties = featured_properties.filter(brand=category)
+
         context.update(
             search_form=PropertySearchForm(initial=initial),
-            featured_properties=Property.objects.filter(is_active=True, is_featured=True).select_related("destination").prefetch_related("images")[:4],
+            featured_properties=featured_properties.select_related("destination").prefetch_related("images")[:4],
+            featured_category=category,
             spain_properties=Property.objects.filter(is_active=True, destination__country_code="ES").select_related("destination").prefetch_related("images")[:6],
             destinations=destinations[:6],
             destinations_by_country=by_country,

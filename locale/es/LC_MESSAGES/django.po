@@ -127,6 +127,15 @@ msgstr "La fecha de llegada no puede estar en el pasado."
 msgid "Check-out cannot be in the past."
 msgstr "La fecha de salida no puede estar en el pasado."
 
+msgid "Select both check-in and check-out dates."
+msgstr "Selecciona las fechas de llegada y salida."
+
+msgid "Choose the end of the return time range."
+msgstr "Selecciona el final del horario de regreso."
+
+msgid "The return time must be after departure."
+msgstr "La hora de regreso debe ser posterior a la salida."
+
 #: bookings/forms.py:81 bookings/forms.py:203 properties/forms.py:25
 msgid "Check-out must be after check-in."
 msgstr "La salida debe ser posterior a la llegada."
@@ -1701,11 +1710,23 @@ msgstr "Descubre nuestra selección exclusiva de propiedades y conoce tu destino
 msgid "All properties"
 msgstr "Todas las propiedades"
 
+msgid "The Collection"
+msgstr "La Colección"
+
+msgid "Why travel to Spain?"
+msgstr "¿Por qué viajar a España?"
+
+msgid "Discover a country where historic streets, remarkable architecture, regional cuisine and Mediterranean coastlines make every city a different experience. Stay close to local life and explore Spain at your own pace."
+msgstr "Descubre un país donde las calles históricas, la arquitectura, la gastronomía regional y las costas mediterráneas hacen de cada ciudad una experiencia distinta. Alójate cerca de la vida local y explora España a tu propio ritmo."
+
+msgid "Explore stays in Spain"
+msgstr "Descubre alojamientos en España"
+
 msgid "Services at Wynwood House"
 msgstr "Servicios en Wynwood House"
 
-msgid "Discover the services at our homes and enjoy a comfortable, memorable stay."
-msgstr "Descubre los servicios que ofrecen nuestras propiedades para disfrutar una estadía cómoda e inolvidable."
+msgid "Discover the services our properties offer to make your stay the most comfortable and exciting experience you can imagine."
+msgstr "Descubre los servicios que ofrecen nuestras propiedades para hacer de tu estadía la experiencia más cómoda y emocionante que puedas imaginar."
 
 msgid "CONTACTLESS CHECK-IN"
 msgstr "CHECK-IN SIN CONTACTO"
@@ -1731,11 +1752,11 @@ msgstr "CAMA WYNWOOD"
 msgid "Enjoy our events!"
 msgstr "¡Disfruta de nuestros eventos!"
 
-msgid "Make the most of your stay with Wynwood events, art, culture and inspiration."
-msgstr "Vive tu experiencia al máximo con los eventos Wynwood, arte, cultura e inspiración."
+msgid "Live your experience to the fullest as you dive into the vibrant world of our Wynwood events. Enjoy art, culture, and inspiration like never before."
+msgstr "Vive tu experiencia al máximo mientras te sumerges en el vibrante mundo de los eventos Wynwood. Disfruta de arte, cultura e inspiración como nunca antes."
 
-msgid "Explore our homes"
-msgstr "Explora nuestros alojamientos"
+msgid "View all events"
+msgstr "Ver todos los eventos"
 
 msgid "Benefits of Wynwood House"
 msgstr "Beneficios de Wynwood House"
@@ -1787,4 +1808,25 @@ msgstr "Quitar huésped"
 
 msgid "Add guest"
 msgstr "Agregar huésped"
+
+msgid "Sign in"
+msgstr "Iniciar sesión"
+
+msgid "List your property"
+msgstr "Publica tu propiedad"
+
+msgid "Invest in real estate"
+msgstr "Invierte en bienes raíces"
+
+msgid "Bedrooms"
+msgstr "Habitaciones"
+
+msgid "Bedroom 1"
+msgstr "Habitación 1"
+
+msgid "1 Queen Bed"
+msgstr "1 cama queen"
+
+msgid "No amenities are listed for this property."
+msgstr "Esta propiedad no tiene comodidades registradas."
 

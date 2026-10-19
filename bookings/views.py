@@ -646,30 +646,22 @@ class ServiceDetailView(LoginRequiredMixin, FormView):
         return context
 
     def _quote(self, form):
-
-
-
-
-
+        values = form.cleaned_data if form.is_bound and form.is_valid() else {}
         if self.service.detail == "transport":
             amount, details = transport_quote(
-                trip_type=form["trip_type"].value() or "one_way",
-                vehicle_key=form["vehicle"].value() or "suv",
-                quantity=int(form["quantity"].value() or 1),
+                trip_type=values.get("trip_type") or "one_way",
+                vehicle_key=values.get("vehicle") or "suv",
+                quantity=values.get("quantity") or 1,
             )
             return {"amount": amount, **details}
         if self.service.detail == "crib":
-            amount = crib_quote(quantity=int(form["quantity"].value() or 1))[0]
-            start_date = form["start_date"].value() or self.reservation.check_in
-            end_date = form["end_date"].value() or self.reservation.check_out
-            if isinstance(start_date, str):
-                start_date = parse_date(start_date)
-            if isinstance(end_date, str):
-                end_date = parse_date(end_date)
+            amount = crib_quote(quantity=values.get("quantity") or 1)[0]
+            start_date = values.get("start_date") or self.reservation.check_in
+            end_date = values.get("end_date") or self.reservation.check_out
             nights = max((end_date - start_date).days, 1) if start_date and end_date else self.reservation.nights
             return {"amount": amount * nights}
         if self.service.detail == "groceries":
-            pack = form["pack"].value() or GROCERY_PACKS[0].key
+            pack = values.get("pack") or GROCERY_PACKS[0].key
             return {"amount": grocery_quote(pack_key=pack)[0], "pack": pack}
         return {"amount": self.service.base_price}
 

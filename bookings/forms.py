@@ -3,6 +3,7 @@ from datetime import time, timedelta
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import get_language
@@ -51,9 +52,6 @@ def parse_phone(phone_str, country=None, default_prefix="+51"):
 
 
 
-PASSWORD_MIN_LENGTH = 8
-PASSWORD_SYMBOLS = set("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")
-NAME_TOKEN_MIN_LENGTH = 3
 PHONE_ALLOWED = re.compile(r"^[0-9+()\s.-]+$")
 AIRPORTS_BY_DESTINATION = {
     "anapoima": (("BOG", "El Dorado International Airport (BOG)"),),
@@ -79,33 +77,6 @@ AIRPORTS_BY_DESTINATION = {
     "paracas": (("PIO", "Pisco International Airport (PIO)"),),
     "miami": (("MIA", "Miami International Airport (MIA)"),),
 }
-
-
-def password_issues(password, full_name="", email=""):
-
-
-
-
-
-    password = password or ""
-    issues = []
-    email_user = email.split("@")[0] if "@" in (email or "") else (email or "")
-    tokens = [
-        token
-        for token in re.split(r"[\s._-]+", f"{full_name} {email_user}".lower())
-        if len(token) >= NAME_TOKEN_MIN_LENGTH
-    ]
-    contains_name = any(token in password.lower() for token in tokens)
-    has_symbol = any(character.isdigit() or character in PASSWORD_SYMBOLS for character in password)
-    if len(password) < PASSWORD_MIN_LENGTH:
-        issues.append("length")
-    if not has_symbol:
-        issues.append("symbol")
-    if contains_name:
-        issues.append("name")
-    if issues:
-        issues.append("strength")
-    return issues
 
 
 def country_choices():
@@ -305,15 +276,17 @@ class CheckoutForm(forms.Form):
         if guests and guests > self.property.max_guests:
             self.add_error("guests", _("This property cannot accommodate that many guests."))
         if password:
-            issues = password_issues(password, data.get("full_name", ""), data.get("email", ""))
-            messages = {
-                "length": _("The password must be at least 8 characters long."),
-                "symbol": _("The password must contain a number or symbol."),
-                "name": _("The password cannot contain your name or email address."),
-            }
-            for issue in issues:
-                if issue in messages:
-                    self.add_error("password", messages[issue])
+            name_parts = (data.get("full_name") or "").partition(" ")
+            password_user = get_user_model()(
+                email=data.get("email", ""),
+                first_name=name_parts[0],
+                last_name=name_parts[2],
+            )
+            try:
+                validate_password(password, password_user)
+            except ValidationError as error:
+                for message in error.messages:
+                    self.add_error("password", message)
         return data
 
 
@@ -404,8 +377,17 @@ class TransportForm(ServiceForm):
                 self.add_error("return_date", _("Choose the return date."))
             if not data.get("return_time"):
                 self.add_error("return_time", _("Choose the return time."))
+            if not data.get("return_time_end"):
+                self.add_error("return_time_end", _("Choose the end of the return time range."))
             if data.get("return_date") and data.get("departure_date") and data["return_date"] < data["departure_date"]:
                 self.add_error("return_date", _("The return date cannot be before departure."))
+            if (
+                data.get("return_date") == data.get("departure_date")
+                and data.get("return_time")
+                and data.get("departure_time")
+                and data["return_time"] <= data["departure_time"]
+            ):
+                self.add_error("return_time", _("The return time must be after departure."))
         else:
             data["return_date"] = None
             data["return_time"] = None
@@ -413,6 +395,9 @@ class TransportForm(ServiceForm):
         if data.get("departure_time") and data.get("departure_time_end"):
             if data["departure_time_end"] <= data["departure_time"]:
                 self.add_error("departure_time_end", _("The end time must be after the start time."))
+        if data.get("return_time") and data.get("return_time_end"):
+            if data["return_time_end"] <= data["return_time"]:
+                self.add_error("return_time_end", _("The end time must be after the start time."))
         return data
 
     def build_charge(self):

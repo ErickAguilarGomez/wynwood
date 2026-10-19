@@ -1,6 +1,44 @@
 const toggle = document.querySelector(".nav-toggle")
 const navigation = document.querySelector(".main-nav")
 
+document.querySelectorAll("[data-featured-filter]").forEach((form) => {
+  let request
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault()
+    const button = event.submitter
+    if (!button) return
+
+    request?.abort()
+    request = new AbortController()
+    const url = new URL(form.action, window.location.href)
+    url.searchParams.set("category", button.value)
+
+    try {
+      const response = await fetch(url, { signal: request.signal })
+      if (!response.ok) throw new Error("Featured properties could not be loaded")
+      const documentFromResponse = new DOMParser().parseFromString(await response.text(), "text/html")
+      const nextTrack = documentFromResponse.querySelector(".featured-track")
+      const track = document.querySelector(".featured-track")
+      if (!nextTrack || !track) throw new Error("Featured properties could not be loaded")
+
+      track.replaceChildren(...nextTrack.children)
+      form.querySelectorAll('button[name="category"]').forEach((tab) => {
+        const active = tab.value === button.value
+        tab.classList.toggle("active", active)
+        tab.setAttribute("aria-pressed", String(active))
+      })
+
+      const pageUrl = new URL(window.location.href)
+      pageUrl.searchParams.set("category", button.value)
+      pageUrl.hash = "stays"
+      window.history.replaceState({ category: button.value }, "", pageUrl)
+    } catch (error) {
+      if (error.name !== "AbortError") window.location.assign(url)
+    }
+  })
+})
+
 if (toggle && navigation) {
   toggle.addEventListener("click", () => {
     const open = toggle.getAttribute("aria-expanded") === "true"

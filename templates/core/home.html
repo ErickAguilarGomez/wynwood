@@ -48,11 +48,11 @@
         <p>{% trans "Explore our exclusive homes and discover your preferred destination your way. Find your ideal stay and start a unique experience." %}</p>
     </div>
     <div class="featured-content">
-        <div class="featured-tabs">
-            <button class="active" type="button">{% trans "All properties" %}</button>
-            <button type="button" class="tab-collection"><img src="{% static 'design/figma/ui/icon-star.svg' %}" alt="" class="tab-icon"> The Collection*</button>
-            <button type="button" class="tab-casa"><img src="{% static 'design/figma/ui/icon-house.svg' %}" alt="" class="tab-icon"> Casa Wynwood</button>
-        </div>
+        <form class="featured-tabs" data-featured-filter method="get" action="{% url 'core:home' %}#stays">
+            <button class="{% if featured_category == 'all' %}active{% endif %}" type="submit" name="category" value="all" aria-pressed="{% if featured_category == 'all' %}true{% else %}false{% endif %}">{% trans "All properties" %}</button>
+            <button type="submit" name="category" value="collection" class="tab-collection{% if featured_category == 'collection' %} active{% endif %}" aria-pressed="{% if featured_category == 'collection' %}true{% else %}false{% endif %}"><img src="{% static 'design/figma/ui/icon-star.svg' %}" alt="" class="tab-icon"> {% trans "The Collection" %}*</button>
+            <button type="submit" name="category" value="casa_wynwood" class="tab-casa{% if featured_category == 'casa_wynwood' %} active{% endif %}" aria-pressed="{% if featured_category == 'casa_wynwood' %}true{% else %}false{% endif %}"><img src="{% static 'design/figma/ui/icon-house.svg' %}" alt="" class="tab-icon"> {% trans "Casa Wynwood" %}</button>
+        </form>
         <div class="featured-track">
             {% for property in featured_properties %}
             <a class="featured-card" href="{{ property.get_absolute_url }}">
@@ -72,22 +72,27 @@
                     </p>
                 </div>
             </a>
-            {% empty %}
-            <a class="featured-card" href="{% url 'properties:results' %}">
-                <img src="{% static 'design/figma/home/featured-one.png' %}" alt="Wynwood House" loading="lazy">
-            </a>
-            <a class="featured-card" href="{% url 'properties:results' %}">
-                <img src="{% static 'design/figma/home/featured-two.png' %}" alt="Wynwood House" loading="lazy">
-            </a>
             {% endfor %}
         </div>
+    </div>
+</section>
+
+<section id="spain" class="events-section">
+    <div class="events-collage">
+        <img class="events-small" src="{% static 'design/figma/home/event-small.png' %}" alt="" loading="lazy">
+        <img class="events-large" src="{% static 'design/figma/home/destination-spain.png' %}" alt="{% trans 'Spain' %}" loading="lazy">
+    </div>
+    <div class="events-copy">
+        <h2>{% trans "Why travel to Spain?" %}</h2>
+        <p>{% trans "Discover a country where historic streets, remarkable architecture, regional cuisine and Mediterranean coastlines make every city a different experience. Stay close to local life and explore Spain at your own pace." %}</p>
+        <a class="pill-button" href="{% url 'properties:results' %}?country=ES">{% trans "Explore stays in Spain" %}</a>
     </div>
 </section>
 
 <section class="services-section">
     <div class="services-copy">
         <h2>{% trans "Services at Wynwood House" %}</h2>
-        <p>{% trans "Discover the services at our homes and enjoy a comfortable, memorable stay." %}</p>
+        <p>{% trans "Discover the services our properties offer to make your stay the most comfortable and exciting experience you can imagine." %}</p>
     </div>
     <div class="services-grid">
         <article><img src="{% static 'design/figma/home/service-checkin.png' %}" alt=""><span>{% trans "CONTACTLESS CHECK-IN" %}</span></article>
@@ -108,8 +113,8 @@
     </div>
     <div class="events-copy">
         <h2>{% trans "Enjoy our events!" %}</h2>
-        <p>{% trans "Make the most of your stay with Wynwood events, art, culture and inspiration." %}</p>
-        <a class="pill-button" href="{% url 'properties:results' %}">{% trans "Explore our homes" %}</a>
+        <p>{% trans "Live your experience to the fullest as you dive into the vibrant world of our Wynwood events. Enjoy art, culture, and inspiration like never before." %}</p>
+        <a class="pill-button" href="{% if LANGUAGE_CODE == 'es' %}https://wynwood-house.com/events/?lang=es{% else %}https://wynwood-house.com/events/{% endif %}" target="_blank" rel="noopener">{% trans "View all events" %}</a>
     </div>
 </section>
 
@@ -137,7 +142,7 @@
         <img src="{% static 'design/figma/home/casa-wynwood.png' %}" alt="Casa Wynwood">
     </a>
     <a id="collection" href="{% url 'properties:results' %}" class="house-panel">
-        <img src="{% static 'design/figma/home/the-collection.png' %}" alt="The Collection">
+        <img src="{% static 'design/figma/home/the-collection.png' %}" alt="{% trans 'The Collection' %}">
     </a>
 </section>
 

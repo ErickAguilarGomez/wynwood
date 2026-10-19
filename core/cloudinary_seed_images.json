@@ -773,7 +773,7 @@
   "_fallback_demo_images": [
     {
       "name": "media/demo_images/01",
-      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792348007/media/demo_images/01.jpg",
+      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792380031/media/demo_images/01.webp",
       "width": 1200,
       "height": 800,
       "sort_order": 0,
@@ -782,7 +782,7 @@
     },
     {
       "name": "media/demo_images/02",
-      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792348007/media/demo_images/02.jpg",
+      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792380033/media/demo_images/02.webp",
       "width": 1200,
       "height": 800,
       "sort_order": 1,
@@ -791,7 +791,7 @@
     },
     {
       "name": "media/demo_images/03",
-      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792348008/media/demo_images/03.jpg",
+      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792380036/media/demo_images/03.webp",
       "width": 1200,
       "height": 800,
       "sort_order": 2,
@@ -800,7 +800,7 @@
     },
     {
       "name": "media/demo_images/04",
-      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792348008/media/demo_images/04.jpg",
+      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792380038/media/demo_images/04.webp",
       "width": 1200,
       "height": 800,
       "sort_order": 3,
@@ -809,7 +809,7 @@
     },
     {
       "name": "media/demo_images/05",
-      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792348009/media/demo_images/05.jpg",
+      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792380040/media/demo_images/05.webp",
       "width": 1200,
       "height": 800,
       "sort_order": 4,
@@ -818,7 +818,7 @@
     },
     {
       "name": "media/demo_images/06",
-      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792348010/media/demo_images/06.jpg",
+      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792380042/media/demo_images/06.webp",
       "width": 1200,
       "height": 800,
       "sort_order": 5,
@@ -827,7 +827,7 @@
     },
     {
       "name": "media/demo_images/07",
-      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792348010/media/demo_images/07.jpg",
+      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792380044/media/demo_images/07.webp",
       "width": 1200,
       "height": 800,
       "sort_order": 6,
@@ -836,7 +836,7 @@
     },
     {
       "name": "media/demo_images/08",
-      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792348011/media/demo_images/08.jpg",
+      "url": "https://res.cloudinary.com/z6aspubg/image/upload/v1792380046/media/demo_images/08.webp",
       "width": 1200,
       "height": 800,
       "sort_order": 7,

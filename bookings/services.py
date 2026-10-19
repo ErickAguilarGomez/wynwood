@@ -81,7 +81,7 @@ class ReservationService:
     @classmethod
     @transaction.atomic
     def add_service(cls, *, reservation, kind, amount, details=None):
-
+        reservation = Reservation.objects.select_for_update().get(pk=reservation.pk)
         cls._ensure_editable(reservation)
         valid_kinds = {choice.value for choice in ReservationCharge.Kind}
         if kind not in valid_kinds:
@@ -96,7 +96,7 @@ class ReservationService:
     @classmethod
     @transaction.atomic
     def remove_service(cls, *, reservation, kind):
-
+        reservation = Reservation.objects.select_for_update().get(pk=reservation.pk)
         cls._ensure_editable(reservation)
         reservation.charges.filter(kind=kind).delete()
         return cls._recalculate(reservation)

@@ -476,6 +476,10 @@ class Command(BaseCommand):
             destination_slug, title_es, title_en, summary_es, summary_en, price, guests, bedrooms, beds, country, province, district, featured, custom_image = data
             slug = slugify(title_en)
             coords = self.property_coordinates.get(title_en, (None, None))
+            brand = {
+                "Gran Vía Skyline": Property.Brand.CASA_WYNWOOD,
+                "Salamanca Collection": Property.Brand.COLLECTION,
+            }.get(title_en, Property.Brand.STANDARD)
             property, _ = Property.objects.update_or_create(
                 destination=destinations[destination_slug],
                 title_en=title_en,
@@ -508,6 +512,7 @@ class Command(BaseCommand):
                     "bedrooms": bedrooms,
                     "beds": beds,
                     "bathrooms": 2,
+                    "brand": brand,
                     "latitude": coords[0],
                     "longitude": coords[1],
                     "is_featured": featured,

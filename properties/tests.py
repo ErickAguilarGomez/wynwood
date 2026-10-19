@@ -95,6 +95,21 @@ class PropertySearchTests(TestCase):
         self.assertTemplateUsed(response, "properties/_results_list.html")
         self.assertContains(response, self.property.title_es)
 
+    def test_rejects_oversized_destination_query_without_server_error(self):
+        response = self.client.get(reverse("properties:results"), {"destination": "9" * 5000})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["page_obj"].paginator.count, 0)
+
+    def test_invalid_price_filter_does_not_return_unfiltered_properties(self):
+        response = self.search(min_price="not-a-price")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["page_obj"].paginator.count, 0)
+
+    def test_requires_both_search_dates(self):
+        response = self.search(check_out="")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["page_obj"].paginator.count, 0)
+
 
 class PropertyImageTests(TestCase):
     @override_settings(MEDIA_ROOT=tempfile.gettempdir())

@@ -56,6 +56,7 @@ class Migration(migrations.Migration):
                 ('bedrooms', models.PositiveSmallIntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)])),
                 ('beds', models.PositiveSmallIntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)])),
                 ('bathrooms', models.DecimalField(decimal_places=1, default=1, max_digits=3, validators=[django.core.validators.MinValueValidator(0.5)])),
+                ('brand', models.CharField(choices=[('standard', 'Wynwood House'), ('collection', 'The Collection'), ('casa_wynwood', 'Casa Wynwood')], default='standard', max_length=20)),
                 ('latitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True)),
                 ('longitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True)),
                 ('is_featured', models.BooleanField(default=False)),

@@ -54,7 +54,7 @@ class RequestIdMiddleware:
             extra={
                 "request_id": request_id,
                 "method": request.method,
-                "path": request.path,
+                "route": getattr(getattr(request, "resolver_match", None), "route", ""),
                 "status_code": response.status_code,
                 "duration_ms": round((time.monotonic() - started) * 1000, 2),
             },

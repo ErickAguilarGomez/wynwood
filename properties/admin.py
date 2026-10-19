@@ -10,8 +10,19 @@ class PropertyImageInline(admin.TabularInline):
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ("title_es", "destination", "country", "province", "district", "price_per_night", "max_guests", "is_featured", "is_active")
-    list_filter = ("country", "province", "district", "destination", "is_featured", "is_active")
+    list_display = (
+        "title_es",
+        "destination",
+        "country",
+        "province",
+        "district",
+        "brand",
+        "price_per_night",
+        "max_guests",
+        "is_featured",
+        "is_active",
+    )
+    list_filter = ("country", "province", "district", "destination", "brand", "is_featured", "is_active")
     search_fields = ("title_es", "title_en", "country", "province", "district", "address")
     prepopulated_fields = {"slug": ("title_es",)}
     filter_horizontal = ("amenities",)

@@ -26,26 +26,26 @@
             <hr>
             <p class="detail-description">{{ property.description }}</p>
             <hr>
-            <h2>AMENITIES</h2>
+            <h2>{% trans 'Amenities' %}</h2>
             <div class="detail-amenities">
                 {% for amenity in property.amenities.all %}
                 <span><img src="{% static 'design/figma/detail/icons/' %}{{ amenity.icon }}.svg" alt="" width="50" height="50"><small>{{ amenity.name }}</small></span>
                 {% empty %}
-                <p class="detail-amenities-empty">No hay comodidades registradas para esta propiedad.</p>
+                <p class="detail-amenities-empty">{% trans 'No amenities are listed for this property.' %}</p>
                 {% endfor %}
             </div>
             <hr>
-            <h2 class="bedrooms-title">BEDROOMS</h2>
+            <h2 class="bedrooms-title">{% trans 'Bedrooms' %}</h2>
             <div class="bedroom-item">
-                <small class="bedroom-name">Bedroom 1</small>
+                <small class="bedroom-name">{% trans 'Bedroom 1' %}</small>
                 <img src="{% static 'design/figma/detail/icons/bed.svg' %}" alt="" width="40" height="40">
-                <small class="bedroom-bed">1 Queen Bed</small>
+                <small class="bedroom-bed">{% trans '1 Queen Bed' %}</small>
             </div>
         </article>
         <aside class="figma-booking-card" id="booking" data-booking-card>
             <div class="booking-tabs" data-booking-tabs>
-                <button class="active" type="button" data-booking-tab="daily">DIARIO</button>
-                <button type="button" data-booking-tab="monthly">MENSUAL</button>
+                <button class="active" type="button" data-booking-tab="daily">{% trans 'Daily' %}</button>
+                <button type="button" data-booking-tab="monthly">{% trans 'Monthly' %}</button>
             </div>
             <p class="booking-rate" data-booking-rate>
                 <span data-rate-daily>{{ booking_currency }} {{ property.price_per_night|floatformat:0 }} {% trans 'per night' %}</span>

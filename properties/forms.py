@@ -2,33 +2,11 @@ from django import forms
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from .models import Amenity, Destination
-
-
-class DestinationField(forms.Field):
-
-
-    def to_python(self, value):
-        if not value:
-            return None
-        value = str(value).strip()
-        if not value:
-            return None
-        if value.isdigit():
-            dest = Destination.objects.filter(pk=int(value)).first()
-            if dest:
-                return dest
-        dest = Destination.objects.filter(slug__iexact=value).first()
-        if dest:
-            return dest
-        dest = Destination.objects.filter(name_es__iexact=value).first() or Destination.objects.filter(name_en__iexact=value).first()
-        if dest:
-            return dest
-        return value
+from .models import Amenity
 
 
 class PropertySearchForm(forms.Form):
-    destination = DestinationField(required=False)
+    destination = forms.CharField(required=False, max_length=120)
     country = forms.CharField(required=False, max_length=120)
     province = forms.CharField(required=False, max_length=120)
     district = forms.CharField(required=False, max_length=120)
@@ -55,6 +33,8 @@ class PropertySearchForm(forms.Form):
             self.add_error("check_in", _("Check-in cannot be in the past."))
         if check_out and check_out < timezone.localdate():
             self.add_error("check_out", _("Check-out cannot be in the past."))
+        if bool(check_in) != bool(check_out):
+            self.add_error("check_out" if check_in else "check_in", _("Select both check-in and check-out dates."))
         if check_in and check_out and check_out <= check_in:
             self.add_error("check_out", _("Check-out must be after check-in."))
         return data

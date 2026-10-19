@@ -78,6 +78,11 @@ class Amenity(models.Model):
 
 
 class Property(models.Model):
+    class Brand(models.TextChoices):
+        STANDARD = "standard", _("Wynwood House")
+        COLLECTION = "collection", _("The Collection")
+        CASA_WYNWOOD = "casa_wynwood", _("Casa Wynwood")
+
     destination = models.ForeignKey(Destination, on_delete=models.PROTECT, related_name="properties")
     amenities = models.ManyToManyField(Amenity, related_name="properties", blank=True)
     slug = models.SlugField(unique=True)
@@ -100,6 +105,7 @@ class Property(models.Model):
     bedrooms = models.PositiveSmallIntegerField(default=1, validators=[MinValueValidator(1)])
     beds = models.PositiveSmallIntegerField(default=1, validators=[MinValueValidator(1)])
     bathrooms = models.DecimalField(max_digits=3, decimal_places=1, default=1, validators=[MinValueValidator(0.5)])
+    brand = models.CharField(max_length=20, choices=Brand.choices, default=Brand.STANDARD)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     is_featured = models.BooleanField(default=False)
