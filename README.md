@@ -104,19 +104,18 @@ PUBLIC_BASE_URL=http://localhost:8000
 
 `BOOKING_TAX_RATE` es la tasa de respaldo para países que no tienen una tasa específica configurada. `PUBLIC_BASE_URL` se usa para los enlaces incluidos en los correos.
 
-### Envío de correos por SMTP
+### Envío de correos con Resend
 
-Reemplaza los valores vacíos por los datos de tu proveedor de correo:
+Configura Resend en los servicios web y worker con una clave de API de envío y una dirección de un dominio verificado:
 
 ```dotenv
-SMTP_HOST=
-SMTP_PORT=587
-SMTP_USER=
-SMTP_PASSWORD=
-SMTP_USE_TLS=True
-SMTP_FROM_EMAIL=bookings@example.com
-SMTP_FROM_NAME=Wynwood House
+EMAIL_BACKEND=bookings.email_backends.ResendEmailBackend
+RESEND_API_KEY=
+EMAIL_FROM_EMAIL=reservas@erickaguilargomez.me
+EMAIL_FROM_NAME=Wynwood House
 ```
+
+El backend envía mediante HTTPS. `EMAIL_FROM_EMAIL` debe pertenecer a un dominio verificado en Resend.
 
 
 ### Imágenes con Cloudinary

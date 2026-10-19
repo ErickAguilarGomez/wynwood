@@ -1,6 +1,5 @@
 from datetime import time, timedelta
 from decimal import ROUND_HALF_UP, Decimal
-from smtplib import SMTPException
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -33,6 +32,7 @@ from .additional_services import (
     transport_quote,
 )
 from .currencies import currency_symbol
+from .email_backends import ResendEmailError
 from .forms import COUNTRY_PHONE_PREFIXES, SERVICE_FORMS, CheckoutForm, MonthlyInquiryForm, parse_phone
 from .models import Reservation, ReservationCharge
 from .services import PropertyUnavailable, ReservationService, ReservationValidationError
@@ -108,7 +108,7 @@ class MonthlyInquiryView(View):
         )
         try:
             sent = send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [SUPPORT_EMAIL])
-        except (OSError, SMTPException):
+        except (OSError, ResendEmailError):
             sent = 0
 
         if sent:

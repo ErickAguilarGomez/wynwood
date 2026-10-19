@@ -1,6 +1,5 @@
 import logging
 from decimal import Decimal
-from smtplib import SMTPException
 
 from celery import shared_task
 from django.conf import settings
@@ -10,6 +9,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone, translation
 
 from .currencies import currency_symbol
+from .email_backends import ResendEmailError
 from .models import Reservation
 
 logger = logging.getLogger(__name__)
@@ -61,7 +61,13 @@ def _email_context(reservation):
     }
 
 
-@shared_task(bind=True, autoretry_for=(OSError, SMTPException), retry_backoff=True, retry_jitter=True, max_retries=5)
+@shared_task(
+    bind=True,
+    autoretry_for=(OSError, ResendEmailError),
+    retry_backoff=True,
+    retry_jitter=True,
+    max_retries=5,
+)
 def send_confirmation_email(self, reservation_id):
     with transaction.atomic():
         reservation = (
