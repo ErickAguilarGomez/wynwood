@@ -56,7 +56,7 @@
                     <a href="{% url 'bookings:list' %}">{% trans 'My bookings' %}</a>
                     <form action="{% url 'accounts:logout' %}" method="post">{% csrf_token %}<button class="nav-link" type="submit">{% trans 'Log out' %}</button></form>
                 {% else %}
-                    <a href="{% url 'accounts:login' %}">{% trans 'Iniciar sesión' %}</a>
+                    <a href="{% url 'accounts:login' %}">{% trans 'Sign in' %}</a>
                 {% endif %}
                 <span class="nav-divider" aria-hidden="true"></span>
                 <form action="{% url 'set_language' %}" method="post" class="language-switcher">

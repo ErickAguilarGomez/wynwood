@@ -1,6 +1,8 @@
 {% load static i18n %}
 {% if variant == 'footer' %}
-<form class="search-bar search-bar-footer" action="{% url 'properties:results' %}" method="get">
+<form class="search-bar search-bar-footer" action="{% url 'properties:results' %}" method="get"
+    data-city-placeholder="{% trans 'City or destination' %}" data-district-placeholder="{% trans 'District' %}"
+    data-district-singular="{% trans 'district' %}" data-district-plural="{% trans 'Districts' %}">
     <div class="search-destination" data-city-picker>
         <img src="{% static 'design/figma/ui/icon-search.svg' %}" alt="" class="field-icon">
         <span>{% trans 'Destination' %}</span>
@@ -56,7 +58,9 @@
     <button class="search-button" type="submit">{% trans 'Search' %}</button>
 </form>
 {% else %}
-<form class="search-bar search-bar-hero" action="{% url 'properties:results' %}" method="get">
+<form class="search-bar search-bar-hero" action="{% url 'properties:results' %}" method="get"
+    data-city-placeholder="{% trans 'City or destination' %}" data-district-placeholder="{% trans 'District' %}"
+    data-district-singular="{% trans 'district' %}" data-district-plural="{% trans 'Districts' %}">
     <div class="search-col search-destination" data-city-picker>
         <img src="{% static 'design/figma/ui/icon-search.svg' %}" alt="" class="field-icon">
         <input type="hidden" name="country" value="{{ search_form.country.value|default:'' }}" data-city-country>

@@ -8,7 +8,11 @@
 {% block body_class %}results-page{% endblock %}
 {% block content %}
 <section class="results-filters">
-    <form action="{% url 'properties:results' %}" method="get" data-results-filters id="results-filter-form">
+    <form action="{% url 'properties:results' %}" method="get" data-results-filters id="results-filter-form"
+        data-city-placeholder="{% trans 'City or destination' %}" data-district-placeholder="{% trans 'District' %}"
+        data-district-singular="{% trans 'district' %}" data-district-plural="{% trans 'Districts' %}"
+        data-amenity-singular="{% trans 'amenity' %}" data-amenity-plural="{% trans 'amenities' %}"
+        data-amenities-label="{% trans 'Amenities' %}" data-guest-singular="{% trans 'Guest' %}" data-guest-plural="{% trans 'Guests' %}">
         <span class="filter-home" aria-hidden="true"><img src="{% static 'design/figma/results/icon-homes.svg' %}" alt="" width="24" height="24"></span>
 
         
@@ -16,7 +20,7 @@
             <input type="hidden" name="destination" value="{{ current_destination.pk|default:requested_destination }}" data-filter-city-input>
             <input type="hidden" name="country" value="{{ current_destination.country|default:requested_country }}" data-filter-country-input>
             <button type="button" class="filter-btn" data-filter-trigger>
-                <span class="filter-label" data-filter-city-label>{% if current_destination %}{{ current_destination.name }}, {{ current_destination.country }}{% elif requested_destination %}{{ requested_destination }}{% else %}Ciudad o destino{% endif %}</span>
+                <span class="filter-label" data-filter-city-label>{% if current_destination %}{{ current_destination.name }}, {{ current_destination.country }}{% elif requested_destination %}{{ requested_destination }}{% else %}{% trans 'City or destination' %}{% endif %}</span>
                 <span class="filter-plus">+</span>
             </button>
             <div class="filter-dropdown city-panel" data-filter-panel hidden>
@@ -32,7 +36,7 @@
         
         <div class="filter-col filter-district-col" data-filter-scope>
             <button type="button" class="filter-btn" data-filter-trigger>
-                <span class="filter-label" data-filter-district-label>{% if current_districts %}{{ current_districts|join:', ' }}{% else %}Distritos{% endif %}</span>
+                <span class="filter-label" data-filter-district-label>{% if current_districts %}{{ current_districts|join:', ' }}{% else %}{% trans 'Districts' %}{% endif %}</span>
                 <span class="filter-plus">+</span>
             </button>
             <div class="filter-dropdown district-panel" data-filter-panel hidden>
@@ -52,8 +56,8 @@
         
         <div class="filter-col filter-dates-col" data-date-range>
             <button type="button" class="filter-btn" data-date-trigger aria-haspopup="dialog" aria-expanded="false">
-                <span class="filter-label" data-date-summary data-empty="Fechas de estancia">
-                    {% if search_data.check_in and search_data.check_out %}{{ search_data.check_in|date:'d M Y' }} - {{ search_data.check_out|date:'d M Y' }}{% else %}Fechas de estancia{% endif %}
+                <span class="filter-label" data-date-summary data-empty="{% trans 'Stay dates' %}">
+                    {% if search_data.check_in and search_data.check_out %}{{ search_data.check_in|date:'d M Y' }} - {{ search_data.check_out|date:'d M Y' }}{% else %}{% trans 'Stay dates' %}{% endif %}
                 </span>
                 <span class="filter-plus">+</span>
             </button>
@@ -65,15 +69,15 @@
         <div class="filter-col filter-guests-col" data-guest-picker>
             <input type="hidden" name="guests" value="{{ current_guests }}" data-guest-input>
             <button type="button" class="filter-btn" data-guest-trigger aria-expanded="false">
-                <span class="filter-label" data-guest-label>{{ current_guests }} {% if current_guests == 1 %}Huésped{% else %}Huéspedes{% endif %}</span>
+                <span class="filter-label" data-guest-label>{{ current_guests }} {% if current_guests == 1 %}{% trans 'Guest' %}{% else %}{% trans 'Guests' %}{% endif %}</span>
                 <span class="filter-plus">+</span>
             </button>
             <div class="guest-panel" data-guest-panel hidden>
-                <p class="guest-panel-title">Huéspedes</p>
+                <p class="guest-panel-title">{% trans 'Guests' %}</p>
                 <div class="guest-stepper">
-                    <button type="button" data-guest-step="-1" aria-label="Quitar huésped">−</button>
+                    <button type="button" data-guest-step="-1" aria-label="{% trans 'Remove guest' %}">−</button>
                     <output data-guest-count>{{ current_guests }}</output>
-                    <button type="button" data-guest-step="1" aria-label="Agregar huésped">+</button>
+                    <button type="button" data-guest-step="1" aria-label="{% trans 'Add guest' %}">+</button>
                 </div>
             </div>
         </div>
@@ -85,9 +89,9 @@
                     {% if current_min_price and current_max_price %}
                         {{ booking_currency }} {{ current_min_price }} - {{ booking_currency }} {{ current_max_price }}
                     {% elif current_max_price %}
-                        Hasta {{ booking_currency }} {{ current_max_price }}
+                        {% trans 'Up to' %} {{ booking_currency }} {{ current_max_price }}
                     {% elif current_min_price %}
-                        Desde {{ booking_currency }} {{ current_min_price }}
+                        {% trans 'From' %} {{ booking_currency }} {{ current_min_price }}
                     {% else %}
                         {{ booking_currency }} {{ price_floor|floatformat:0 }} - {{ booking_currency }} {{ price_ceiling|floatformat:0 }}
                     {% endif %}
@@ -96,11 +100,11 @@
             </button>
             <div class="filter-dropdown price-panel" data-filter-panel hidden>
                 <div class="price-slider" data-price-slider data-price-currency="{{ booking_currency }}" data-price-floor="{{ price_floor|floatformat:0 }}" data-price-ceiling="{{ price_ceiling|floatformat:0 }}">
-                    <p class="price-slider-title">Precio por noche</p>
-                    <div class="price-slider-track" aria-label="Rango de precio por noche">
+                    <p class="price-slider-title">{% trans 'Price per night' %}</p>
+                    <div class="price-slider-track" aria-label="{% trans 'Nightly price range' %}">
                         <span class="price-slider-fill" data-price-fill></span>
-                        <input type="range" min="{{ price_floor|floatformat:0 }}" max="{{ price_ceiling|floatformat:0 }}" step="1" value="{{ current_min_price|default:price_floor|floatformat:0 }}" data-price-min-range aria-label="Precio mínimo">
-                        <input type="range" min="{{ price_floor|floatformat:0 }}" max="{{ price_ceiling|floatformat:0 }}" step="1" value="{{ current_max_price|default:price_ceiling|floatformat:0 }}" data-price-max-range aria-label="Precio máximo">
+                        <input type="range" min="{{ price_floor|floatformat:0 }}" max="{{ price_ceiling|floatformat:0 }}" step="1" value="{{ current_min_price|default:price_floor|floatformat:0 }}" data-price-min-range aria-label="{% trans 'Minimum price' %}">
+                        <input type="range" min="{{ price_floor|floatformat:0 }}" max="{{ price_ceiling|floatformat:0 }}" step="1" value="{{ current_max_price|default:price_ceiling|floatformat:0 }}" data-price-max-range aria-label="{% trans 'Maximum price' %}">
                     </div>
                     <div class="price-slider-values"><output data-price-min-label></output><output data-price-max-label></output></div>
                 </div>
@@ -112,7 +116,7 @@
         
         <div class="filter-col filter-amenities-col" data-filter-scope>
             <button type="button" class="filter-btn" data-filter-trigger>
-                <span class="filter-label">Comodidades</span>
+                <span class="filter-label">{% trans 'Amenities' %}</span>
                 <span class="filter-plus">+</span>
             </button>
             <div class="filter-dropdown amenities-panel" data-filter-panel hidden>
@@ -141,7 +145,7 @@
 <section class="results-canvas">
     <div class="results-main" data-results-content>{% include 'properties/_results_list.html' %}</div>
     <aside class="results-map">
-        <div id="results-map" class="results-map-canvas" data-results-map></div>
+        <div id="results-map" class="results-map-canvas" data-results-map data-night-label="{% trans 'night' %}" data-view-property="{% trans 'View property' %}"></div>
     </aside>
 </section>
 {% endblock %}

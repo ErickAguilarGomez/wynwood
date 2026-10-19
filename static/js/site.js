@@ -59,8 +59,8 @@ document.querySelectorAll("[data-location-form]").forEach((form) => {
     select.replaceChildren(new Option(label, ""))
   }
   const loadCities = async (selectedCity = "") => {
-    resetOptions(city, "Ciudad o destino")
-    resetOptions(district, "Distrito")
+    resetOptions(city, form.dataset.cityPlaceholder || "City or destination")
+    resetOptions(district, form.dataset.districtPlaceholder || "District")
     if (!country.value) return
     const response = await fetch(`/api/locations/cities/?country=${encodeURIComponent(country.value)}`)
     if (!response.ok) return
@@ -68,7 +68,7 @@ document.querySelectorAll("[data-location-form]").forEach((form) => {
     data.cities.forEach((item) => city.add(new Option(item.name, item.id, false, String(item.id) === String(selectedCity))))
   }
   const loadDistricts = async (selectedDistrict = "") => {
-    resetOptions(district, "Distrito")
+    resetOptions(district, form.dataset.districtPlaceholder || "District")
     if (!city.value) return
     const response = await fetch(`/api/locations/districts/?destination=${encodeURIComponent(city.value)}`)
     if (!response.ok) return
@@ -128,7 +128,7 @@ document.querySelectorAll("[data-city-picker]").forEach((picker) => {
   const updateDistrictLabel = () => {
     if (!hasDistrictPicker) return
     const count = districtOptions.querySelectorAll('input[name="district"]:checked').length
-    districtLabel.textContent = count ? `${count} distrito${count === 1 ? "" : "s"}` : "Distritos"
+    districtLabel.textContent = count ? `${count} ${count === 1 ? form.dataset.districtSingular : form.dataset.districtPlural}` : form.dataset.districtPlural
   }
   const loadDistricts = async () => {
     if (!hasDistrictPicker) return
@@ -240,12 +240,12 @@ document.querySelectorAll("[data-results-filters]").forEach((form) => {
   const updateDistrictLabel = () => {
     if (!districtOptions || !districtLabel) return
     const selected = districtOptions.querySelectorAll('input[name="district"]:checked')
-    districtLabel.textContent = selected.length ? `${selected.length} distrito${selected.length === 1 ? "" : "s"}` : "Distritos"
+    districtLabel.textContent = selected.length ? `${selected.length} ${selected.length === 1 ? form.dataset.districtSingular : form.dataset.districtPlural}` : form.dataset.districtPlural
   }
   const updateAmenitiesLabel = () => {
     const label = amenitiesScope?.querySelector(".filter-label")
     const count = amenitiesScope?.querySelectorAll('input[name="amenities"]:checked').length || 0
-    if (label) label.textContent = count ? `${count} comodidad${count === 1 ? "" : "es"}` : "Comodidades"
+    if (label) label.textContent = count ? `${count} ${count === 1 ? form.dataset.amenitySingular : form.dataset.amenityPlural}` : form.dataset.amenitiesLabel
   }
   const formatPrice = (value) => {
     const currency = priceSlider?.dataset.priceCurrency || document.documentElement.dataset.currency || "USD"
@@ -692,7 +692,10 @@ document.querySelectorAll("[data-booking-quote]").forEach((booking) => {
     } else {
       amount = fmt(nightlyRate * nights)
     }
-    summary.textContent = `${nights} ${nights === 1 ? "noche" : "noches"} · ${currency} ${amount}`
+    const language = document.documentElement.lang.toLowerCase().startsWith("en") ? "en" : "es"
+    const nightLabel = new Intl.NumberFormat(language).format(nights)
+    const nightText = nights === 1 ? (language === "en" ? "night" : "noche") : (language === "en" ? "nights" : "noches")
+    summary.textContent = `${nightLabel} ${nightText} · ${currency} ${amount}`
   }
 
 
@@ -1320,8 +1323,8 @@ initPromoCountdown()
           ${prop.image ? `<img src="${prop.image}" alt="${prop.title}">` : ""}
           <h4>${prop.title}</h4>
           <p>${prop.district ? `${prop.district}, ` : ""}${prop.destination}</p>
-          <strong>${prop.currency} ${Math.round(prop.price)} / noche</strong>
-          <div><a href="${prop.url}">Ver propiedad</a></div>
+          <strong>${prop.currency} ${Math.round(prop.price)} / ${mapEl.dataset.nightLabel}</strong>
+          <div><a href="${prop.url}">${mapEl.dataset.viewProperty}</a></div>
         </div>
       `
       marker.bindPopup(popupHtml)

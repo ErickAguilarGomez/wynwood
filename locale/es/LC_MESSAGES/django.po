@@ -1818,6 +1818,36 @@ msgstr "Publica tu propiedad"
 msgid "Invest in real estate"
 msgstr "Invierte en bienes raíces"
 
+msgid "Guest"
+msgstr "Huésped"
+
+msgid "Up to"
+msgstr "Hasta"
+
+msgid "Price per night"
+msgstr "Precio por noche"
+
+msgid "Nightly price range"
+msgstr "Rango de precio por noche"
+
+msgid "Minimum price"
+msgstr "Precio mínimo"
+
+msgid "Maximum price"
+msgstr "Precio máximo"
+
+msgid "district"
+msgstr "distrito"
+
+msgid "amenity"
+msgstr "comodidad"
+
+msgid "amenities"
+msgstr "comodidades"
+
+msgid "View property"
+msgstr "Ver propiedad"
+
 msgid "Bedrooms"
 msgstr "Habitaciones"
 
