@@ -153,6 +153,7 @@ document.querySelectorAll("[data-city-picker]").forEach((picker) => {
       input.name = "district"
       input.value = item.name
       input.id = `district-${destinationId}-${index}`
+      if (isHeroPicker && form.id) input.setAttribute("form", form.id)
       text.textContent = item.name
       input.addEventListener("change", updateDistrictLabel)
       label.append(input, text)
@@ -468,15 +469,21 @@ document.querySelectorAll("[data-date-range]").forEach((picker) => {
   const endInput = singleDate ? null : picker.querySelector(`input[name="${endName}"]`)
   if (!trigger || !startInput || (!singleDate && !endInput)) return
 
-  let start = dateFromIso(startInput.value)
-  let end = endInput ? dateFromIso(endInput.value) : null
-  let view = startOfMonth(start || rangeToday)
   const isHeroDatePicker = Boolean(picker.closest(".home-search"))
   const isEnglish = rangeLocale.toLowerCase().startsWith("en")
-  const minAllowed = dateFromIso(picker.dataset.minDate) || (picker.dataset.allowPast === "true" ? new Date(1900, 0, 1) : rangeToday)
-  const maxAllowed = dateFromIso(picker.dataset.maxDate) || (picker.dataset.allowPast === "true" ? rangeToday : null)
+  const requestedMin = dateFromIso(picker.dataset.minDate)
+  const requestedMax = dateFromIso(picker.dataset.maxDate)
+  const minAllowed = birthdayPicker
+    ? requestedMin || new Date(1900, 0, 1)
+    : requestedMin && requestedMin > rangeToday
+      ? requestedMin
+      : rangeToday
+  const maxAllowed = birthdayPicker ? requestedMax || rangeToday : requestedMax
+  let start = dateFromIso(startInput.value)
+  let end = endInput ? dateFromIso(endInput.value) : null
   if (start && (start < minAllowed || (maxAllowed && start > maxAllowed))) start = null
   if (end && (!start || end <= start || end < minAllowed || (maxAllowed && end > maxAllowed))) end = null
+  let view = startOfMonth(start || (minAllowed > rangeToday ? minAllowed : rangeToday))
 
   const panel = document.createElement("div")
   panel.className = "date-panel"
@@ -503,21 +510,20 @@ document.querySelectorAll("[data-date-range]").forEach((picker) => {
   const positionPanel = () => {
     const rect = picker.getBoundingClientRect()
     const width = panel.offsetWidth
-    const height = panel.offsetHeight
     const margin = 12
     let left = rect.left + rect.width / 2 - width / 2
     left = Math.min(left, window.innerWidth - width - margin)
     left = Math.max(margin, left)
-    let top = rect.bottom + margin
-
-
-
-    if (!isHeroDatePicker && top + height > window.innerHeight - margin && rect.top - height - margin > margin) {
-      top = rect.top - height - margin
-    }
+    const naturalHeight = panel.scrollHeight
+    const spaceAbove = Math.max(0, rect.top - margin)
+    const spaceBelow = Math.max(0, window.innerHeight - rect.bottom - margin)
+    const openAbove = naturalHeight > spaceBelow && spaceAbove > spaceBelow
+    const availableHeight = openAbove ? spaceAbove : spaceBelow
+    const height = Math.min(naturalHeight, availableHeight)
+    const top = openAbove ? rect.top - margin - height : rect.bottom + margin
+    panel.style.maxHeight = `${availableHeight}px`
     panel.style.left = `${left + (isHeroDatePicker ? window.scrollX : 0)}px`
-    panel.style.top = `${top + (isHeroDatePicker ? window.scrollY : 0)}px`
-    panel.style.maxHeight = isHeroDatePicker ? "" : `${Math.max(180, window.innerHeight - top - margin)}px`
+    panel.style.top = `${Math.max(margin, top) + (isHeroDatePicker ? window.scrollY : 0)}px`
   }
 
   const monthMarkup = (monthDate) => {
@@ -557,6 +563,8 @@ document.querySelectorAll("[data-date-range]").forEach((picker) => {
 
   const render = () => {
     monthsEl.innerHTML = monthMarkup(view) + (singleDate ? "" : monthMarkup(shiftMonth(view, 1)))
+    panel.querySelector('[data-nav="-1"]').disabled = view <= startOfMonth(minAllowed)
+    panel.querySelector('[data-nav="1"]').disabled = Boolean(maxAllowed && view >= startOfMonth(maxAllowed))
     if (!summary) return
     if (start && end) summary.textContent = `${shortDayFormatter.format(start)} - ${shortDayFormatter.format(end)}`
     else if (start) summary.textContent = picker.dataset.dateFormat === "numeric"
@@ -582,6 +590,17 @@ document.querySelectorAll("[data-date-range]").forEach((picker) => {
     panel.hidden = true
     trigger.setAttribute("aria-expanded", "false")
   }
+  const repositionOnViewportChange = () => {
+    if (panel.hidden) return
+    const rect = picker.getBoundingClientRect()
+    if (rect.bottom <= 0 || rect.top >= window.innerHeight) {
+      close()
+      return
+    }
+    positionPanel()
+  }
+  window.addEventListener("scroll", repositionOnViewportChange, { passive: true })
+  window.addEventListener("resize", repositionOnViewportChange)
 
   trigger.addEventListener("click", (event) => {
     event.stopPropagation()
@@ -1464,7 +1483,13 @@ initPromoCountdown()
 document.querySelectorAll(".language-switcher").forEach((form) => {
   form.addEventListener("submit", () => {
     const next = form.querySelector('[name="next"]')
-    if (next) next.value = `${window.location.pathname}${window.location.search}${window.location.hash}`
+    if (!next) return
+    const currentUrl = new URL(window.location.href)
+    if (document.querySelector("[data-featured-filter]")) {
+      currentUrl.searchParams.delete("category")
+      currentUrl.hash = ""
+    }
+    next.value = `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`
   })
 })
 

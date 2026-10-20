@@ -58,7 +58,7 @@
     <button class="search-button" type="submit">{% trans 'Search' %}</button>
 </form>
 {% else %}
-<form class="search-bar search-bar-hero" action="{% url 'properties:results' %}" method="get"
+<form id="home-search-form" class="search-bar search-bar-hero" action="{% url 'properties:results' %}" method="get"
     data-city-placeholder="{% trans 'City or destination' %}" data-district-placeholder="{% trans 'District' %}"
     data-district-singular="{% trans 'district' %}" data-district-plural="{% trans 'Districts' %}">
     <div class="search-col search-destination" data-city-picker>
