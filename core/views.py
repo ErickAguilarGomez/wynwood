@@ -1,9 +1,7 @@
 from django.shortcuts import render
-from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
-from core.dates import parse_date
 from properties.forms import PropertySearchForm
 from properties.models import Country, Property
 
@@ -16,15 +14,10 @@ class HomeView(TemplateView):
         category = self.request.GET.get("category", "all")
         if category not in {"all", Property.Brand.COLLECTION, Property.Brand.CASA_WYNWOOD}:
             category = "all"
-        initial = {"guests": self.request.session.get("search_guests", 2)}
-        saved_in = self.request.session.get("search_check_in")
-        saved_out = self.request.session.get("search_check_out")
-        if saved_in and saved_out:
-            parsed_in = parse_date(str(saved_in))
-            parsed_out = parse_date(str(saved_out))
-            if parsed_in and parsed_out and parsed_in >= timezone.localdate() and parsed_out > parsed_in:
-                initial["check_in"] = parsed_in
-                initial["check_out"] = parsed_out
+        initial = {"guests": 2}
+        self.request.session.pop("search_guests", None)
+        self.request.session.pop("search_check_in", None)
+        self.request.session.pop("search_check_out", None)
 
         featured_properties = Property.objects.filter(is_active=True, is_featured=True)
         if category != "all":
