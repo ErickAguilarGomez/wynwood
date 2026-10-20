@@ -12,22 +12,23 @@
         data-city-placeholder="{% trans 'City or destination' %}" data-district-placeholder="{% trans 'District' %}"
         data-district-singular="{% trans 'district' %}" data-district-plural="{% trans 'Districts' %}"
         data-amenity-singular="{% trans 'amenity' %}" data-amenity-plural="{% trans 'amenities' %}"
-        data-amenities-label="{% trans 'Amenities' %}" data-guest-singular="{% trans 'Guest' %}" data-guest-plural="{% trans 'Guests' %}">
+        data-amenities-label="{% trans 'Amenities' %}" data-guest-singular="{% trans 'Guest' %}" data-guest-plural="{% trans 'Guests' %}"
+        data-select-city-label="{% trans 'Select a city first' %}" data-no-districts-label="{% trans 'No districts available' %}">
         <span class="filter-home" aria-hidden="true"><img src="{% static 'design/figma/results/icon-homes.svg' %}" alt="" width="24" height="24"></span>
 
         
         <div class="filter-col filter-city-col" data-filter-scope>
             <input type="hidden" name="destination" value="{{ current_destination.pk|default:requested_destination }}" data-filter-city-input>
-            <input type="hidden" name="country" value="{{ current_destination.country|default:requested_country }}" data-filter-country-input>
+            <input type="hidden" name="country" value="{{ current_destination.country_code|default:requested_country }}" data-filter-country-input>
             <button type="button" class="filter-btn" data-filter-trigger>
                 <span class="filter-label" data-filter-city-label>{% if current_destination %}{{ current_destination.name }}, {{ current_destination.country }}{% elif requested_destination %}{{ requested_destination }}{% else %}{% trans 'City or destination' %}{% endif %}</span>
                 <span class="filter-plus">+</span>
             </button>
             <div class="filter-dropdown city-panel" data-filter-panel hidden>
-                {% for country_name, dest_list in destinations_by_country.items %}
+                {% for country_name, dest_list in footer_destinations_by_country.items %}
                     <p class="city-country">{{ country_name }}</p>
                     {% for dest in dest_list %}
-                    <button type="button" class="city-option-btn" data-select-city data-id="{{ dest.pk }}" data-name="{{ dest.name }}" data-country="{{ dest.country }}">{{ dest.name }}</button>
+                    <button type="button" class="city-option-btn" data-select-city data-id="{{ dest.pk }}" data-name="{{ dest.name }}" data-country="{{ dest.country_code }}" data-country-label="{{ dest.country }}">{{ dest.name }}</button>
                     {% endfor %}
                 {% endfor %}
             </div>

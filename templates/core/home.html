@@ -37,11 +37,9 @@
         </div>
     </div>
     <div class="destination-track">
-        <a class="destination-tile" href="{% url 'properties:results' %}?country=CO"><img src="{% static 'design/figma/home/destination-colombia.png' %}" alt="{% trans 'Colombia' %}"></a>
-        <a class="destination-tile" href="{% url 'properties:results' %}?country=MX"><img src="{% static 'design/figma/home/destination-mexico.png' %}" alt="{% trans 'Mexico' %}"></a>
-        <a class="destination-tile" href="{% url 'properties:results' %}?country=PE"><img src="{% static 'design/figma/home/destination-peru.png' %}" alt="{% trans 'Peru' %}"></a>
-        <a class="destination-tile" href="{% url 'properties:results' %}?country=PA"><img src="{% static 'design/figma/home/destination-panama.png' %}" alt="{% trans 'Panama' %}"></a>
-        <a class="destination-tile" href="{% url 'properties:results' %}?country=ES"><img src="{% static 'design/figma/home/destination-spain.png' %}" alt="{% trans 'Spain' %}"></a>
+        {% for country in featured_countries %}
+        <a class="destination-tile" href="{% url 'properties:results' %}?country={{ country.code }}"><img src="{% static country.home_image %}" alt="{{ country.name }}"></a>
+        {% endfor %}
     </div>
 </section>
 
@@ -70,7 +68,7 @@
                         <span class="guest-count"><img class="card-guest-icon" src="{% static 'design/figma/ui/icon-user.svg' %}" alt="" width="14" height="14">{{ property.max_guests }}</span>
                     </div>
                     <p class="featured-card-meta">
-                        <strong>{{ booking_currency }} {{ property.price_per_night|floatformat:0 }} {% trans 'night' %}</strong>
+                        <strong>{{ booking_currency }} {{ property.price_per_night|floatformat:'-2'  }} {% trans 'night' %}</strong>
                         <em>{{ property.destination.name }}</em>
                     </p>
                 </div>

@@ -5,35 +5,20 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
 from django.utils import timezone
-from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
-from properties.models import COUNTRY_NAMES
+from properties.models import Country
 
 from .additional_services import (
-    GROCERY_PACKS,
     crib_quote,
     flexible_checkin_quote,
+    get_grocery_packs,
     grocery_quote,
     transport_quote,
     vehicle_choices,
 )
-
-PHONE_PREFIXES = ("+1", "+34", "+39", "+51", "+52", "+54", "+56", "+57", "+58", "+507", "+593")
-
-COUNTRY_PHONE_PREFIXES = {
-    "AR": "+54",
-    "CL": "+56",
-    "CO": "+57",
-    "EC": "+593",
-    "ES": "+34",
-    "IT": "+39",
-    "MX": "+52",
-    "PA": "+507",
-    "PE": "+51",
-    "US": "+1",
-}
 
 
 def parse_phone(phone_str, country=None, default_prefix="+51"):
@@ -41,51 +26,30 @@ def parse_phone(phone_str, country=None, default_prefix="+51"):
     phone_raw = (phone_str or "").strip()
     matched_prefix = None
     number = phone_raw
-    for prefix in sorted(PHONE_PREFIXES, key=len, reverse=True):
+    for prefix in sorted(phone_prefixes(), key=len, reverse=True):
         if phone_raw.startswith(prefix):
             matched_prefix = prefix
             number = phone_raw[len(prefix) :].strip()
             break
     if not matched_prefix:
-        matched_prefix = COUNTRY_PHONE_PREFIXES.get(country, default_prefix)
+        matched_prefix = Country.objects.filter(code=country, is_active=True).values_list("phone_prefix", flat=True).first() or default_prefix
     return matched_prefix, number
 
 
+def phone_prefixes():
+    return tuple(Country.objects.filter(is_active=True).exclude(phone_prefix="").values_list("phone_prefix", flat=True).distinct())
+
+
+def country_phone_prefix(country_code, default="+51"):
+    return Country.objects.filter(code=country_code, is_active=True).values_list("phone_prefix", flat=True).first() or default
+
 
 PHONE_ALLOWED = re.compile(r"^[0-9+()\s.-]+$")
-AIRPORTS_BY_DESTINATION = {
-    "anapoima": (("BOG", "El Dorado International Airport (BOG)"),),
-    "bogota": (("BOG", "El Dorado International Airport (BOG)"),),
-    "cartagena": (("CTG", "Rafael Núñez International Airport (CTG)"),),
-    "guatape": (("MDE", "José María Córdova International Airport (MDE)"),),
-    "medellin": (
-        ("MDE", "José María Córdova International Airport (MDE)"),
-        ("EOH", "Olaya Herrera Airport (EOH)"),
-    ),
-    "madrid": (("MAD", "Adolfo Suárez Madrid–Barajas Airport (MAD)"),),
-    "barcelona": (("BCN", "Barcelona–El Prat Airport (BCN)"),),
-    "firenze": (("FLR", "Florence Airport (FLR)"),),
-    "milano": (
-        ("MXP", "Milan Malpensa Airport (MXP)"),
-        ("LIN", "Milan Linate Airport (LIN)"),
-    ),
-    "cdmx": (("MEX", "Mexico City International Airport (MEX)"),),
-    "ciudad-de-panama": (("PTY", "Tocumen International Airport (PTY)"),),
-    "cusco": (("CUZ", "Alejandro Velasco Astete International Airport (CUZ)"),),
-    "lima": (("LIM", "Jorge Chávez International Airport (LIM)"),),
-    "mancora": (("TYL", "Cap. FAP Víctor Montes Arias International Airport (TYL)"),),
-    "paracas": (("PIO", "Pisco International Airport (PIO)"),),
-    "miami": (("MIA", "Miami International Airport (MIA)"),),
-}
 
 
 def country_choices():
 
-    english = get_language() == "en"
-    return [
-        (code, names[1] if english else names[0])
-        for code, names in sorted(COUNTRY_NAMES.items(), key=lambda item: item[1][1 if english else 0])
-    ]
+    return [(country.code, country.name) for country in Country.objects.filter(is_active=True)]
 
 
 class ReservationForm(forms.Form):
@@ -111,6 +75,8 @@ class ReservationForm(forms.Form):
             self.add_error("check_out", _("Check-out cannot be in the past."))
         if check_in and check_out and check_out <= check_in:
             self.add_error("check_out", _("Check-out must be after check-in."))
+        if check_in and check_out and (check_out - check_in).days > 32767:
+            self.add_error("check_out", _("Choose a shorter stay."))
         booking_type = data.get("booking_type") or "daily"
         if booking_type == "monthly" and check_in and check_out:
             if (check_out - check_in).days < 30:
@@ -125,7 +91,7 @@ class MonthlyInquiryForm(forms.Form):
     full_name = forms.CharField(label=_("Full name"), max_length=150)
     phone_code = forms.ChoiceField(
         label=_("Indicator"),
-        choices=[(prefix, prefix) for prefix in PHONE_PREFIXES],
+        choices=(),
     )
     phone = forms.CharField(label=_("Phone"), max_length=32)
 
@@ -135,6 +101,10 @@ class MonthlyInquiryForm(forms.Form):
             raise forms.ValidationError(_("Enter your full name."))
         return full_name
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["phone_code"].choices = [(prefix, prefix) for prefix in phone_prefixes()]
+
     def clean_phone(self):
         phone = (self.cleaned_data.get("phone") or "").strip()
         if not PHONE_ALLOWED.match(phone) or len(re.sub(r"\D", "", phone)) < 6:
@@ -143,11 +113,6 @@ class MonthlyInquiryForm(forms.Form):
 
 
 class CheckoutForm(forms.Form):
-
-
-
-
-
 
 
     email = forms.EmailField(
@@ -184,7 +149,7 @@ class CheckoutForm(forms.Form):
     )
     phone_code = forms.ChoiceField(
         label=_("Indicator"),
-        choices=[(prefix, prefix) for prefix in PHONE_PREFIXES],
+        choices=(),
         initial="+51",
         widget=forms.Select(attrs={"class": "registro-input registro-select registro-code"}),
     )
@@ -209,15 +174,20 @@ class CheckoutForm(forms.Form):
     newsletter = forms.BooleanField(label=_("I do not wish to subscribe to the Wynwood House newsletter"), required=False)
     check_in = forms.DateField(widget=forms.HiddenInput)
     check_out = forms.DateField(widget=forms.HiddenInput)
-    guests = forms.IntegerField(widget=forms.HiddenInput)
-    booking_type = forms.CharField(widget=forms.HiddenInput, required=False, initial="daily")
+    guests = forms.IntegerField(widget=forms.HiddenInput, min_value=1)
+    booking_type = forms.ChoiceField(
+        choices=(("daily", _("Daily")),), widget=forms.HiddenInput, required=False, initial="daily"
+    )
 
     def __init__(self, *args, property, user=None, request=None, **kwargs):
         self.property = property
         self.user = user
         self.request = request
         super().__init__(*args, **kwargs)
+        self.fields["guests"].max_value = property.max_guests
+        self.fields["guests"].validators.append(MaxValueValidator(property.max_guests))
         self.fields["nationality"].choices = [("", _("Select your country")), *country_choices()]
+        self.fields["phone_code"].choices = [(prefix, prefix) for prefix in phone_prefixes()]
 
         self.hide_password = bool(user and user.is_authenticated)
         if self.hide_password:
@@ -269,6 +239,8 @@ class CheckoutForm(forms.Form):
             self.add_error("check_out", _("Check-out cannot be in the past."))
         if check_in and check_out and check_out <= check_in:
             self.add_error("check_out", _("Check-out must be after check-in."))
+        if check_in and check_out and (check_out - check_in).days > 32767:
+            self.add_error("check_out", _("Choose a shorter stay."))
         booking_type = data.get("booking_type") or "daily"
         if booking_type == "monthly" and check_in and check_out:
             if (check_out - check_in).days < 30:
@@ -293,14 +265,11 @@ class CheckoutForm(forms.Form):
 class ServiceForm(forms.Form):
 
 
-
-
-
-
     service = None
 
-    def __init__(self, *args, reservation=None, **kwargs):
+    def __init__(self, *args, reservation=None, service=None, **kwargs):
         self.reservation = reservation
+        self.service = service
         super().__init__(*args, **kwargs)
 
     def build_charge(self):
@@ -335,14 +304,14 @@ class TransportForm(ServiceForm):
     def __init__(self, *args, reservation=None, **kwargs):
         super().__init__(*args, reservation=reservation, **kwargs)
         self.fields["vehicle"].choices = vehicle_choices()
-        self.fields["vehicle"].initial = "suv"
+        self.fields["vehicle"].initial = next((key for key, name in self.fields["vehicle"].choices), "")
         if reservation is not None:
-            airports = AIRPORTS_BY_DESTINATION.get(
-                reservation.property.destination.slug,
-                ((reservation.property.destination.slug, f"{reservation.property.destination.name} Airport"),),
+            airports = tuple(
+                (airport.code, str(airport))
+                for airport in reservation.property.destination.airports.filter(is_active=True)
             )
             self.fields["airport"].choices = airports
-            self.fields["airport"].initial = airports[0][0]
+            self.fields["airport"].initial = airports[0][0] if airports else ""
             min_date = max(reservation.check_in - timedelta(days=2), timezone.localdate())
             max_date = reservation.check_out + timedelta(days=2)
             self.date_min = min_date.isoformat()
@@ -429,7 +398,7 @@ class FlexibleCheckInForm(ServiceForm):
         return service_date
 
     def build_charge(self):
-        amount, details = flexible_checkin_quote(check_in_time=self.cleaned_data["check_in_time"])
+        amount, details = flexible_checkin_quote(check_in_time=self.cleaned_data["check_in_time"], service=self.service)
         details["service_date"] = self.cleaned_data["service_date"].isoformat()
         return amount, details
 
@@ -440,8 +409,9 @@ class GroceryForm(ServiceForm):
 
     def __init__(self, *args, reservation=None, **kwargs):
         super().__init__(*args, reservation=reservation, **kwargs)
-        self.fields["pack"].choices = tuple((pack.key, pack.name) for pack in GROCERY_PACKS)
-        self.fields["pack"].initial = GROCERY_PACKS[0].key
+        packs = get_grocery_packs()
+        self.fields["pack"].choices = tuple((pack.key, pack.name) for pack in packs)
+        self.fields["pack"].initial = packs.first().key if packs.exists() else ""
 
     def clean_delivery_date(self):
         delivery_date = self.cleaned_data["delivery_date"]
@@ -460,9 +430,6 @@ class CribForm(ServiceForm):
     start_date = forms.DateField(label=_("First date"), widget=forms.HiddenInput)
     end_date = forms.DateField(label=_("Last date"), widget=forms.HiddenInput)
 
-    def __init__(self, *args, reservation=None, **kwargs):
-        super().__init__(*args, reservation=reservation, **kwargs)
-
     def clean(self):
         data = super().clean()
         start_date = data.get("start_date")
@@ -475,7 +442,7 @@ class CribForm(ServiceForm):
         return data
 
     def build_charge(self):
-        amount, details = crib_quote(quantity=self.cleaned_data["quantity"])
+        amount, details = crib_quote(quantity=self.cleaned_data["quantity"], service=self.service)
         if self.reservation:
             amount *= (self.cleaned_data["end_date"] - self.cleaned_data["start_date"]).days
         details["start_date"] = self.cleaned_data["start_date"].isoformat()
@@ -489,10 +456,6 @@ SERVICE_FORMS = {
     "groceries": GroceryForm,
     "crib": CribForm,
 }
-
-
-def form_for_service(service):
-    return SERVICE_FORMS[service.detail]
 
 
 def _slot(day, moment):

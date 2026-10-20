@@ -21,6 +21,12 @@ class PropertySearchForm(forms.Form):
     max_price = forms.DecimalField(required=False, min_value=0, decimal_places=2, max_digits=10, label=_("Maximum price"))
     amenities = forms.ModelMultipleChoiceField(queryset=Amenity.objects.all(), required=False, label=_("Amenities"))
 
+    def clean_destination(self):
+        destination = self.cleaned_data["destination"]
+        if destination.isdecimal() and int(destination) > 9223372036854775807:
+            raise forms.ValidationError(_("Select a valid destination."))
+        return destination
+
     def clean(self):
         data = super().clean()
         min_price = data.get("min_price")

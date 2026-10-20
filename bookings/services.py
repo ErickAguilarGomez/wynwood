@@ -2,14 +2,16 @@ from datetime import timedelta
 from decimal import ROUND_HALF_UP, Decimal
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from core.dates import parse_date
 from properties.models import Property
 
-from .additional_services import GROCERY_PACKS, SERVICES, SERVICES_BY_KEY, crib_quote, grocery_quote, transport_quote
-from .models import Reservation, ReservationCharge
+from .additional_services import get_services
+from .models import Reservation, ReservationCharge, ServiceCatalog
 from .tax import included_tax_amount, resolve_tax_rate
 
 
@@ -21,6 +23,62 @@ class ReservationValidationError(Exception):
     pass
 
 
+def service_is_configured(charge, service=None):
+    detail = service.detail if service else next(
+        (detail for detail, kind in ServiceCatalog.configuration_kinds.items() if kind == charge.kind), None
+    )
+    if detail is None:
+        return service is None
+    details = charge.details or {}
+    if not details.get("configured"):
+        return False
+    if detail == "transport":
+        departure = (details.get("departure") or "").partition(" ")[0]
+        try:
+            quantity = int(details.get("quantity", 0))
+        except (TypeError, ValueError):
+            quantity = 0
+        return bool(
+            parse_date(departure)
+            and " " in (details.get("departure") or "")
+            and details.get("departure_end")
+            and quantity > 0
+            and details.get("vehicle")
+            and details.get("airport")
+            and (
+                details.get("trip_type") != "round_trip"
+                or (
+                    parse_date((details.get("return") or "").partition(" ")[0])
+                    and " " in (details.get("return") or "")
+                    and details.get("return_end")
+                )
+            )
+        )
+    if detail == "flexible_checkin":
+        return bool(parse_date(details.get("service_date", "")) and details.get("check_in_time"))
+    if detail == "groceries":
+        return bool(parse_date(details.get("delivery_date", "")) and details.get("pack"))
+    if detail == "crib":
+        try:
+            quantity = int(details.get("quantity", 0))
+        except (TypeError, ValueError):
+            quantity = 0
+        return bool(
+            parse_date(details.get("start_date", ""))
+            and parse_date(details.get("end_date", ""))
+            and quantity > 0
+        )
+    return False
+
+
+def _validate_amounts(model=Reservation, **amounts):
+    try:
+        for name, amount in amounts.items():
+            model._meta.get_field(name).run_validators(amount)
+    except ValidationError as error:
+        raise ReservationValidationError(_("The reservation amount exceeds the supported limit.")) from error
+
+
 def _normalize_charges(charges):
 
     normalized = []
@@ -30,26 +88,15 @@ def _normalize_charges(charges):
         if kind not in valid_kinds:
             raise ReservationValidationError(_("The extra charge type is invalid."))
         amount = Decimal(str(charge["amount"])).quantize(Decimal("0.01"), ROUND_HALF_UP)
+        if amount < 0:
+            raise ReservationValidationError(_("The extra charge amount cannot be negative."))
+        _validate_amounts(model=ReservationCharge, amount=amount)
         normalized.append((kind, amount))
     return normalized
 
 
 class ReservationService:
     hold_minutes = 20
-
-    @staticmethod
-    def _expire_own_overlapping_holds(*, user, property, check_in, check_out, exclude_id=None, now=None):
-        reservations = Reservation.objects.filter(
-            user=user,
-            property=property,
-            status=Reservation.Status.PAYMENT_PENDING,
-            expires_at__gt=now or timezone.now(),
-            check_in__lt=check_out,
-            check_out__gt=check_in,
-        )
-        if exclude_id is not None:
-            reservations = reservations.exclude(pk=exclude_id)
-        reservations.update(status=Reservation.Status.EXPIRED)
 
     @staticmethod
     def _ensure_editable(reservation):
@@ -63,15 +110,13 @@ class ReservationService:
     def _recalculate(cls, reservation):
 
 
-
-
-
         charges_total = sum((charge.amount for charge in reservation.charges.all()), Decimal("0.00"))
         total = (reservation.subtotal + reservation.cleaning_fee + charges_total - reservation.discount_amount).quantize(
             Decimal("0.01"), ROUND_HALF_UP
         )
         if total < 0:
             raise ReservationValidationError(_("The reservation total cannot be negative."))
+        _validate_amounts(total=total)
         reservation.total = total
         reservation.tax_amount = included_tax_amount(total, reservation.tax_rate)
         reservation.points_earned = max(round(float(total) * settings.WYNWOOD_POINTS_RATE), 0)
@@ -89,6 +134,7 @@ class ReservationService:
         amount = Decimal(str(amount)).quantize(Decimal("0.01"), ROUND_HALF_UP)
         if amount < 0:
             raise ReservationValidationError(_("The reservation total cannot be negative."))
+        _validate_amounts(model=ReservationCharge, amount=amount)
         reservation.charges.filter(kind=kind).delete()
         ReservationCharge.objects.create(reservation=reservation, kind=kind, amount=amount, details=details or {})
         return cls._recalculate(reservation)
@@ -109,6 +155,8 @@ class ReservationService:
         if check_in < timezone.localdate() or check_out <= check_in:
             raise ReservationValidationError(_("The selected dates are invalid."))
         nights = (check_out - check_in).days
+        if nights > 32767:
+            raise ReservationValidationError(_("Choose a shorter stay."))
         if booking_type == Reservation.BookingType.MONTHLY and nights < 30:
             raise ReservationValidationError(_("Monthly stays require a minimum of 30 nights."))
 
@@ -121,14 +169,6 @@ class ReservationService:
             status=Reservation.Status.PAYMENT_PENDING,
             expires_at__lte=now,
         ).exclude(pk=reservation.pk).update(status=Reservation.Status.EXPIRED)
-        cls._expire_own_overlapping_holds(
-            user=reservation.user,
-            property=property,
-            check_in=check_in,
-            check_out=check_out,
-            exclude_id=reservation.pk,
-            now=now,
-        )
         conflict = Reservation.objects.filter(
             property=property,
             status__in=Reservation.blocking_statuses(),
@@ -151,16 +191,18 @@ class ReservationService:
             subtotal = (nightly_rate * nights).quantize(Decimal("0.01"), ROUND_HALF_UP)
 
         dates_changed = reservation.check_in != check_in or reservation.check_out != check_out
-        service_kinds = {service.key: service.kind for service in SERVICES}
+        services = list(get_services())
+        service_kinds = {service.key: service.kind for service in services}
         requested_keys = set(selected_services or [])
-        selected_keys = [service.key for service in SERVICES if service.key in requested_keys]
+        selected_keys = [service.key for service in services if service.key in requested_keys]
         selected_kinds = {service_kinds[key] for key in selected_keys}
         reservation.charges.filter(
             kind__in=set(service_kinds.values()) - selected_kinds
         ).delete()
         if dates_changed:
-            reservation.charges.filter(kind__in=selected_kinds).delete()
+            reservation.charges.filter(kind__in=ServiceCatalog.configuration_kinds.values()).delete()
 
+        _validate_amounts(subtotal=subtotal)
         reservation.check_in = check_in
         reservation.check_out = check_out
         reservation.guests = guests
@@ -177,19 +219,11 @@ class ReservationService:
             )
         )
 
-        for key in selected_keys:
-            service = SERVICES_BY_KEY[key]
-            if reservation.charges.filter(kind=service.kind).exists():
+        for service in services:
+            if service.key not in selected_keys or reservation.charges.filter(kind=service.kind).exists():
                 continue
-            if service.detail == "transport":
-                amount, _ = transport_quote(trip_type="one_way", vehicle_key="suv", quantity=1)
-            elif service.detail == "groceries":
-                amount, _ = grocery_quote(pack_key=GROCERY_PACKS[0].key)
-            elif service.detail == "crib":
-                amount, _ = crib_quote(quantity=1)
-                amount *= nights
-            else:
-                amount = service.base_price
+            amount = service.starting_price * (nights if service.detail == "crib" else 1)
+            _validate_amounts(model=ReservationCharge, amount=amount)
             ReservationCharge.objects.create(
                 reservation=reservation,
                 kind=service.kind,
@@ -217,6 +251,8 @@ class ReservationService:
         if check_in < timezone.localdate() or check_out <= check_in:
             raise ReservationValidationError(_("The selected dates are invalid."))
         nights = (check_out - check_in).days
+        if nights > 32767:
+            raise ReservationValidationError(_("Choose a shorter stay."))
         if booking_type == Reservation.BookingType.MONTHLY:
             if nights < 30:
                 raise ReservationValidationError(_("Monthly stays require a minimum of 30 nights."))
@@ -234,13 +270,6 @@ class ReservationService:
             status=Reservation.Status.PAYMENT_PENDING,
             expires_at__lte=now,
         ).update(status=Reservation.Status.EXPIRED)
-        cls._expire_own_overlapping_holds(
-            user=user,
-            property=property,
-            check_in=check_in,
-            check_out=check_out,
-            now=now,
-        )
         conflict = Reservation.objects.filter(
             property=property,
             status__in=Reservation.blocking_statuses(),
@@ -271,6 +300,7 @@ class ReservationService:
             raise ReservationValidationError(_("The reservation total cannot be negative."))
 
 
+        _validate_amounts(subtotal=subtotal, total=total)
         tax_rate = resolve_tax_rate(property)
         tax_amount = included_tax_amount(total, tax_rate)
         points = round(float(total) * settings.WYNWOOD_POINTS_RATE)

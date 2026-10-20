@@ -12,4 +12,4 @@ case "${DJANGO_DEBUG:-True}" in
         python manage.py seed_demo --if-empty
         ;;
 esac
-exec gunicorn config.wsgi:application --bind 0.0.0.0:"${PORT:-8000}" --workers="${WEB_CONCURRENCY:-2}" --threads="${WEB_THREADS:-2}" --timeout=45 --access-logfile=- --error-logfile=- --worker-tmp-dir=/tmp
+exec gunicorn config.wsgi:application --bind 0.0.0.0:"${PORT:-8000}" --workers="${WEB_CONCURRENCY:-2}" --threads="${WEB_THREADS:-2}" --timeout=45 --error-logfile=- --worker-tmp-dir=/tmp

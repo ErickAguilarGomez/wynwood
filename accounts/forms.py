@@ -3,6 +3,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from properties.models import Country
+
 from .models import User
 
 
@@ -11,11 +13,6 @@ class LoginForm(AuthenticationForm):
 
 
 class RegistrationForm(UserCreationForm):
-
-
-
-
-
 
 
     first_name = forms.CharField(label=_("First name"), max_length=150)
@@ -29,7 +26,7 @@ class RegistrationForm(UserCreationForm):
     country = forms.ChoiceField(
         label=_("Country"),
         required=False,
-        choices=[("", _("Select"))] + list(User.Country.choices),
+        choices=(),
     )
 
     class Meta:
@@ -42,6 +39,7 @@ class RegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["country"].choices = [("", _("Select")), *[(country.code, country.name) for country in Country.objects.filter(is_active=True)]]
         self.fields["birth_date"].widget = forms.HiddenInput()
 
     def clean_birth_date(self):

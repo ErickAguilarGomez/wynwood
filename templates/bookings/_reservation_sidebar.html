@@ -47,40 +47,48 @@
         <div class="svc-stay-lines">
             <div class="svc-stay-line">
                 {% if reservation.booking_type == 'monthly' and reservation.monthly_rate %}
-                <span>{{ currency_symbol }} {{ reservation.monthly_rate|floatformat:0 }} / {% trans 'month' %} ({{ reservation.nights }} {% trans 'nights' %})</span>
+                <span>{{ currency_symbol }} {{ reservation.monthly_rate|floatformat:'-2'  }} / {% trans 'month' %} ({{ reservation.nights }} {% trans 'nights' %})</span>
                 {% else %}
-                <span>{{ currency_symbol }} {{ reservation.nightly_rate|floatformat:0 }} x {{ reservation.nights }}</span>
+                <span>{{ currency_symbol }} {{ reservation.nightly_rate|floatformat:'-2'  }} x {{ reservation.nights }}</span>
                 {% endif %}
-                <strong>{{ currency_symbol }} {{ reservation.subtotal|floatformat:0 }}</strong>
+                <strong>{{ currency_symbol }} {{ reservation.subtotal|floatformat:'-2'  }}</strong>
             </div>
             <div class="svc-stay-line">
                 <span>{% trans 'Cleaning fee' %}</span>
-                <strong>{{ currency_symbol }} {{ reservation.cleaning_fee|floatformat:0 }}</strong>
+                <strong>{{ currency_symbol }} {{ reservation.cleaning_fee|floatformat:'-2'  }}</strong>
             </div>
             {% for charge in charges %}
                 <div class="svc-stay-line">
                     <span>{{ charge.label }}</span>
-                    <strong>{{ currency_symbol }} {{ charge.amount|floatformat:0 }}</strong>
+                    <strong>{{ currency_symbol }} {{ charge.amount|floatformat:'-2'  }}</strong>
                 </div>
+                {% if charge.unavailable and reservation.status == 'payment_pending' %}
+                    <form method="post" action="{% url 'bookings:services' reservation.public_id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="remove_service">
+                        <input type="hidden" name="kind" value="{{ charge.kind }}">
+                        <button class="svc-remove" type="submit">{% trans 'Remove' %} · {{ charge.label }}</button>
+                    </form>
+                {% endif %}
             {% endfor %}
             {% if payment_checkout and reservation.tax_amount %}
                 <div class="payment-tax-group">
                     <p>{% trans 'Taxes included' %}</p>
                     <div class="svc-stay-line">
                         <span>{{ tax_label }} ({{ tax_percent|floatformat:2 }}%)</span>
-                        <strong>{{ currency_symbol }} {{ reservation.tax_amount|floatformat:0 }}</strong>
+                        <strong>{{ currency_symbol }} {{ reservation.tax_amount|floatformat:'-2'  }}</strong>
                     </div>
                 </div>
             {% endif %}
             {% if reservation.discount_amount %}
                 <div class="svc-stay-line svc-stay-discount">
                     <span>{% trans 'Wynwood Points discount' %}</span>
-                    <strong>{{ currency_symbol }} -{{ reservation.discount_amount|floatformat:0 }}</strong>
+                    <strong>{{ currency_symbol }} -{{ reservation.discount_amount|floatformat:'-2'  }}</strong>
                 </div>
             {% endif %}
             <div class="svc-stay-line svc-stay-total">
                 <span>{% trans 'Total' %}</span>
-                <strong>{{ currency_symbol }} <span data-reservation-total-display>{{ reservation.total|floatformat:0 }}</span></strong>
+                <strong>{{ currency_symbol }} <span data-reservation-total-display>{{ reservation.total|floatformat:'-2'  }}</span></strong>
             </div>
         </div>
 

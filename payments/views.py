@@ -7,9 +7,10 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext as _
 from django.views import View
 
-from bookings.additional_services import SERVICES, service_for_kind
+from bookings.additional_services import get_services
 from bookings.models import Reservation
-from bookings.views import _reservation_context, _service_is_configured
+from bookings.services import ReservationValidationError
+from bookings.views import _reservation_context, _service_configuration_redirect
 
 from .forms import SimulatedPaymentForm
 from .models import Payment
@@ -41,19 +42,9 @@ class PaymentCheckoutView(LoginRequiredMixin, View):
         self.payment = Payment.objects.filter(reservation=self.reservation).first()
         if self.payment is None:
             return redirect("bookings:services", public_id=self.reservation.public_id)
-        for charge in self.reservation.charges.all():
-            service = service_for_kind(charge.kind)
-            if service and not _service_is_configured(charge, service):
-                messages.warning(
-                    request,
-                    _("Complete the configuration for %(service)s before continuing to payment.")
-                    % {"service": service.name},
-                )
-                return redirect(
-                    "bookings:service_detail",
-                    public_id=self.reservation.public_id,
-                    service_key=service.key,
-                )
+        configuration_redirect = _service_configuration_redirect(request, self.reservation)
+        if configuration_redirect:
+            return configuration_redirect
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, form=None):
@@ -63,12 +54,6 @@ class PaymentCheckoutView(LoginRequiredMixin, View):
             tax_label = _("VAT")
         else:
             tax_label = {"PE": _("IGV"), "PA": _("ITBMS")}.get(country_code, _("IVA"))
-        checkout_images = {
-            "flexible-checkin": "design/figma/checkout/service-checkin.jpg",
-            "transport": "design/figma/checkout/service-transport.jpg",
-            "groceries": "design/figma/checkout/service-fridge.jpg",
-            "baby-crib": "design/figma/checkout/service-crib.jpg",
-        }
         return {
             **_reservation_context(self.reservation),
             "form": form or SimulatedPaymentForm(),
@@ -76,9 +61,9 @@ class PaymentCheckoutView(LoginRequiredMixin, View):
                 {
                     "service": service,
                     "charge": added.get(service.kind),
-                    "checkout_image": checkout_images[service.key],
+                    "checkout_image": service.checkout_image or service.image,
                 }
-                for service in SERVICES
+                for service in get_services()
             ],
             "test_approved_card": "4242 4242 4242 4242",
             "test_rejected_card": "4000 0000 0000 0002",
@@ -100,9 +85,17 @@ class PaymentCheckoutView(LoginRequiredMixin, View):
             return render(request, self.template_name, self.get_context_data(form), status=400)
         try:
             payment = PaymentService.process_simulated_payment(self.reservation, form.payment_outcome)
+        except ReservationValidationError as error:
+            messages.error(request, error)
+            return redirect("bookings:services", public_id=self.reservation.public_id)
         except ValueError:
             self.reservation.refresh_from_db()
-            if self.reservation.status == Reservation.Status.PAYMENT_PENDING:
+            if self.reservation.status == Reservation.Status.CONFIRMED:
+                return redirect(self.reservation.get_absolute_url())
+            if (
+                self.reservation.status == Reservation.Status.PAYMENT_PENDING
+                and self.reservation.expires_at <= timezone.now()
+            ):
                 self.reservation.status = Reservation.Status.EXPIRED
                 self.reservation.save(update_fields=("status", "updated_at"))
             messages.error(request, _("The reservation hold has expired. Please start a new reservation."))

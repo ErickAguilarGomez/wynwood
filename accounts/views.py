@@ -1,9 +1,11 @@
 from django.contrib.auth import login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LoginView, LogoutView
+from django.db import IntegrityError, transaction
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext as _
 from django.views.generic import FormView
 
 from .forms import LoginForm, RegistrationForm
@@ -41,7 +43,12 @@ class RegisterView(FormView):
         return str(self.success_url)
 
     def form_valid(self, form):
-        user = form.save()
+        try:
+            with transaction.atomic():
+                user = form.save()
+        except IntegrityError:
+            form.add_error("email", _("An account with this email already exists. Log in to continue."))
+            return self.form_invalid(form)
         login(self.request, user)
         return super().form_valid(form)
 

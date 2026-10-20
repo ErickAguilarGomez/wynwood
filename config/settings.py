@@ -81,18 +81,32 @@ if DATABASE_URL:
     from urllib.parse import urlparse
 
     database = urlparse(DATABASE_URL)
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": database.path.lstrip("/"),
-            "USER": database.username,
-            "PASSWORD": database.password,
-            "HOST": database.hostname,
-            "PORT": database.port or 5432,
-            "CONN_MAX_AGE": 60,
-            "OPTIONS": {"sslmode": env("DATABASE_SSLMODE", "prefer")},
+    if database.scheme == "sqlite":
+        if DATABASE_URL.startswith("sqlite:////"):
+            database_name = "/" + database.path.lstrip("/")
+        elif database.path == "/:memory:":
+            database_name = ":memory:"
+        else:
+            database_name = str(BASE_DIR / database.path.lstrip("/"))
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3", "NAME": database_name,
+                "OPTIONS": {"timeout": 20, "transaction_mode": "IMMEDIATE"},
+            }
         }
-    }
+    else:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": database.path.lstrip("/"),
+                "USER": database.username,
+                "PASSWORD": database.password,
+                "HOST": database.hostname,
+                "PORT": database.port or 5432,
+                "CONN_MAX_AGE": 60,
+                "OPTIONS": {"sslmode": env("DATABASE_SSLMODE", "prefer")},
+            }
+        }
 else:
     DATABASES = {
         "default": {

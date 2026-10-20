@@ -4,37 +4,61 @@ import uuid
 from decimal import Decimal
 from pathlib import Path
 
+from django.contrib.staticfiles.finders import find
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError
+
+from .storage import PropertyImageStorage
 
 
 def property_image_path(instance, filename):
     return f"properties/{instance.property_id}/{uuid.uuid4().hex}.webp"
 
 
-COUNTRY_NAMES = {
-    "AR": ("Argentina", "Argentina"),
-    "CL": ("Chile", "Chile"),
-    "CO": ("Colombia", "Colombia"),
-    "EC": ("Ecuador", "Ecuador"),
-    "ES": ("España", "Spain"),
-    "IT": ("Italy", "Italy"),
-    "MX": ("México", "Mexico"),
-    "PA": ("Panamá", "Panama"),
-    "PE": ("Perú", "Peru"),
-    "US": ("Estados Unidos", "United States"),
-}
-
-
 def validate_image_size(image):
     if image.size > 12 * 1024 * 1024:
         raise ValidationError(_("Image files cannot exceed 12 MB."))
+
+
+class Country(models.Model):
+    code = models.CharField(max_length=2, primary_key=True)
+    name_es = models.CharField(max_length=80)
+    name_en = models.CharField(max_length=80)
+    phone_prefix = models.CharField(max_length=5, blank=True)
+    tax_rate = models.DecimalField(
+        max_digits=5,
+        decimal_places=4,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+    )
+    home_image = models.CharField(max_length=160, blank=True)
+    show_on_home = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ("sort_order", "name_es")
+
+    def __str__(self):
+        return self.name_es
+
+    def clean(self):
+        super().clean()
+        if self.is_active and self.show_on_home:
+            asset = find(self.home_image) if self.home_image else None
+            if not asset or not Path(asset).is_file():
+                raise ValidationError({"home_image": _("Select an existing destination image before showing it on the home page.")})
+
+    @property
+    def name(self):
+        return self.name_en if get_language() == "en" else self.name_es
 
 
 class Destination(models.Model):
@@ -56,8 +80,28 @@ class Destination(models.Model):
 
     @property
     def country(self):
-        spanish, english = COUNTRY_NAMES.get(self.country_code.upper(), (self.country_code, self.country_code))
-        return english if get_language() == "en" else spanish
+        country = Country.objects.filter(code=self.country_code.upper()).first()
+        return country.name if country else self.country_code
+
+
+class Airport(models.Model):
+    destination = models.ForeignKey(Destination, on_delete=models.CASCADE, related_name="airports")
+    code = models.CharField(max_length=8)
+    name_es = models.CharField(max_length=160)
+    name_en = models.CharField(max_length=160)
+    is_active = models.BooleanField(default=True)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ("sort_order", "name_es")
+        constraints = [models.UniqueConstraint(fields=("destination", "code"), name="unique_destination_airport")]
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+    @property
+    def name(self):
+        return self.name_en if get_language() == "en" else self.name_es
 
 
 class Amenity(models.Model):
@@ -137,7 +181,8 @@ class Property(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.country and self.destination:
-            self.country = COUNTRY_NAMES.get(self.destination.country_code.upper(), (self.destination.country_code,))[0]
+            country = Country.objects.filter(code=self.destination.country_code.upper()).first()
+            self.country = country.name_es if country else self.destination.country_code
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -163,12 +208,18 @@ class Property(models.Model):
 
     @property
     def primary_image(self):
-        return self.images.order_by("sort_order", "id").first()
+        return self.images.all().first()
 
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to=property_image_path, width_field="width", height_field="height", validators=(validate_image_size,))
+    image = models.ImageField(
+        upload_to=property_image_path,
+        storage=PropertyImageStorage(),
+        width_field="width",
+        height_field="height",
+        validators=(validate_image_size,),
+    )
     alt_es = models.CharField(max_length=180)
     alt_en = models.CharField(max_length=180)
     width = models.PositiveIntegerField(default=0, editable=False)
@@ -184,21 +235,23 @@ class PropertyImage(models.Model):
 
     def save(self, *args, **kwargs):
         uploaded_file = getattr(self.image, "_file", None)
-        if uploaded_file:
+        if uploaded_file and not self.image._committed:
             validate_image_size(uploaded_file)
             try:
                 source = Image.open(uploaded_file)
+                if source.width * source.height > 40_000_000:
+                    raise ValidationError({"image": _("Image dimensions are too large to process safely.")})
                 source.verify()
                 uploaded_file.seek(0)
-                source = Image.open(uploaded_file)
+                source = ImageOps.exif_transpose(Image.open(uploaded_file))
                 source.thumbnail((1200, 1200), Image.Resampling.LANCZOS)
                 if source.mode not in ("RGB", "RGBA"):
-                    source = source.convert("RGB")
+                    source = source.convert("RGBA" if "transparency" in source.info else "RGB")
                 output = io.BytesIO()
                 source.save(output, format="WEBP", quality=84, method=6)
                 name = f"{Path(self.image.name).stem}.webp"
                 self.image = ContentFile(output.getvalue(), name=name)
-            except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as error:
+            except (UnidentifiedImageError, OSError, ValueError, SyntaxError, Image.DecompressionBombError) as error:
                 raise ValidationError({"image": _("The uploaded file is not a valid image.")}) from error
         super().save(*args, **kwargs)
 

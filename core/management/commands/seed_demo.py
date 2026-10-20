@@ -1,6 +1,5 @@
 import io
 import json
-import random
 from datetime import timedelta
 from decimal import Decimal
 
@@ -15,7 +14,8 @@ from PIL import Image, ImageDraw
 
 from bookings.models import Reservation
 from bookings.tax import included_tax_amount
-from properties.models import Amenity, Destination, Property, PropertyImage
+from core.demo_data import seed_catalogs
+from properties.models import Airport, Amenity, Destination, Property, PropertyImage
 
 
 class Command(BaseCommand):
@@ -421,7 +421,6 @@ class Command(BaseCommand):
         parser.add_argument("--if-empty", action="store_true")
 
     def make_placeholder_image(self, seed, width=1200, height=800):
-        random.seed(seed)
         palettes = [
             ((224, 215, 200), (123, 105, 88), (249, 246, 239)),
             ((205, 215, 214), (61, 82, 83), (243, 238, 229)),
@@ -444,6 +443,7 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+        catalogs = seed_catalogs()
         if options["if_empty"] and Property.objects.exists():
             self.stdout.write("Demo data already exists; skipping seed")
             return
@@ -465,6 +465,13 @@ class Command(BaseCommand):
                 defaults={"name_es": name_es, "name_en": name_en, "country_code": country_code},
             )
             destinations[slug] = destination
+        for slug, entries in catalogs["airports"].items():
+            for order, (code, name_es, name_en) in enumerate(entries):
+                Airport.objects.get_or_create(
+                    destination=destinations[slug],
+                    code=code,
+                    defaults={"name_es": name_es, "name_en": name_en, "sort_order": order},
+                )
         amenities = []
         for order, (name_es, name_en, icon) in enumerate(self.amenities):
             amenity, _ = Amenity.objects.update_or_create(
@@ -481,10 +488,9 @@ class Command(BaseCommand):
                 "Salamanca Collection": Property.Brand.COLLECTION,
             }.get(title_en, Property.Brand.STANDARD)
             property, _ = Property.objects.update_or_create(
-                destination=destinations[destination_slug],
-                title_en=title_en,
+                slug=slug,
                 defaults={
-                    "slug": slug,
+                    "destination": destinations[destination_slug],
                     "title_es": title_es,
                     "title_en": title_en,
                     "summary_es": summary_es,
@@ -526,8 +532,9 @@ class Command(BaseCommand):
                 old_images = list(property.images.all())
                 old_files = [(image.image.storage, image.image.name) for image in old_images]
                 property.images.all().delete()
-                for storage, name in old_files:
-                    transaction.on_commit(lambda storage=storage, name=name: storage.delete(name))
+                if not cloudinary_storage:
+                    for storage, name in old_files:
+                        transaction.on_commit(lambda storage=storage, name=name: storage.delete(name))
             if not property.images.exists():
                 prop_images = cloudinary_images.get(slug)
                 if prop_images:
@@ -589,7 +596,7 @@ class Command(BaseCommand):
             defaults={"first_name": "Adolfo"},
         )
         if created:
-            user.set_password("wynwood123")
+            user.set_unusable_password()
             user.save(update_fields=["password"])
         property = Property.objects.filter(slug="miraflores-ocean-view").first()
         if property is None:
@@ -617,7 +624,9 @@ class Command(BaseCommand):
             "confirmation_sent_at": timezone.now(),
         }
         reservation = Reservation.objects.filter(user=user, property=property).order_by("-created_at").first()
-        if reservation is None:
+        if reservation is None and not property.reservations.filter(
+            status__in=Reservation.blocking_statuses(),
+            check_in__lt=values["check_out"],
+            check_out__gt=values["check_in"],
+        ).exists():
             Reservation.objects.create(user=user, property=property, **values)
-        else:
-            Reservation.objects.filter(pk=reservation.pk).update(**values)

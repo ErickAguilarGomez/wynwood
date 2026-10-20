@@ -1,10 +1,11 @@
 import django.core.validators
 import django.db.models.deletion
 import properties.models
+import properties.storage
 from django.db import migrations, models
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
 
     initial = True
 
@@ -19,9 +20,27 @@ class Migration(migrations.Migration):
                 ('name_es', models.CharField(max_length=80)),
                 ('name_en', models.CharField(max_length=80)),
                 ('icon', models.CharField(default='check', max_length=40)),
+                ('sort_order', models.PositiveSmallIntegerField(default=0)),
             ],
             options={
-                'ordering': ('name_es',),
+                'ordering': ('sort_order', 'name_es'),
+            },
+        ),
+        migrations.CreateModel(
+            name='Country',
+            fields=[
+                ('code', models.CharField(max_length=2, primary_key=True, serialize=False)),
+                ('name_es', models.CharField(max_length=80)),
+                ('name_en', models.CharField(max_length=80)),
+                ('phone_prefix', models.CharField(blank=True, max_length=5)),
+                ('tax_rate', models.DecimalField(blank=True, decimal_places=4, max_digits=5, null=True, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(1)])),
+                ('home_image', models.CharField(blank=True, max_length=160)),
+                ('show_on_home', models.BooleanField(default=False)),
+                ('is_active', models.BooleanField(default=True)),
+                ('sort_order', models.PositiveSmallIntegerField(default=0)),
+            ],
+            options={
+                'ordering': ('sort_order', 'name_es'),
             },
         ),
         migrations.CreateModel(
@@ -49,8 +68,12 @@ class Migration(migrations.Migration):
                 ('summary_en', models.CharField(max_length=240)),
                 ('description_es', models.TextField()),
                 ('description_en', models.TextField()),
+                ('country', models.CharField(blank=True, default='', max_length=120)),
+                ('province', models.CharField(blank=True, default='', max_length=120)),
+                ('district', models.CharField(blank=True, default='', max_length=120)),
                 ('address', models.CharField(max_length=240)),
                 ('price_per_night', models.DecimalField(decimal_places=2, max_digits=10, validators=[django.core.validators.MinValueValidator(0)])),
+                ('price_per_month', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, validators=[django.core.validators.MinValueValidator(0)])),
                 ('cleaning_fee', models.DecimalField(decimal_places=2, default=0, max_digits=10, validators=[django.core.validators.MinValueValidator(0)])),
                 ('max_guests', models.PositiveSmallIntegerField(validators=[django.core.validators.MinValueValidator(1)])),
                 ('bedrooms', models.PositiveSmallIntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)])),
@@ -74,7 +97,7 @@ class Migration(migrations.Migration):
             name='PropertyImage',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(height_field='height', upload_to=properties.models.property_image_path, width_field='width')),
+                ('image', models.ImageField(height_field='height', storage=properties.storage.PropertyImageStorage(), upload_to=properties.models.property_image_path, validators=[properties.models.validate_image_size], width_field='width')),
                 ('alt_es', models.CharField(max_length=180)),
                 ('alt_en', models.CharField(max_length=180)),
                 ('width', models.PositiveIntegerField(default=0, editable=False)),
@@ -86,9 +109,33 @@ class Migration(migrations.Migration):
                 'ordering': ('sort_order', 'id'),
             },
         ),
+        migrations.CreateModel(
+            name='Airport',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('code', models.CharField(max_length=8)),
+                ('name_es', models.CharField(max_length=160)),
+                ('name_en', models.CharField(max_length=160)),
+                ('is_active', models.BooleanField(default=True)),
+                ('sort_order', models.PositiveSmallIntegerField(default=0)),
+                ('destination', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='airports', to='properties.destination')),
+            ],
+            options={
+                'ordering': ('sort_order', 'name_es'),
+                'constraints': [models.UniqueConstraint(fields=('destination', 'code'), name='unique_destination_airport')],
+            },
+        ),
         migrations.AddIndex(
             model_name='property',
             index=models.Index(fields=['destination', 'is_active'], name='prop_dest_active_idx'),
+        ),
+        migrations.AddIndex(
+            model_name='property',
+            index=models.Index(fields=['country', 'is_active'], name='prop_country_active_idx'),
+        ),
+        migrations.AddIndex(
+            model_name='property',
+            index=models.Index(fields=['district', 'is_active'], name='prop_district_active_idx'),
         ),
         migrations.AddIndex(
             model_name='property',
@@ -104,6 +151,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='property',
+            constraint=models.CheckConstraint(condition=models.Q(('price_per_month__isnull', True), ('price_per_month__gte', 0), _connector='OR'), name='property_price_month_nonnegative'),
+        ),
+        migrations.AddConstraint(
+            model_name='property',
             constraint=models.CheckConstraint(condition=models.Q(('cleaning_fee__gte', 0)), name='property_cleaning_nonnegative'),
         ),
         migrations.AddConstraint(
@@ -113,51 +164,5 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name='propertyimage',
             constraint=models.UniqueConstraint(fields=('property', 'sort_order'), name='unique_property_image_order'),
-        ),
-        migrations.AlterField(
-            model_name='propertyimage',
-            name='image',
-            field=models.ImageField(height_field='height', upload_to=properties.models.property_image_path, validators=[properties.models.validate_image_size], width_field='width'),
-        ),
-        migrations.AlterModelOptions(
-            name='amenity',
-            options={'ordering': ('sort_order', 'name_es')},
-        ),
-        migrations.AddField(
-            model_name='amenity',
-            name='sort_order',
-            field=models.PositiveSmallIntegerField(default=0),
-        ),
-        migrations.AddField(
-            model_name='property',
-            name='country',
-            field=models.CharField(blank=True, default='', max_length=120),
-        ),
-        migrations.AddField(
-            model_name='property',
-            name='province',
-            field=models.CharField(blank=True, default='', max_length=120),
-        ),
-        migrations.AddField(
-            model_name='property',
-            name='district',
-            field=models.CharField(blank=True, default='', max_length=120),
-        ),
-        migrations.AddIndex(
-            model_name='property',
-            index=models.Index(fields=['country', 'is_active'], name='prop_country_active_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='property',
-            index=models.Index(fields=['district', 'is_active'], name='prop_district_active_idx'),
-        ),
-        migrations.AddField(
-            model_name='property',
-            name='price_per_month',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, validators=[django.core.validators.MinValueValidator(0)]),
-        ),
-        migrations.AddConstraint(
-            model_name='property',
-            constraint=models.CheckConstraint(condition=models.Q(('price_per_month__isnull', True), ('price_per_month__gte', 0), _connector='OR'), name='property_price_month_nonnegative'),
         ),
     ]

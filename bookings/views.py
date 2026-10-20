@@ -1,6 +1,7 @@
 from datetime import time, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from urllib.parse import urlencode
+from uuid import UUID
 
 from django.conf import settings
 from django.contrib import messages
@@ -13,29 +14,29 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.dateparse import parse_date
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import DetailView, FormView, TemplateView
 
+from core.dates import parse_date
 from payments.services import PaymentService
 from properties.models import Property
 
 from .additional_services import (
-    GROCERY_PACKS,
-    SERVICES,
-    SERVICES_BY_KEY,
-    VEHICLES,
     crib_quote,
+    get_grocery_packs,
+    get_service,
+    get_services,
+    get_vehicles,
     grocery_quote,
     service_for_kind,
     transport_quote,
 )
 from .currencies import currency_symbol
 from .email_backends import ResendEmailError
-from .forms import COUNTRY_PHONE_PREFIXES, SERVICE_FORMS, CheckoutForm, MonthlyInquiryForm, parse_phone
-from .models import Reservation, ReservationCharge
-from .services import PropertyUnavailable, ReservationService, ReservationValidationError
+from .forms import SERVICE_FORMS, CheckoutForm, MonthlyInquiryForm, country_phone_prefix, parse_phone
+from .models import Reservation, ReservationCharge, ServiceCatalog
+from .services import PropertyUnavailable, ReservationService, ReservationValidationError, service_is_configured
 from .tasks import SUPPORT_EMAIL
 
 
@@ -43,47 +44,19 @@ def money(value):
     return Decimal(value).quantize(Decimal("0.01"), ROUND_HALF_UP)
 
 
-def _service_is_configured(charge, service):
-    details = charge.details or {}
-    if not details.get("configured"):
-        return False
-    if service.detail == "transport":
-        departure = (details.get("departure") or "").partition(" ")[0]
-        try:
-            quantity = int(details.get("quantity", 0))
-        except (TypeError, ValueError):
-            quantity = 0
-        return bool(
-            parse_date(departure)
-            and " " in (details.get("departure") or "")
-            and details.get("departure_end")
-            and quantity > 0
-            and details.get("vehicle")
-            and details.get("airport")
-            and (
-                details.get("trip_type") != "round_trip"
-                or (
-                    parse_date((details.get("return") or "").partition(" ")[0])
-                    and " " in (details.get("return") or "")
-                    and details.get("return_end")
-                )
+def _service_configuration_redirect(request, reservation):
+    for charge in ReservationCharge.objects.filter(reservation=reservation):
+        service = service_for_kind(charge.kind)
+        if service_is_configured(charge, service):
+            continue
+        if service and get_service(service.key):
+            messages.warning(
+                request,
+                _("Complete the configuration for %(service)s before continuing to payment.") % {"service": service.name},
             )
-        )
-    if service.detail == "flexible_checkin":
-        return bool(parse_date(details.get("service_date", "")) and details.get("check_in_time"))
-    if service.detail == "groceries":
-        return bool(parse_date(details.get("delivery_date", "")) and details.get("pack"))
-    if service.detail == "crib":
-        try:
-            quantity = int(details.get("quantity", 0))
-        except (TypeError, ValueError):
-            quantity = 0
-        return bool(
-            parse_date(details.get("start_date", ""))
-            and parse_date(details.get("end_date", ""))
-            and quantity > 0
-        )
-    return False
+            return redirect("bookings:service_detail", public_id=reservation.public_id, service_key=service.key)
+        messages.warning(request, _("This service is no longer available. Remove it from your reservation to continue."))
+        return redirect("bookings:services", public_id=reservation.public_id)
 
 
 class MonthlyInquiryView(View):
@@ -121,13 +94,6 @@ class MonthlyInquiryView(View):
 class CheckoutView(FormView):
 
 
-
-
-
-
-
-
-
     template_name = "bookings/checkout.html"
     form_class = CheckoutForm
 
@@ -138,11 +104,18 @@ class CheckoutView(FormView):
             is_active=True,
         )
         self.edit_reservation = None
+        self.checkout_draft = request.session.get("checkout_draft", {})
+        if self.checkout_draft.get("property_slug") != self.property.slug:
+            self.checkout_draft = {}
         reservation_source = request.GET if request.method == "GET" else request.POST
         reservation_id = reservation_source.get("reservation_id")
         if reservation_id:
             if not request.user.is_authenticated:
                 raise Http404
+            try:
+                reservation_id = UUID(reservation_id)
+            except (ValueError, AttributeError):
+                raise Http404 from None
             self.edit_reservation = get_object_or_404(
                 Reservation.objects.select_related("property"),
                 public_id=reservation_id,
@@ -159,7 +132,9 @@ class CheckoutView(FormView):
             if booking_type != "daily":
                 booking_type = "daily"
             email = (request.GET.get("email") or getattr(request.user, "email", "")).strip()
-            phone = (request.GET.get("phone") or getattr(request.user, "phone", "")).strip()
+            phone = (
+                request.GET.get("phone") or getattr(request.user, "phone", "") or self.checkout_draft.get("phone", "")
+            ).strip()
             check_in = parse_date((request.GET.get("check_in") or "").strip())
             check_out = parse_date((request.GET.get("check_out") or "").strip())
             if self.edit_reservation is None and (not email or not phone or not check_in or not check_out):
@@ -183,10 +158,14 @@ class CheckoutView(FormView):
         )
         default_days = 30 if booking_type == "monthly" else 3
         check_out = parse_date((source.get("check_out") or "").strip()) or (
-            reservation.check_out if reservation else check_in + timedelta(days=default_days)
+            reservation.check_out if reservation else None
         )
-        if check_out <= check_in:
-            check_out = check_in + timedelta(days=default_days)
+        if not check_out or check_out <= check_in:
+            try:
+                check_out = check_in + timedelta(days=default_days)
+            except OverflowError:
+                check_in = today + timedelta(days=1)
+                check_out = check_in + timedelta(days=default_days)
         try:
             guests = int(source.get("guests") or (reservation.guests if reservation else 2))
         except (TypeError, ValueError):
@@ -202,7 +181,7 @@ class CheckoutView(FormView):
             "booking_type": booking_type,
         }
         dest_country = getattr(getattr(self.property, "destination", None), "country_code", None)
-        fallback_prefix = COUNTRY_PHONE_PREFIXES.get(dest_country, "+51")
+        fallback_prefix = country_phone_prefix(dest_country)
 
         if self.request.GET.get("email"):
             initial["email"] = self.request.GET.get("email", "").strip()
@@ -236,6 +215,9 @@ class CheckoutView(FormView):
         else:
             if "phone_code" not in initial:
                 initial["phone_code"] = fallback_prefix
+        for key in ("full_name", "nationality", "phone_code", "phone", "birth_date"):
+            if self.checkout_draft.get(key):
+                initial[key] = self.checkout_draft[key]
         return initial
 
     def get_form_kwargs(self):
@@ -266,7 +248,7 @@ class CheckoutView(FormView):
                 if self.request.method == "POST"
                 else [
                     service.key
-                    for service in SERVICES
+                    for service in get_services()
                     if self.edit_reservation.charges.filter(kind=service.kind).exists()
                 ]
             )
@@ -299,6 +281,7 @@ class CheckoutView(FormView):
                 "hide_password": getattr(context.get("form"), "hide_password", False),
                 "selected_service_keys": selected_service_keys,
                 "edit_reservation": self.edit_reservation,
+                "services": get_services(),
             }
         )
         return context
@@ -306,6 +289,13 @@ class CheckoutView(FormView):
     def form_invalid(self, form):
         email_errors = form.errors.as_data().get("email", [])
         if any(error.code == "account_exists" for error in email_errors):
+            self.request.session["checkout_draft"] = {
+                "property_slug": self.property.slug,
+                **{
+                    key: self.request.POST.get(key, "")
+                    for key in ("full_name", "nationality", "phone_code", "phone", "birth_date")
+                },
+            }
             messages.info(self.request, _("An account with this email already exists. Log in to continue."))
             checkout_params = []
             for key in ("check_in", "check_out", "guests", "booking_type"):
@@ -347,6 +337,13 @@ class CheckoutView(FormView):
                 form.add_error(None, error)
                 return self.form_invalid(form)
             return redirect("bookings:services", public_id=reservation.public_id)
+        available_services = {service.key: service for service in get_services()}
+        selected_services = [
+            available_services[key]
+            for key in dict.fromkeys(self.request.POST.getlist("selected_services"))
+            if key in available_services
+        ]
+        nights = (form.cleaned_data["check_out"] - form.cleaned_data["check_in"]).days
         try:
             reservation = ReservationService.create(
                 user=user,
@@ -356,81 +353,53 @@ class CheckoutView(FormView):
                 check_out=form.cleaned_data["check_out"],
                 guests=form.cleaned_data["guests"],
                 booking_type=form.cleaned_data.get("booking_type") or "daily",
+                charges=[
+                    {
+                        "kind": service.kind,
+                        "amount": service.starting_price * (nights if service.detail == "crib" else 1),
+                    }
+                    for service in selected_services
+                ],
             )
         except (PropertyUnavailable, ReservationValidationError) as error:
             form.add_error(None, error)
             return self.form_invalid(form)
 
-        selected_services = self.request.POST.getlist("selected_services")
-        for key in selected_services:
-            if key == "flexible-checkin":
-                ReservationService.add_service(
-                    reservation=reservation,
-                    kind=ReservationCharge.Kind.EARLY_CHECK_IN,
-                    amount=Decimal("26.00"),
-                    details={"configured": False},
-                )
-            elif key == "baby-crib":
-                nights = max((reservation.check_out - reservation.check_in).days, 1)
-                ReservationService.add_service(
-                    reservation=reservation,
-                    kind=ReservationCharge.Kind.CRIB,
-                    amount=Decimal("15.00") * nights,
-                    details={"configured": False},
-                )
-            elif key == "transport":
-                ReservationService.add_service(
-                    reservation=reservation,
-                    kind=ReservationCharge.Kind.TRANSPORT,
-                    amount=Decimal("13.00"),
-                    details={"configured": False},
-                )
-            elif key == "groceries":
-                ReservationService.add_service(
-                    reservation=reservation,
-                    kind=ReservationCharge.Kind.GROCERY,
-                    amount=Decimal("18.00"),
-                    details={"configured": False},
-                )
-
-        next_service = next((key for key in selected_services if key in SERVICES_BY_KEY), None)
-        if next_service:
+        self.request.session.pop("checkout_draft", None)
+        if selected_services:
             return redirect(
                 "bookings:service_detail",
                 public_id=reservation.public_id,
-                service_key=next_service,
+                service_key=selected_services[0].key,
             )
 
         return redirect("bookings:services", public_id=reservation.public_id)
 
-    def _create_guest_account(self, form):
-
-        data = form.cleaned_data
+    def _profile_data(self, data):
         first_name, _, last_name = data["full_name"].strip().partition(" ")
         phone_code = (data.get("phone_code") or "").strip()
-        phone_num = (data.get("phone") or "").strip()
-        if phone_num:
-            phone = f"{phone_code} {phone_num}".strip() if phone_code and not phone_num.startswith("+") else phone_num
-        else:
-            phone = ""
-        nationality = (data.get("nationality") or "").strip()
-        birth_date = data.get("birth_date")
+        phone = (data.get("phone") or "").strip()
+        if phone and phone_code and not phone.startswith("+"):
+            phone = f"{phone_code} {phone}"
+        return {
+            "first_name": first_name[:150],
+            "last_name": last_name[:150],
+            "phone": phone[:32],
+            "country": (data.get("nationality") or "").strip(),
+            "birth_date": data.get("birth_date"),
+        }
+
+    def _create_guest_account(self, form):
+        data = form.cleaned_data
         try:
             user = get_user_model().objects.create_user(
-                email=data["email"],
-                password=data["password"],
-                first_name=first_name[:150],
-                last_name=last_name[:150],
-                phone=phone[:32],
-                country=nationality,
-                birth_date=birth_date,
+                email=data["email"], password=data["password"], **self._profile_data(data)
             )
         except IntegrityError:
             form.add_error(
                 "email",
                 ValidationError(
-                    _("An account with this email already exists. Log in to continue."),
-                    code="account_exists",
+                    _("An account with this email already exists. Log in to continue."), code="account_exists",
                 ),
             )
             return None
@@ -438,34 +407,11 @@ class CheckoutView(FormView):
         return user
 
     def _update_user_profile(self, user, data):
-
         updated_fields = []
-        full_name = (data.get("full_name") or "").strip()
-        if full_name:
-            first_name, _, last_name = full_name.partition(" ")
-            first_name = first_name[:150]
-            last_name = last_name[:150]
-            if first_name and user.first_name != first_name:
-                user.first_name = first_name
-                updated_fields.append("first_name")
-            if last_name and user.last_name != last_name:
-                user.last_name = last_name
-                updated_fields.append("last_name")
-        nationality = (data.get("nationality") or "").strip()
-        if nationality and user.country != nationality:
-            user.country = nationality
-            updated_fields.append("country")
-        birth_date = data.get("birth_date")
-        if birth_date and user.birth_date != birth_date:
-            user.birth_date = birth_date
-            updated_fields.append("birth_date")
-        phone_num = (data.get("phone") or "").strip()
-        phone_code = (data.get("phone_code") or "").strip()
-        if phone_num:
-            full_phone = f"{phone_code} {phone_num}".strip() if phone_code and not phone_num.startswith("+") else phone_num
-            if user.phone != full_phone[:32]:
-                user.phone = full_phone[:32]
-                updated_fields.append("phone")
+        for field, value in self._profile_data(data).items():
+            if value and getattr(user, field) != value:
+                setattr(user, field, value)
+                updated_fields.append(field)
         if updated_fields:
             user.save(update_fields=updated_fields)
 
@@ -476,6 +422,8 @@ class ReservationServicesView(LoginRequiredMixin, TemplateView):
     template_name = "bookings/services.html"
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
         self.reservation = get_object_or_404(
             Reservation.objects.select_related("property", "property__destination").prefetch_related(
                 "charges", "property__images"
@@ -494,13 +442,25 @@ class ReservationServicesView(LoginRequiredMixin, TemplateView):
             _reservation_context(self.reservation),
             services=[
                 {"service": service, "charge": added.get(service.kind)}
-                for service in SERVICES
+                for service in get_services()
             ],
             editable=self.reservation.status == Reservation.Status.PAYMENT_PENDING,
         )
         return context
 
     def post(self, request, *args, **kwargs):
+        if request.POST.get("action") == "remove_service":
+            try:
+                kind = request.POST.get("kind")
+                if kind not in ServiceCatalog.configuration_kinds.values():
+                    raise ReservationValidationError(_("The extra charge type is invalid."))
+                ReservationService.remove_service(reservation=self.reservation, kind=kind)
+            except ReservationValidationError as error:
+                messages.error(request, error)
+            else:
+                messages.success(request, _("Service removed from your reservation."))
+            return redirect("bookings:services", public_id=self.reservation.public_id)
+
         if request.POST.get("action") == "update_stay":
             try:
                 check_in = parse_date(request.POST.get("check_in", ""))
@@ -510,7 +470,7 @@ class ReservationServicesView(LoginRequiredMixin, TemplateView):
                     raise ReservationValidationError(_("Select valid check-in and check-out dates."))
                 selected_services = [
                     service.key
-                    for service in SERVICES
+                    for service in get_services()
                     if self.reservation.charges.filter(kind=service.kind).exists()
                 ]
                 ReservationService.update_stay(
@@ -536,19 +496,9 @@ class ReservationServicesView(LoginRequiredMixin, TemplateView):
             messages.error(request, _("The reservation hold has expired. Please start a new reservation."))
             return redirect(self.reservation.property.get_absolute_url())
 
-        for charge in ReservationCharge.objects.filter(reservation=self.reservation).order_by("id"):
-            service = service_for_kind(charge.kind)
-            if service and not _service_is_configured(charge, service):
-                messages.warning(
-                    request,
-                    _("Complete the configuration for %(service)s before continuing to payment.")
-                    % {"service": service.name},
-                )
-                return redirect(
-                    "bookings:service_detail",
-                    public_id=self.reservation.public_id,
-                    service_key=service.key,
-                )
+        configuration_redirect = _service_configuration_redirect(request, self.reservation)
+        if configuration_redirect:
+            return configuration_redirect
         PaymentService.start_checkout(self.reservation)
         return redirect("payments:checkout", public_id=self.reservation.public_id)
 
@@ -559,6 +509,8 @@ class ServiceDetailView(LoginRequiredMixin, FormView):
     template_name = "bookings/service_detail.html"
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
         self.reservation = get_object_or_404(
             Reservation.objects.select_related("property", "property__destination").prefetch_related(
                 "charges", "property__images"
@@ -566,7 +518,17 @@ class ServiceDetailView(LoginRequiredMixin, FormView):
             public_id=kwargs["public_id"],
             user=request.user,
         )
-        self.service = SERVICES_BY_KEY.get(kwargs["service_key"])
+        self.service = get_service(kwargs["service_key"])
+        if self.service is None:
+            self.service = ServiceCatalog.objects.filter(
+                key=kwargs["service_key"], category=ServiceCatalog.Category.SERVICE,
+                kind__in=self.reservation.charges.values_list("kind", flat=True),
+            ).first()
+            if self.service:
+                if request.method == "POST" and request.POST.get("action") == "remove":
+                    return self._remove()
+                messages.warning(request, _("This service is no longer available. Remove it from your reservation to continue."))
+                return redirect("bookings:services", public_id=self.reservation.public_id)
         if self.service is None:
             raise Http404
         return super().dispatch(request, *args, **kwargs)
@@ -577,6 +539,7 @@ class ServiceDetailView(LoginRequiredMixin, FormView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["reservation"] = self.reservation
+        kwargs["service"] = self.service
         return kwargs
 
     def get_initial(self):
@@ -603,7 +566,7 @@ class ServiceDetailView(LoginRequiredMixin, FormView):
             return initial
         if self.service.detail == "groceries":
             return {
-                "pack": details.get("pack", GROCERY_PACKS[0].key),
+                "pack": details.get("pack", get_grocery_packs().values_list("key", flat=True).first()),
                 "delivery_date": parse_date(details.get("delivery_date", "")),
             }
         if self.service.detail == "crib":
@@ -628,20 +591,20 @@ class ServiceDetailView(LoginRequiredMixin, FormView):
             _reservation_context(self.reservation),
             services=[
                 {"service": service, "charge": self.reservation.charges.filter(kind=service.kind).first()}
-                for service in SERVICES
+                for service in get_services()
             ],
             service=self.service,
             service_key=self.service.key,
             return_to_payment=self.request.GET.get("next") == "payment",
             config_template=f"bookings/config/{self.service.detail}.html",
             existing_charge=self.reservation.charges.filter(kind=self.service.kind).first(),
-            vehicles=VEHICLES,
-            grocery_packs=GROCERY_PACKS,
+            vehicles=get_vehicles(),
+            grocery_packs=get_grocery_packs(),
             quote=self._quote(form),
         )
         context["existing_service_amount"] = context["existing_charge"].amount if context["existing_charge"] else 0
         context["service_configured"] = bool(
-            context["existing_charge"] and _service_is_configured(context["existing_charge"], self.service)
+            context["existing_charge"] and service_is_configured(context["existing_charge"], self.service)
         )
         return context
 
@@ -650,18 +613,18 @@ class ServiceDetailView(LoginRequiredMixin, FormView):
         if self.service.detail == "transport":
             amount, details = transport_quote(
                 trip_type=values.get("trip_type") or "one_way",
-                vehicle_key=values.get("vehicle") or "suv",
+                vehicle_key=values.get("vehicle") or get_vehicles().values_list("key", flat=True).first(),
                 quantity=values.get("quantity") or 1,
             )
-            return {"amount": amount, **details}
+            return {"amount": amount, "vehicle_name": get_vehicles().get(key=details["vehicle"]).name, **details}
         if self.service.detail == "crib":
-            amount = crib_quote(quantity=values.get("quantity") or 1)[0]
+            amount = crib_quote(quantity=values.get("quantity") or 1, service=self.service)[0]
             start_date = values.get("start_date") or self.reservation.check_in
             end_date = values.get("end_date") or self.reservation.check_out
             nights = max((end_date - start_date).days, 1) if start_date and end_date else self.reservation.nights
             return {"amount": amount * nights}
         if self.service.detail == "groceries":
-            pack = values.get("pack") or GROCERY_PACKS[0].key
+            pack = values.get("pack") or get_grocery_packs().values_list("key", flat=True).first()
             return {"amount": grocery_quote(pack_key=pack)[0], "pack": pack}
         return {"amount": self.service.base_price}
 
@@ -700,19 +663,9 @@ class ServiceDetailView(LoginRequiredMixin, FormView):
             form.add_error(None, error)
             return self.form_invalid(form)
         messages.success(self.request, _("Service added to your reservation."))
-        for charge in ReservationCharge.objects.filter(reservation=self.reservation).order_by("id"):
-            service = service_for_kind(charge.kind)
-            if service and not _service_is_configured(charge, service):
-                messages.info(
-                    self.request,
-                    _("Complete the configuration for %(service)s before continuing to payment.")
-                    % {"service": service.name},
-                )
-                return redirect(
-                    "bookings:service_detail",
-                    public_id=self.reservation.public_id,
-                    service_key=service.key,
-                )
+        configuration_redirect = _service_configuration_redirect(self.request, self.reservation)
+        if configuration_redirect:
+            return configuration_redirect
         if self.request.GET.get("next") == "payment" or self.request.POST.get("next") == "payment":
             return redirect("payments:checkout", public_id=self.reservation.public_id)
         return redirect("bookings:services", public_id=self.reservation.public_id)
@@ -721,9 +674,11 @@ class ServiceDetailView(LoginRequiredMixin, FormView):
 def _reservation_context(reservation):
 
     charges = list(reservation.charges.all())
+    available_kinds = set(get_services().values_list("kind", flat=True))
     for charge in charges:
         service = service_for_kind(charge.kind)
         charge.label = service.name if service else charge.get_kind_display()
+        charge.unavailable = charge.kind in ServiceCatalog.configuration_kinds.values() and charge.kind not in available_kinds
     return {
         "reservation": reservation,
         "property": reservation.property,

@@ -3,8 +3,11 @@ import uuid
 
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
+from bookings.additional_services import service_for_kind
 from bookings.models import Reservation
+from bookings.services import ReservationValidationError, service_is_configured
 from bookings.tasks import send_confirmation_email
 
 from .models import Payment
@@ -64,6 +67,11 @@ class PaymentService:
             raise ValueError("This reservation is not awaiting payment.")
         if reservation.expires_at <= timezone.now():
             raise ValueError("The reservation hold has expired.")
+
+        for charge in reservation.charges.all():
+            service = service_for_kind(charge.kind)
+            if not service_is_configured(charge, service):
+                raise ReservationValidationError(_("Configure all selected services before paying."))
 
         payment.provider = cls.provider
         payment.status = Payment.Status.APPROVED if outcome == "approved" else Payment.Status.REJECTED

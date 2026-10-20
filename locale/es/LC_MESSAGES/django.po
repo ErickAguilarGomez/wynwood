@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wynwood House\n"
 "Report-Msgid-Bugs-To: \n"
-"MIME-Version: 1.0\n"
-"POT-Creation-Date: 2026-10-17 20:00-0500\n"
+"POT-Creation-Date: 2026-10-19 10:29-0500\n"
 "Language: es\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -21,387 +21,650 @@ msgstr "Permisos"
 msgid "Important dates"
 msgstr "Fechas importantes"
 
-#: accounts/forms.py:9 bookings/forms.py:96 templates/accounts/login.html:11
+#: accounts/forms.py:12 bookings/forms.py:125 templates/accounts/login.html:11
 msgid "Email"
 msgstr "Correo electrónico"
 
-#: accounts/forms.py:20
+#: accounts/forms.py:23
 msgid "First name"
 msgstr "Nombres"
 
-#: accounts/forms.py:21
+#: accounts/forms.py:24
 msgid "Last name"
 msgstr "Apellidos"
 
-#: accounts/forms.py:23 accounts/models.py:32 bookings/forms.py:145
+#: accounts/forms.py:26 accounts/models.py:30 bookings/forms.py:175
 msgid "Date of birth"
 msgstr "Fecha de nacimiento"
 
-msgid "Year"
-msgstr "Año"
-
-#: accounts/forms.py:27 accounts/models.py:31 bookings/forms.py:133
-#: templates/properties/detail.html:63
+#: accounts/forms.py:30 accounts/models.py:29 bookings/forms.py:97
+#: bookings/forms.py:163 bookings/views.py:63
+#: templates/properties/detail.html:81 templates/properties/detail.html:111
 msgid "Phone"
 msgstr "Teléfono"
 
-#: accounts/forms.py:29 accounts/models.py:33
+#: accounts/forms.py:32 accounts/models.py:31 payments/forms.py:39
 msgid "Country"
 msgstr "País"
 
-#: accounts/forms.py:31
+#: accounts/forms.py:47
 msgid "Select"
 msgstr "Seleccionar"
 
-#: accounts/models.py:18
-msgid "Argentina"
-msgstr "Argentina"
+#: accounts/forms.py:53 bookings/forms.py:221
+msgid "The date of birth cannot be in the future."
+msgstr "La fecha de nacimiento no puede estar en el futuro."
 
-#: accounts/models.py:19
-msgid "Chile"
-msgstr "Chile"
+#: accounts/models.py:10
+msgid "superuser status"
+msgstr "estado de superusuario"
 
-#: accounts/models.py:20
-msgid "Colombia"
-msgstr "Colombia"
+#: accounts/models.py:11
+msgid "staff status"
+msgstr "estado de personal"
 
-#: accounts/models.py:21
-msgid "Ecuador"
-msgstr "Ecuador"
+#: accounts/models.py:12
+msgid "active"
+msgstr "activo"
 
-#: accounts/models.py:22 templates/bookings/email/confirmation.html:166
-#: templates/bookings/email/confirmation.html:167
-msgid "Spain"
-msgstr "España"
+#: accounts/models.py:15
+msgid "groups"
+msgstr "grupos"
 
-#: accounts/models.py:23
-msgid "Italy"
-msgstr "Italia"
+#: accounts/models.py:22
+msgid "user permissions"
+msgstr "permisos de usuario"
 
-#: accounts/models.py:24 templates/bookings/email/confirmation.html:154
-#: templates/bookings/email/confirmation.html:155
-msgid "Mexico"
-msgstr "México"
+#: accounts/views.py:50 bookings/forms.py:234 bookings/views.py:291
+#: bookings/views.py:402
+msgid "An account with this email already exists. Log in to continue."
+msgstr "Ya existe una cuenta con este correo. Inicia sesión para continuar."
 
-#: accounts/models.py:25 templates/bookings/email/confirmation.html:162
-#: templates/bookings/email/confirmation.html:163
-msgid "Panama"
-msgstr "Panamá"
-
-#: accounts/models.py:26 templates/bookings/email/confirmation.html:158
-#: templates/bookings/email/confirmation.html:159
-msgid "Peru"
-msgstr "Perú"
-
-#: accounts/models.py:27
-msgid "United States"
-msgstr "Estados Unidos"
-
-#: bookings/forms.py:63 properties/forms.py:11
+#: bookings/forms.py:57 properties/forms.py:14
 #: templates/bookings/email/confirmation.txt:6
 msgid "Check-in"
 msgstr "Llegada"
 
-#: bookings/forms.py:64 properties/forms.py:14
+#: bookings/forms.py:58 properties/forms.py:17
 #: templates/bookings/email/confirmation.txt:7
 msgid "Check-out"
 msgstr "Salida"
 
-#: bookings/forms.py:65 properties/forms.py:16
-#: templates/bookings/_reservation_sidebar.html:17
-#: templates/bookings/checkout.html:134
+#: bookings/forms.py:59 properties/forms.py:19
+#: templates/bookings/_reservation_sidebar.html:32
+#: templates/bookings/checkout.html:140
 #: templates/bookings/email/confirmation.txt:8
-#: templates/components/search_form.html:26
-#: templates/properties/results.html:24 templates/properties/results.html:58
+#: templates/components/search_form.html:42
+#: templates/components/search_form.html:45
+#: templates/components/search_form.html:47
+#: templates/components/search_form.html:113
+#: templates/properties/_results_list.html:12
+#: templates/properties/results.html:15 templates/properties/results.html:73
+#: templates/properties/results.html:77
 msgid "Guests"
 msgstr "Huéspedes"
 
-#: bookings/forms.py:66
+#: bookings/forms.py:61
 msgid "I accept the booking terms"
 msgstr "Acepto los términos de reserva"
 
-#: bookings/forms.py:79 bookings/forms.py:201 properties/forms.py:23
+#: bookings/forms.py:74 bookings/forms.py:243 properties/forms.py:39
 msgid "Check-in cannot be in the past."
 msgstr "La fecha de llegada no puede estar en el pasado."
 
+#: bookings/forms.py:76 bookings/forms.py:245 properties/forms.py:41
 msgid "Check-out cannot be in the past."
 msgstr "La fecha de salida no puede estar en el pasado."
 
-msgid "Select both check-in and check-out dates."
-msgstr "Selecciona las fechas de llegada y salida."
-
-msgid "Choose the end of the return time range."
-msgstr "Selecciona el final del horario de regreso."
-
-msgid "The return time must be after departure."
-msgstr "La hora de regreso debe ser posterior a la salida."
-
-#: bookings/forms.py:81 bookings/forms.py:203 properties/forms.py:25
+#: bookings/forms.py:78 bookings/forms.py:247 properties/forms.py:45
 msgid "Check-out must be after check-in."
 msgstr "La salida debe ser posterior a la llegada."
 
-#: bookings/forms.py:83 bookings/forms.py:205
+#: bookings/forms.py:80 bookings/forms.py:249 bookings/services.py:163
+#: bookings/services.py:271
+#| msgid "Choose dates within your stay."
+msgid "Choose a shorter stay."
+msgstr "Selecciona una estadía más corta."
+
+#: bookings/forms.py:84 bookings/forms.py:253 bookings/services.py:165
+#: bookings/services.py:274
+msgid "Monthly stays require a minimum of 30 nights."
+msgstr "Las estadías mensuales requieren un mínimo de 30 noches."
+
+#: bookings/forms.py:86 bookings/forms.py:255
 msgid "This property cannot accommodate that many guests."
 msgstr "Esta propiedad no admite esa cantidad de huéspedes."
 
-#: bookings/forms.py:100
-msgid "Create password"
-msgstr "Crear contraseña"
+#: bookings/forms.py:91 bookings/views.py:62
+#: templates/properties/detail.html:77 templates/properties/detail.html:103
+msgid "Email address"
+msgstr "Correo electrónico"
 
-#: bookings/forms.py:105
-msgid "Enter a new password"
-msgstr "Ingresa una nueva contraseña"
-
-#: bookings/forms.py:111
+#: bookings/forms.py:92 bookings/forms.py:141
+#: templates/properties/detail.html:107
 msgid "Full name"
 msgstr "Nombre completo"
 
-#: bookings/forms.py:117
-msgid "Enter your full name"
-msgstr "Ingresa tu nombre completo"
-
-#: bookings/forms.py:123
-msgid "Nationality"
-msgstr "Nacionalidad"
-
-#: bookings/forms.py:127
+#: bookings/forms.py:94 bookings/forms.py:157
 msgid "Indicator"
 msgstr "Indicador"
 
-#: bookings/forms.py:139
-msgid "Enter your phone number"
-msgstr "Ingresa tu número de teléfono"
+#: bookings/forms.py:102
+msgid "Enter your full name."
+msgstr "Ingresa tu nombre completo."
 
-#: bookings/forms.py:151
-msgid "Enter your date of birth"
-msgstr "Ingresa tu fecha de nacimiento"
-
-#: bookings/forms.py:157
-msgid "I do not wish to subscribe to the Wynwood House newsletter"
-msgstr "No deseo suscribirme al boletín de Wynwood House"
-
-#: bookings/forms.py:166
-msgid "Select your country"
-msgstr "Selecciona tu país"
-
-#: bookings/forms.py bookings/views.py
-msgid "An account with this email already exists. Log in to continue."
-msgstr "Ya existe una cuenta con este correo. Inicia sesión para continuar."
-
-#: bookings/forms.py:186
+#: bookings/forms.py:112 bookings/forms.py:215
 msgid "Enter a valid phone number."
 msgstr "Ingresa un número de teléfono válido."
 
-#: bookings/forms.py:192
-msgid "The date of birth cannot be in the future."
-msgstr "La fecha de nacimiento no puede estar en el futuro."
+#: bookings/forms.py:129
+msgid "Create password"
+msgstr "Crear contraseña"
 
-#: bookings/forms.py:210
-msgid "The password must be at least 8 characters long."
-msgstr "La contraseña debe tener al menos 8 caracteres."
+#: bookings/forms.py:135
+msgid "Enter a new password"
+msgstr "Ingresa una nueva contraseña"
 
-#: bookings/forms.py:211
-msgid "The password must contain a number or symbol."
-msgstr "La contraseña debe incluir un número o símbolo."
+#: bookings/forms.py:147
+msgid "Enter your full name"
+msgstr "Ingresa tu nombre completo"
 
-#: bookings/forms.py:212
-msgid "The password cannot contain your name or email address."
-msgstr "La contraseña no puede contener tu nombre ni tu correo electrónico."
+#: bookings/forms.py:153
+msgid "Nationality"
+msgstr "Nacionalidad"
 
-#: bookings/forms.py:239 templates/bookings/config/transport.html:9
+#: bookings/forms.py:169
+msgid "Enter your phone number"
+msgstr "Ingresa tu número de teléfono"
+
+#: bookings/forms.py:180
+msgid "I do not wish to subscribe to the Wynwood House newsletter"
+msgstr "No deseo suscribirme al boletín de Wynwood House"
+
+#: bookings/forms.py:185 bookings/models.py:27
+#: templates/properties/detail.html:47
+msgid "Daily"
+msgstr "Diario"
+
+#: bookings/forms.py:195 payments/forms.py:49
+msgid "Select your country"
+msgstr "Selecciona tu país"
+
+#: bookings/forms.py:290 templates/bookings/config/transport.html:9
 msgid "Trip type"
 msgstr "Tipo de viaje"
 
-#: bookings/forms.py:240 templates/bookings/config/transport.html:16
+#: bookings/forms.py:291 templates/bookings/config/transport.html:16
 msgid "Round trip"
 msgstr "Ida y vuelta"
 
-#: bookings/forms.py:240 templates/bookings/config/transport.html:12
-#: templates/bookings/config/transport.html:23
+#: bookings/forms.py:291 templates/bookings/config/transport.html:12
+#: templates/bookings/config/transport.html:35
 msgid "One way"
 msgstr "Solo ida"
 
-#: bookings/forms.py:244
+#: bookings/forms.py:295
 msgid "Departure date"
 msgstr "Fecha de ida"
 
-#: bookings/forms.py:245
+#: bookings/forms.py:296
 msgid "Departure time"
 msgstr "Hora de ida"
 
-#: bookings/forms.py:247
+#: bookings/forms.py:298
 msgid "Departure time end"
 msgstr "Hora de fin de ida"
 
-#: bookings/forms.py:250
+#: bookings/forms.py:300 templates/bookings/config/transport.html:50
+msgid "Airport"
+msgstr "Aeropuerto"
+
+#: bookings/forms.py:302
 msgid "Return date"
 msgstr "Fecha de vuelta"
 
-#: bookings/forms.py:253
+#: bookings/forms.py:305
 msgid "Return time"
 msgstr "Hora de vuelta"
 
-#: bookings/forms.py:256
+#: bookings/forms.py:308
 msgid "Return time end"
 msgstr "Hora de fin de vuelta"
 
-#: bookings/forms.py:258 templates/bookings/config/transport.html:44
+#: bookings/forms.py:310 templates/bookings/config/transport.html:56
 msgid "Vehicle type"
 msgstr "Tipo de vehículo"
 
-#: bookings/forms.py:259 templates/bookings/config/transport.html:60
+#: bookings/forms.py:311 templates/bookings/config/transport.html:73
 msgid "Vehicles"
 msgstr "Vehículos"
 
-#: bookings/forms.py:278
+#: bookings/forms.py:343
+#, python-format
+msgid "The transport date must be close to your stay (between %(min)s and %(max)s)."
+msgstr "La fecha de transporte debe estar cerca de tu estadía (entre %(min)s y %(max)s)."
+
+#: bookings/forms.py:349
+#, python-format
+msgid "The return date must be close to your stay (between %(min)s and %(max)s)."
+msgstr "La fecha de regreso debe estar cerca de tu estadía (entre %(min)s y %(max)s)."
+
+#: bookings/forms.py:355
 msgid "Choose the return date."
 msgstr "Elige la fecha de vuelta."
 
-#: bookings/forms.py:280
+#: bookings/forms.py:357
 msgid "Choose the return time."
 msgstr "Elige la hora de vuelta."
 
-#: bookings/forms.py:282
+#: bookings/forms.py:359
+msgid "Choose the end of the return time range."
+msgstr "Selecciona el final del horario de regreso."
+
+#: bookings/forms.py:361
 msgid "The return date cannot be before departure."
 msgstr "La fecha de vuelta no puede ser anterior a la de ida."
 
-#: bookings/forms.py:289
+#: bookings/forms.py:368
+msgid "The return time must be after departure."
+msgstr "La hora de regreso debe ser posterior a la salida."
+
+#: bookings/forms.py:375 bookings/forms.py:378
 msgid "The end time must be after the start time."
 msgstr "La hora de fin debe ser posterior a la de inicio."
 
-#: bookings/forms.py:306 templates/bookings/config/flexible_checkin.html:11
+#: bookings/forms.py:396 templates/bookings/config/flexible_checkin.html:9
+msgid "Service date"
+msgstr "Fecha del servicio"
+
+#: bookings/forms.py:397 templates/bookings/config/flexible_checkin.html:20
 msgid "Check-in time"
 msgstr "Hora de llegada"
 
-#: bookings/forms.py:317
+#: bookings/forms.py:406
+msgid "Choose a date during your stay."
+msgstr "Elige una fecha durante tu estadía."
+
+#: bookings/forms.py:416
 msgid "Pack"
 msgstr "Pack"
 
-#: bookings/forms.py:328 templates/bookings/config/crib.html:8
+#: bookings/forms.py:417 templates/bookings/config/groceries.html:8
+msgid "Delivery date"
+msgstr "Fecha de entrega"
+
+#: bookings/forms.py:428
+msgid "Choose a delivery date during your stay."
+msgstr "Elige una fecha de entrega durante tu estadía."
+
+#: bookings/forms.py:438 templates/bookings/config/crib.html:20
 msgid "Cribs"
 msgstr "Cunas"
 
-#: bookings/models.py:19
+#: bookings/forms.py:439
+msgid "First date"
+msgstr "Fecha de inicio"
+
+#: bookings/forms.py:440
+msgid "Last date"
+msgstr "Fecha de fin"
+
+#: bookings/forms.py:451
+msgid "Choose dates within your stay."
+msgstr "Elige fechas dentro de tu estadía."
+
+#: bookings/forms.py:453
+msgid "The end date must be after the start date."
+msgstr "La fecha de salida debe ser posterior a la fecha de llegada."
+
+#: bookings/models.py:20
 msgid "Payment pending"
 msgstr "Pago pendiente"
 
-#: bookings/models.py:20
+#: bookings/models.py:21
 msgid "Confirmed"
 msgstr "Confirmada"
 
-#: bookings/models.py:21
+#: bookings/models.py:22
 msgid "Cancelled"
 msgstr "Cancelada"
 
-#: bookings/models.py:22
+#: bookings/models.py:23
 msgid "Expired"
 msgstr "Vencida"
 
-#: bookings/models.py:23
+#: bookings/models.py:24
 msgid "Payment failed"
 msgstr "Pago fallido"
 
-#: bookings/models.py:94
+#: bookings/models.py:28 templates/properties/detail.html:48
+msgid "Monthly"
+msgstr "Mensual"
+
+#: bookings/models.py:101
 msgid "Late check-in"
 msgstr "Late check-in"
 
-#: bookings/models.py:95
+#: bookings/models.py:102
 msgid "Early check-in"
 msgstr "Early check-in"
 
-#: bookings/models.py:96
+#: bookings/models.py:103
 msgid "Pet fee"
 msgstr "Mascota"
 
-#: bookings/models.py:97
+#: bookings/models.py:104
 msgid "Extra guest"
 msgstr "Huésped adicional"
 
-#: bookings/models.py:98 templates/bookings/checkout.html:91
+#: bookings/models.py:105
 msgid "Transport service"
 msgstr "Servicio de transporte"
 
-#: bookings/models.py:99
+#: bookings/models.py:106 bookings/models.py:130
 msgid "Grocery pack"
 msgstr "Pack de compras"
 
-#: bookings/models.py:100 templates/bookings/checkout.html:101
+#: bookings/models.py:107
 msgid "Baby crib"
 msgstr "Cuna para bebé"
 
-#: bookings/models.py:101
+#: bookings/models.py:108
 msgid "Other"
 msgstr "Otro"
 
-#: bookings/services.py:30 bookings/services.py:73
+#: bookings/models.py:128
+msgid "Service"
+msgstr "Servicio"
+
+#: bookings/models.py:129
+msgid "Vehicle"
+msgstr "Vehículo"
+
+#: bookings/models.py:210
+#, python-format
+msgid "From %(currency)s %(amount)s"
+msgstr "Desde %(currency)s %(amount)s"
+
+#: bookings/models.py:212
+#, python-format
+msgid "%(currency)s %(amount)s / night"
+msgstr "%(currency)s %(amount)s / noche"
+
+#: bookings/services.py:82
+#| msgid "The reservation hold has expired."
+msgid "The reservation amount exceeds the supported limit."
+msgstr "El importe de la reserva supera el límite admitido."
+
+#: bookings/services.py:92 bookings/services.py:138
 msgid "The extra charge type is invalid."
 msgstr "El tipo de cargo adicional no es válido."
 
-#: bookings/services.py:43
+#: bookings/services.py:95
+msgid "The extra charge amount cannot be negative."
+msgstr "El importe del cargo adicional no puede ser negativo."
+
+#: bookings/services.py:107
 msgid "This reservation can no longer be modified."
 msgstr "Esta reserva ya no se puede modificar."
 
-#: bookings/services.py:45
+#: bookings/services.py:109
 msgid "The reservation hold has expired."
 msgstr "La retención de la reserva ha expirado."
 
-#: bookings/services.py:59 bookings/services.py:76 bookings/services.py:137
+#: bookings/services.py:123 bookings/services.py:141 bookings/services.py:316
 msgid "The reservation total cannot be negative."
 msgstr "El total de la reserva no puede ser negativo."
 
-#: bookings/services.py:104
+#: bookings/services.py:160 bookings/services.py:268
 msgid "The selected dates are invalid."
 msgstr "Las fechas seleccionadas no son válidas."
 
-#: bookings/services.py:111
+#: bookings/services.py:169 bookings/services.py:281
 msgid "The number of guests is invalid."
 msgstr "La cantidad de huéspedes no es válida."
 
-#: bookings/services.py:126 bookings/services.py:164
+#: bookings/services.py:183 bookings/services.py:296 bookings/services.py:346
 msgid "Those dates are no longer available."
 msgstr "Esas fechas ya no están disponibles."
 
-#: bookings/services.py:132
+#: bookings/services.py:311
 msgid "The discount cannot be negative."
 msgstr "El descuento no puede ser negativo."
 
-#: bookings/views.py:201
-msgid "Payments are temporarily unavailable. Your card was not charged."
-msgstr "Los pagos no están disponibles por el momento. No se realizó ningún cargo en tu tarjeta."
-"Los pagos no están disponibles por el momento. No se realizó ningún cargo en "
-"tu tarjeta.Los pagos no están disponibles temporalmente. No se realizó "
-"ningún cargo."
+#: bookings/views.py:52
+msgid "Enter your name, email address and phone number."
+msgstr "Ingresa tu nombre, correo electrónico y número de teléfono."
 
-#: bookings/views.py:275
-msgid "Service removed from your reservation."
-msgstr "Servicio eliminado de tu reserva."
+#: bookings/views.py:57
+#, python-format
+msgid "Monthly stay inquiry: %(property)s"
+msgstr "Solicitud de estadía mensual: %(property)s"
 
-#: bookings/views.py:292
-msgid "Service added to your reservation."
-msgstr "Servicio agregado a tu reserva."
+#: bookings/views.py:60
+msgid "Property"
+msgstr "Alojamiento"
 
+#: bookings/views.py:61
+msgid "Name"
+msgstr "Nombre"
+
+#: bookings/views.py:64
+msgid "Property link"
+msgstr "Enlace del alojamiento"
+
+#: bookings/views.py:73
+msgid "Your information was sent to our reservations team."
+msgstr "Tu información fue enviada a nuestro personal de reservas."
+
+#: bookings/views.py:75
+msgid "We could not send your request. Please try again."
+msgstr "No pudimos enviar tu solicitud. Inténtalo de nuevo."
+
+#: bookings/views.py:122
+msgid "Monthly stays are handled by our reservations team."
+msgstr "Las estadías mensuales son gestionadas por nuestro equipo de reservas."
+
+#: bookings/views.py:135
+msgid "Complete your email address, phone number, arrival date and departure date to continue."
+msgstr "Completa tu correo, número de teléfono, fecha de llegada y fecha de salida para continuar."
+
+#: bookings/views.py:482
+msgid "Select valid check-in and check-out dates."
+msgstr "Selecciona fechas válidas de llegada y salida."
+
+#: bookings/views.py:497
+msgid "Unable to update this stay."
+msgstr "No se pudo actualizar la estadía."
+
+#: bookings/views.py:499
+msgid "Your stay details were updated."
+msgstr "Los datos de tu estadía fueron actualizados."
+
+#: bookings/views.py:508 payments/views.py:40 payments/views.py:111
+msgid "The reservation hold has expired. Please start a new reservation."
+msgstr "La retención de la reserva venció. Inicia una nueva reserva."
+
+#: bookings/views.py:516 bookings/views.py:682 payments/views.py:50
+#, python-format
 msgid "Complete the configuration for %(service)s before continuing to payment."
 msgstr "Completa la configuración de %(service)s antes de continuar al pago."
 
-#: bookings/views.py:323
-msgid "We are still verifying your payment. Please try again shortly."
-msgstr "Todavía estamos verificando tu pago. Vuelve a intentarlo en unos minutos."
-"Todavía estamos verificando tu pago. Vuelve a intentarlo en unos minutos.Aún "
-"estamos verificando tu pago. Inténtalo nuevamente en unos instantes."
+#: bookings/views.py:656
+msgid "Service removed from your reservation."
+msgstr "Servicio eliminado de tu reserva."
 
-#: properties/forms.py:9
-msgid "Where do you want to stay?"
-msgstr "¿Dónde quieres hospedarte?"
+#: bookings/views.py:676
+msgid "Service added to your reservation."
+msgstr "Servicio agregado a tu reserva."
 
-#: templates/accounts/_auth_page.html:18
-msgid "Stay dates"
-msgstr "Fechas de la estadía"
+#: core/views.py:61
+msgid "We could not process that request"
+msgstr "No pudimos procesar esa solicitud"
 
-#: templates/accounts/_auth_page.html:19
-msgid "Districts"
-msgstr "Distritos"
+#: core/views.py:65
+msgid "You do not have access to this page"
+msgstr "No tienes acceso a esta página"
 
-#: templates/accounts/_auth_page.html:24
+#: core/views.py:69
+msgid "The page you are looking for does not exist"
+msgstr "La página que buscas no existe"
+
+#: core/views.py:73
+msgid "Something went wrong"
+msgstr "Ocurrió un error"
+
+#: payments/forms.py:15
+msgid "Card number"
+msgstr "Número de tarjeta"
+
+#: payments/forms.py:22
+msgid "Expiration date"
+msgstr "Caducidad"
+
+#: payments/forms.py:24
+msgid "MM/YYYY"
+msgstr "MM/AAAA"
+
+#: payments/forms.py:27
+msgid "Security code (CVV)"
+msgstr "Código CVV"
+
+#: payments/forms.py:34
+msgid "Installments"
+msgstr "Cuotas"
+
+#: payments/forms.py:35
+msgid "Select number of installments"
+msgstr "Seleccionar número de cuotas"
+
+#: payments/forms.py:37
+msgid "Address"
+msgstr "Dirección"
+
+#: payments/forms.py:38
+msgid "Address 2 (optional)"
+msgstr "Dirección 2 (opcional)"
+
+#: payments/forms.py:40
+msgid "State / Region"
+msgstr "Estado / Región"
+
+#: payments/forms.py:41
+msgid "City"
+msgstr "Ciudad"
+
+#: payments/forms.py:42
+msgid "Postal code"
+msgstr "Código postal"
+
+#: payments/forms.py:44
+msgid "The cardholder is the person making this reservation."
+msgstr "El titular de la tarjeta es la persona que realiza la reserva."
+
+#: payments/forms.py:51 payments/forms.py:52
+msgid "Enter your address"
+msgstr "Ingresa tu dirección"
+
+#: payments/forms.py:53
+msgid "Enter your state"
+msgstr "Ingresa tu estado"
+
+#: payments/forms.py:54
+msgid "Enter city name"
+msgstr "Ingresa el nombre de la ciudad"
+
+#: payments/forms.py:66
+msgid "Enter a valid test card number."
+msgstr "Ingresa un número de tarjeta de prueba válido."
+
+#: payments/forms.py:73
+msgid "Enter the expiration date as MM/YYYY."
+msgstr "Ingresa el vencimiento en formato MM/AAAA."
+
+#: payments/forms.py:77
+msgid "The card has expired."
+msgstr "La tarjeta está vencida."
+
+#: payments/forms.py:83
+msgid "Enter a valid security code."
+msgstr "Ingresa un código de seguridad válido."
+
+#: payments/services.py:74
+msgid "Configure all selected services before paying."
+msgstr "Configura todos los servicios seleccionados antes de pagar."
+
+#: payments/views.py:64 templates/bookings/email/confirmation.html:123
+msgid "VAT"
+msgstr "IVA"
+
+#: payments/views.py:66
+msgid "IGV"
+msgstr "IGV"
+
+#: payments/views.py:66
+msgid "ITBMS"
+msgstr "ITBMS"
+
+#: payments/views.py:66
+msgid "IVA"
+msgstr "IVA"
+
+#: payments/views.py:115
+msgid "The test card was declined. Use the approved test card or try again."
+msgstr "La tarjeta de prueba fue rechazada. Usa la tarjeta aprobada o inténtalo de nuevo."
+
+#: properties/forms.py:20 templates/properties/results.html:107
+msgid "Minimum price"
+msgstr "Precio mínimo"
+
+#: properties/forms.py:21 templates/properties/results.html:108
+msgid "Maximum price"
+msgstr "Precio máximo"
+
+#: properties/forms.py:22 templates/properties/detail.html:29
+#: templates/properties/results.html:15 templates/properties/results.html:120
+msgid "Amenities"
+msgstr "Comodidades"
+
+#: properties/forms.py:27
+msgid "Select a valid destination."
+msgstr "Selecciona un destino válido."
+
+#: properties/forms.py:35
+msgid "The maximum price must be greater than the minimum price."
+msgstr "El precio máximo debe ser mayor que el precio mínimo."
+
+#: properties/forms.py:43
+msgid "Select both check-in and check-out dates."
+msgstr "Selecciona las fechas de llegada y salida."
+
+#: properties/models.py:25
+msgid "Image files cannot exceed 12 MB."
+msgstr "Las imágenes no pueden superar los 12 MB."
+
+#: properties/models.py:118 templates/accounts/password_reset_email.txt:9
+msgid "Wynwood House"
+msgstr "Wynwood House"
+
+#: properties/models.py:119 templates/components/main_links.html:4
+#: templates/core/home.html:54 templates/core/home.html:146
+msgid "The Collection"
+msgstr "La Colección"
+
+#: properties/models.py:120 templates/base.html:91 templates/core/home.html:55
+msgid "Casa Wynwood"
+msgstr "Casa Wynwood"
+
+#: properties/models.py:235
+msgid "Image dimensions are too large to process safely."
+msgstr "Las dimensiones de la imagen son demasiado grandes para procesarla de forma segura."
+
+#: properties/models.py:247
+msgid "The uploaded file is not a valid image."
+msgstr "El archivo cargado no es una imagen válida."
+
+#: templates/accounts/_auth_page.html:17
 msgid "Chat on WhatsApp"
 msgstr "Chatea por WhatsApp"
 
@@ -410,7 +673,7 @@ msgstr "Chatea por WhatsApp"
 #: templates/accounts/password_reset_complete.html:8
 #: templates/accounts/password_reset_done.html:8
 #: templates/accounts/password_reset_form.html:12
-#: templates/bookings/checkout.html:47
+#: templates/bookings/checkout.html:49
 msgid "Log in"
 msgstr "Iniciar sesión"
 
@@ -418,9 +681,13 @@ msgstr "Iniciar sesión"
 msgid "Password"
 msgstr "Contraseña"
 
-#: templates/accounts/login.html:18 templates/bookings/checkout.html:31
+#: templates/accounts/login.html:18 templates/bookings/checkout.html:33
 msgid "Show password"
 msgstr "Mostrar contraseña"
+
+#: templates/accounts/login.html:18 templates/bookings/checkout.html:33
+msgid "Hide password"
+msgstr "Ocultar contraseña"
 
 #: templates/accounts/login.html:27
 msgid "Don’t have an account? Sign up"
@@ -464,36 +731,20 @@ msgid "Check your email"
 msgstr "Revisa tu correo"
 
 #: templates/accounts/password_reset_done.html:6
-msgid ""
-"If an account exists with that email, we have sent a link to reset your "
-"password. Remember to check your spam folder."
-msgstr ""
-"Si existe una cuenta con ese correo, te enviamos un enlace para restablecer "
-"tu contraseña. Recuerda revisar la carpeta de spam. "
+msgid "If an account exists with that email, we have sent a link to reset your password. Remember to check your spam folder."
+msgstr "Si existe una cuenta con ese correo, te enviamos un enlace para restablecer tu contraseña. Recuerda revisar la carpeta de spam. "
 
 #: templates/accounts/password_reset_email.txt:1
 msgid "Hello,"
 msgstr "Hola,"
 
 #: templates/accounts/password_reset_email.txt:3
-msgid ""
-"We received a request to reset the password of your Wynwood House account. "
-"Open this link to choose a new one:"
-msgstr ""
-"Recibimos una solicitud para restablecer la contraseña de tu cuenta de "
-"Wynwood House. Abre este enlace para elegir una nueva: "
+msgid "We received a request to reset the password of your Wynwood House account. Open this link to choose a new one:"
+msgstr "Recibimos una solicitud para restablecer la contraseña de tu cuenta de Wynwood House. Abre este enlace para elegir una nueva: "
 
 #: templates/accounts/password_reset_email.txt:7
-msgid ""
-"If you did not request it, you can ignore this email and your password will "
-"stay the same."
-msgstr ""
-"Si no lo solicitaste, puedes ignorar este correo y tu contraseña seguirá "
-"igual. "
-
-#: templates/accounts/password_reset_email.txt:9
-msgid "Wynwood House"
-msgstr "Wynwood House"
+msgid "If you did not request it, you can ignore this email and your password will stay the same."
+msgstr "Si no lo solicitaste, puedes ignorar este correo y tu contraseña seguirá igual. "
 
 #: templates/accounts/password_reset_form.html:9
 msgid "Send"
@@ -503,7 +754,7 @@ msgstr "Enviar"
 msgid "Reset your Wynwood House password"
 msgstr "Restablece tu contraseña de Wynwood House"
 
-#: templates/accounts/register.html:3 templates/accounts/register.html:26
+#: templates/accounts/register.html:3 templates/accounts/register.html:35
 msgid "Create account"
 msgstr "Crear cuenta"
 
@@ -511,31 +762,38 @@ msgstr "Crear cuenta"
 msgid "Sign up"
 msgstr "Regístrate"
 
-#: templates/accounts/register.html:22 templates/bookings/checkout.html:47
+#: templates/accounts/register.html:13 templates/bookings/checkout.html:75
+msgid "Year"
+msgstr "Año"
+
+#: templates/accounts/register.html:18 templates/bookings/checkout.html:80
+msgid "Select date"
+msgstr "Seleccionar fecha"
+
+#: templates/accounts/register.html:31 templates/bookings/checkout.html:49
 msgid "Already have an account?"
 msgstr "¿Ya tienes una cuenta?"
 
-#: templates/accounts/register.html:23
+#: templates/accounts/register.html:32
 msgid "Sign in here"
 msgstr "Inicia sesión aquí"
 
-#: templates/accounts/register.html:27
-msgid ""
-"* By clicking CREATE ACCOUNT you accept the policies of Wynwood-house.com, "
-"you can review them in the following links:"
-msgstr ""
-"* Haciendo click en CREAR CUENTA, usted acepta las políticas de Wynwood-"
-"house.com, puede revisarlas en los siguientes enlaces: "
+#: templates/accounts/register.html:36
+msgid "* By clicking CREATE ACCOUNT you accept the policies of Wynwood-house.com, you can review them in the following links:"
+msgstr "* Haciendo click en CREAR CUENTA, usted acepta las políticas de Wynwood-house.com, puede revisarlas en los siguientes enlaces: "
 
-#: templates/accounts/register.html:28
+#: templates/accounts/register.html:37 templates/base.html:96
+#: templates/payments/checkout.html:97
 msgid "Terms of service"
 msgstr "Términos del servicio"
 
-#: templates/accounts/register.html:29
+#: templates/accounts/register.html:38 templates/base.html:96
+#: templates/payments/checkout.html:97
 msgid "Privacy policy"
 msgstr "Política de privacidad"
 
-#: templates/accounts/register.html:30
+#: templates/accounts/register.html:39 templates/base.html:96
+#: templates/payments/checkout.html:97
 msgid "Cancellation policy"
 msgstr "Política de cancelación"
 
@@ -543,81 +801,225 @@ msgstr "Política de cancelación"
 msgid "Curated homes for exceptional stays."
 msgstr "Hogares seleccionados para estadías excepcionales."
 
-#: templates/base.html:31 templates/base.html:55 templates/bookings/list.html:3
+#: templates/base.html:20 templates/base.html:48
+msgid "Menu"
+msgstr "Menú"
+
+#: templates/base.html:33 templates/base.html:57 templates/bookings/list.html:3
 #: templates/bookings/list.html:4
 msgid "My bookings"
 msgstr "Mis reservas"
 
-#: templates/base.html:37 templates/base.html:51
+#: templates/base.html:35 templates/base.html:60
+msgid "Sign in"
+msgstr "Iniciar sesión"
+
+#: templates/base.html:37 templates/properties/detail.html:92
+msgid "Book now"
+msgstr "Reservar ahora"
+
+#: templates/base.html:39 templates/base.html:53
 msgid "Main navigation"
 msgstr "Navegación principal"
 
-#: templates/base.html:46
-msgid "Menu"
-msgstr "Menú"
-
-#: templates/base.html:56
+#: templates/base.html:58
 msgid "Log out"
 msgstr "Cerrar sesión"
 
-#: templates/base.html:58
-msgid "Iniciar sesión"
-msgstr "Iniciar sesión"
+#: templates/base.html:89
+msgid "Reservations"
+msgstr "Reservas"
 
-#: templates/bookings/_reservation_sidebar.html:3
-#: templates/bookings/checkout.html:116
+#: templates/base.html:90
+msgid "Services"
+msgstr "Servicios"
+
+#: templates/base.html:90
+msgid "Groups & Long Stays"
+msgstr "Grupos & Largas Estadías"
+
+#: templates/base.html:90
+msgid "Events & Productions"
+msgstr "Eventos & Producciones"
+
+#: templates/base.html:91
+msgid "About us"
+msgstr "Nosotros"
+
+#: templates/base.html:91
+msgid "Who are we?"
+msgstr "¿Quiénes somos?"
+
+#: templates/base.html:91
+msgid "Blog & News"
+msgstr "Blog y noticias"
+
+#: templates/base.html:91
+msgid "Work with us"
+msgstr "Trabaja con nosotros"
+
+#: templates/base.html:92
+msgid "Owners & Investors"
+msgstr "Propietarios & Inversionistas"
+
+#: templates/base.html:92
+msgid "Wynwood Real Estate"
+msgstr "Bienes raíces Wynwood"
+
+#: templates/base.html:92
+msgid "Owners"
+msgstr "Propietarios"
+
+#: templates/base.html:93
+msgid "Benefits"
+msgstr "Beneficios"
+
+#: templates/base.html:93
+msgid "Guides"
+msgstr "Guías"
+
+#: templates/base.html:93
+msgid "Rewards Program"
+msgstr "Programa de Rewards"
+
+#: templates/base.html:95
+msgid "Destinations"
+msgstr "Destinos"
+
+#: templates/base.html:96
+msgid "Terms & Conditions"
+msgstr "Términos y condiciones"
+
+#: templates/base.html:97
+msgid "Contact us"
+msgstr "Contáctanos"
+
+#: templates/base.html:97
+msgid "Write to us"
+msgstr "Escríbenos"
+
+#: templates/base.html:97
+msgid "FAQ"
+msgstr "Preguntas frecuentes"
+
+#: templates/base.html:98
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: templates/base.html:110
+msgid "Download our app for free"
+msgstr "Descarga nuestra app gratis"
+
+#: templates/base.html:112
+msgid "Download on the App Store"
+msgstr "Descargar en App Store"
+
+#: templates/base.html:113
+msgid "Get it on Google Play"
+msgstr "Descargar en Google Play"
+
+#: templates/bookings/_reservation_sidebar.html:4
+#: templates/payments/checkout.html:103
+msgid "Need help completing your reservation?"
+msgstr "¿Necesitas ayuda para completar tu reserva?"
+
+#: templates/bookings/_reservation_sidebar.html:4
+#: templates/bookings/checkout.html:112
 msgid "Do you need help completing your reservation?"
 msgstr "¿Necesitas ayuda para completar tu reserva?"
 
-#: templates/bookings/_reservation_sidebar.html:12
-#: templates/bookings/checkout.html:130
+#: templates/bookings/_reservation_sidebar.html:23
+#: templates/bookings/checkout.html:131
 msgid "Dates"
 msgstr "Fechas"
 
-#: templates/bookings/_reservation_sidebar.html:18
+#: templates/bookings/_reservation_sidebar.html:24
+msgid "Edit dates"
+msgstr "Editar fechas"
+
+#: templates/bookings/_reservation_sidebar.html:33
+msgid "Edit guests"
+msgstr "Editar huéspedes"
+
+#: templates/bookings/_reservation_sidebar.html:34
 #, python-format
 msgid "%(guests)s person"
 msgid_plural "%(guests)s people"
 msgstr[0] "%(guests)s persona"
 msgstr[1] "%(guests)s personas"
 
-#: templates/bookings/_reservation_sidebar.html:28
-#: templates/bookings/checkout.html:140 templates/bookings/confirmation.html:37
+#: templates/bookings/_reservation_sidebar.html:38
+#: templates/bookings/checkout.html:147
+#: templates/components/search_form.html:49
+#: templates/components/search_form.html:115
+#: templates/properties/results.html:79
+msgid "Remove guest"
+msgstr "Quitar huésped"
+
+#: templates/bookings/_reservation_sidebar.html:40
+#: templates/bookings/checkout.html:149
+#: templates/components/search_form.html:51
+#: templates/components/search_form.html:117
+#: templates/properties/results.html:81
+msgid "Add guest"
+msgstr "Agregar huésped"
+
+#: templates/bookings/_reservation_sidebar.html:44
+msgid "Update stay"
+msgstr "Actualizar estadía"
+
+#: templates/bookings/_reservation_sidebar.html:50
+#: templates/bookings/checkout.html:156
+msgid "month"
+msgstr "mes"
+
+#: templates/bookings/_reservation_sidebar.html:50
+#: templates/bookings/checkout.html:156
+msgid "nights"
+msgstr "noches"
+
+#: templates/bookings/_reservation_sidebar.html:57
+#: templates/bookings/checkout.html:160 templates/bookings/confirmation.html:36
 #: templates/bookings/email/confirmation.html:102
 msgid "Cleaning fee"
 msgstr "Tarifa de limpieza"
 
-#: templates/bookings/_reservation_sidebar.html:39
-#: templates/bookings/checkout.html:145 templates/bookings/confirmation.html:48
+#: templates/bookings/_reservation_sidebar.html:68
+msgid "Taxes included"
+msgstr "Impuestos incluidos"
+
+#: templates/bookings/_reservation_sidebar.html:77
+#: templates/bookings/checkout.html:166 templates/bookings/confirmation.html:47
 #: templates/bookings/email/confirmation.html:113
 msgid "Wynwood Points discount"
 msgstr "Descuento Wynwood Points"
 
-#: templates/bookings/_reservation_sidebar.html:44
-#: templates/bookings/checkout.html:148 templates/bookings/confirmation.html:53
+#: templates/bookings/_reservation_sidebar.html:82
+#: templates/bookings/checkout.html:169 templates/bookings/confirmation.html:52
 #: templates/bookings/email/confirmation.html:134
 #: templates/bookings/email/confirmation.txt:9
 msgid "Total"
 msgstr "Total"
 
-#: templates/bookings/_reservation_sidebar.html:49
-#: templates/bookings/confirmation.html:21
+#: templates/bookings/_reservation_sidebar.html:87
+#: templates/bookings/confirmation.html:20
 msgid "With this booking you are earning"
 msgstr "Con esta reserva estás acumulando"
 
-#: templates/bookings/_reservation_sidebar.html:50
-#: templates/bookings/checkout.html:152
+#: templates/bookings/_reservation_sidebar.html:88
+#: templates/bookings/checkout.html:173
+#, python-format
 msgid "%(points)s Wynwood Points"
 msgstr "%(points)s Wynwood Points"
 
-#: templates/bookings/_reservation_sidebar.html:51
-#: templates/bookings/checkout.html:153
+#: templates/bookings/_reservation_sidebar.html:89
+#: templates/bookings/checkout.html:174
 msgid "Learn more about Wynwood Points"
 msgstr "Conoce más sobre Wynwood Points"
 
 #: templates/bookings/checkout.html:3 templates/bookings/checkout.html:9
 #: templates/bookings/service_detail.html:8 templates/bookings/services.html:3
-#: templates/bookings/services.html:8
+#: templates/bookings/services.html:8 templates/payments/checkout.html:9
 msgid "Payment page"
 msgstr "Página de pago"
 
@@ -625,224 +1027,167 @@ msgstr "Página de pago"
 msgid "Breadcrumb"
 msgstr "Ruta de navegación"
 
-#: templates/bookings/checkout.html:17
+#: templates/bookings/checkout.html:19
 msgid "Registration"
 msgstr "Registro"
 
-#: templates/bookings/checkout.html:18
+#: templates/bookings/checkout.html:20
 msgid "We will email the confirmation of your reservation."
 msgstr "Te enviaremos la confirmación de tu reserva por correo electrónico."
 
-#: templates/bookings/checkout.html:31
-msgid "Hide password"
-msgstr "Ocultar contraseña"
-
-#: templates/bookings/checkout.html:36
+#: templates/bookings/checkout.html:38
 msgid "Strong"
 msgstr "Fuerte"
 
-#: templates/bookings/checkout.html:36 templates/bookings/checkout.html:37
+#: templates/bookings/checkout.html:38 templates/bookings/checkout.html:39
 msgid "Weak"
 msgstr "Débil"
 
-#: templates/bookings/checkout.html:37
+#: templates/bookings/checkout.html:39
 msgid "Password strength:"
 msgstr "Seguridad de la contraseña:"
 
-#: templates/bookings/checkout.html:38
+#: templates/bookings/checkout.html:40
 msgid "It cannot contain your name or email address"
 msgstr "No puede contener tu nombre o dirección de correo electrónico"
 
-#: templates/bookings/checkout.html:39
-msgid "At least 8 characters"
-msgstr "Al menos 8 caracteres"
+#: templates/bookings/checkout.html:41
+msgid "At least 10 characters"
+msgstr "Al menos 10 caracteres"
 
-#: templates/bookings/checkout.html:40
+#: templates/bookings/checkout.html:42
 msgid "It does not contain a number or symbol"
 msgstr "No contiene un número o símbolo"
 
-#: templates/bookings/checkout.html:50
+#: templates/bookings/checkout.html:52
 msgid "Personal information"
 msgstr "Información personal"
 
-#: templates/bookings/checkout.html:81
+#: templates/bookings/checkout.html:89 templates/payments/checkout.html:21
 msgid "Additional services"
 msgstr "Servicios adicionales"
 
-#: templates/bookings/checkout.html:82
+#: templates/bookings/checkout.html:90
 msgid "Personalize your trip with additional services"
 msgstr "Personaliza tu viaje con servicios adicionales"
 
-#: templates/bookings/checkout.html:86
-msgid "Flexible check-in & check-out"
-msgstr "Check-in & Check-out flexible"
-
-#: templates/bookings/checkout.html:87 templates/bookings/checkout.html:92
-#: templates/bookings/checkout.html:97 templates/bookings/checkout.html:102
-#: templates/bookings/config/crib.html:25
-#: templates/bookings/config/flexible_checkin.html:21
-#: templates/bookings/config/groceries.html:30
-#: templates/bookings/config/transport.html:101
-#: templates/bookings/services.html:38
+#: templates/bookings/checkout.html:97
+#: templates/bookings/config/_actions.html:5
+#: templates/bookings/services.html:44 templates/payments/checkout.html:37
 msgid "Add"
 msgstr "Agregar"
 
-#: templates/bookings/checkout.html:87 templates/bookings/checkout.html:92
-#: templates/bookings/checkout.html:97 templates/bookings/checkout.html:102
-#: templates/bookings/services.html:30
+#: templates/bookings/checkout.html:97 templates/bookings/services.html:30
 msgid "Added"
 msgstr "Agregado"
 
-msgid "Configure"
-msgstr "Configurar"
-
-msgid "Airport"
-msgstr "Aeropuerto"
-
-msgid "Service dates"
-msgstr "Fechas del servicio"
-
-msgid "Select dates"
-msgstr "Seleccionar fechas"
-
-msgid "Select a date"
-msgstr "Seleccionar una fecha"
-
-msgid "Delivery date"
-msgstr "Fecha de entrega"
-
-msgid "Service date"
-msgstr "Fecha del servicio"
-
-msgid "Choose the date and time for your flexible check-in or check-out request."
-msgstr "Elige la fecha y hora para solicitar un check-in o check-out flexible."
-
-msgid "Choose a date during your stay."
-msgstr "Elige una fecha durante tu estadía."
-
-msgid "Choose dates within your stay."
-msgstr "Elige fechas dentro de tu estadía."
-
-msgid "The end date must be after the start date."
-msgstr "La fecha de salida debe ser posterior a la fecha de llegada."
-
-msgid "Choose a delivery date during your stay."
-msgstr "Elige una fecha de entrega durante tu estadía."
-
-#: templates/bookings/checkout.html:96
-msgid "Stock your fridge"
-msgstr "Llena tu nevera"
-
-#: templates/bookings/checkout.html:106
+#: templates/bookings/checkout.html:102
 #, python-format
-msgid ""
-"By selecting continue, you accept the <a href=\"%(cancel_url)s\" "
-"target=\"_blank\" rel=\"noopener\">Cancellation Policy</a>, <a "
-"href=\"%(terms_url)s\" target=\"_blank\" rel=\"noopener\">Terms of Service</"
-"a> and <a href=\"%(privacy_url)s\" target=\"_blank\" "
-"rel=\"noopener\">Privacy Policies</a>. You also agree to pay the total "
-"amount shown."
-msgstr "Al seleccionar continuar, aceptas las <a href=\"%(cancel_url)s\" "
-"target=\"_blank\" rel=\"noopener\">Políticas de cancelación</a>, <a "
-"href=\"%(terms_url)s\" target=\"_blank\" rel=\"noopener\">Términos de servicio</"
-"a> y <a href=\"%(privacy_url)s\" target=\"_blank\" "
-"rel=\"noopener\">Políticas de privacidad</a>. También estás de acuerdo en pagar la "
-"cantidad total mostrada."
+msgid "By selecting continue, you accept the <a href=\"%(cancel_url)s\" target=\"_blank\" rel=\"noopener\">Cancellation Policy</a>, <a href=\"%(terms_url)s\" target=\"_blank\" rel=\"noopener\">Terms of Service</a> and <a href=\"%(privacy_url)s\" target=\"_blank\" rel=\"noopener\">Privacy Policies</a>. You also agree to pay the total amount shown."
+msgstr "Al seleccionar continuar, aceptas las <a href=\"%(cancel_url)s\" target=\"_blank\" rel=\"noopener\">Políticas de cancelación</a>, <a href=\"%(terms_url)s\" target=\"_blank\" rel=\"noopener\">Términos de servicio</a> y <a href=\"%(privacy_url)s\" target=\"_blank\" rel=\"noopener\">Políticas de privacidad</a>. También estás de acuerdo en pagar la cantidad total mostrada."
 
-#: templates/bookings/checkout.html:108
+#: templates/bookings/checkout.html:104
 msgid "Continue"
 msgstr "Continuar"
 
-#: templates/bookings/checkout.html:111
-msgid ""
-"Wynwood will send you exclusive member offers, inspiring content, commercial "
-"emails and push notifications. You can opt out at any time from your account "
-"settings or directly from any notification you receive."
-msgstr "Wynwood te enviará ofertas exclusivas para miembros, contenido inspirador, correos "
-"comerciales y notificaciones push. Puedes darte de baja en cualquier momento desde la "
-"configuración de tu cuenta o directamente desde cualquier notificación que recibas."
+#: templates/bookings/checkout.html:107
+msgid "Wynwood will send you exclusive member offers, inspiring content, commercial emails and push notifications. You can opt out at any time from your account settings or directly from any notification you receive."
+msgstr "Wynwood te enviará ofertas exclusivas para miembros, contenido inspirador, correos comerciales y notificaciones push. Puedes darte de baja en cualquier momento desde la configuración de tu cuenta o directamente desde cualquier notificación que recibas."
 
-#: templates/bookings/checkout.html:131
+#: templates/bookings/checkout.html:134
 msgid "Change dates"
 msgstr "Cambiar fechas"
 
-#: templates/bookings/checkout.html:135
+#: templates/bookings/checkout.html:139
+msgid "person"
+msgstr "persona"
+
+#: templates/bookings/checkout.html:139
+msgid "people"
+msgstr "personas"
+
+#: templates/bookings/checkout.html:142
 #, python-format
 msgid "%(counter)s person"
 msgid_plural "%(counter)s people"
 msgstr[0] "%(counter)s persona"
 msgstr[1] "%(counter)s personas"
 
-#: templates/bookings/checkout.html:135
+#: templates/bookings/checkout.html:143
 msgid "Change guests"
 msgstr "Cambiar huéspedes"
 
-#: templates/bookings/checkout.html:151
+#: templates/bookings/checkout.html:172
 msgid "With this reservation you are generating"
 msgstr "Con esta reserva estás generando"
 
-#: templates/bookings/config/crib.html:10
-msgid "Remove crib"
-msgstr "Quitar cuna"
-
-#: templates/bookings/config/crib.html:12
-msgid "Add crib"
-msgstr "Agregar cuna"
-
-#: templates/bookings/config/crib.html:18
-#: templates/bookings/config/flexible_checkin.html:13
-#: templates/bookings/config/groceries.html:23
-#: templates/bookings/config/transport.html:93
-msgid "TOTAL:"
-msgstr "TOTAL:"
-
-#: templates/bookings/config/crib.html:23
-#: templates/bookings/config/flexible_checkin.html:19
-#: templates/bookings/config/groceries.html:28
-#: templates/bookings/config/transport.html:99
+#: templates/bookings/config/_actions.html:3
 msgid "Back"
 msgstr "Volver"
 
-#: templates/bookings/config/crib.html:25
-#: templates/bookings/config/flexible_checkin.html:21
-#: templates/bookings/config/groceries.html:30
-#: templates/bookings/config/transport.html:101
+#: templates/bookings/config/_actions.html:5
 msgid "Update"
 msgstr "Actualizar"
 
-#: templates/bookings/config/flexible_checkin.html:7
-#, python-format
-msgid ""
-"Book an early check-in on %(date)s and access your reservation without "
-"waiting!"
-msgstr ""
+#: templates/bookings/config/crib.html:8
+#: templates/bookings/config/transport.html:22
+msgid "Service dates"
+msgstr "Fechas del servicio"
+
+#: templates/bookings/config/crib.html:11
+#: templates/bookings/config/transport.html:25
+msgid "Select dates"
+msgstr "Seleccionar fechas"
+
+#: templates/bookings/config/crib.html:22
+msgid "Remove crib"
+msgstr "Quitar cuna"
+
+#: templates/bookings/config/crib.html:24
+msgid "Add crib"
+msgstr "Agregar cuna"
+
+#: templates/bookings/config/crib.html:30
+#: templates/bookings/config/flexible_checkin.html:22
+#: templates/bookings/config/groceries.html:34
+#: templates/bookings/config/transport.html:106
+msgid "TOTAL:"
+msgstr "TOTAL:"
+
+#: templates/bookings/config/flexible_checkin.html:6
+msgid "Choose the date and time for your flexible check-in or check-out request."
+msgstr "Elige la fecha y hora para solicitar un check-in o check-out flexible."
+
+#: templates/bookings/config/flexible_checkin.html:12
+#: templates/bookings/config/groceries.html:11
+msgid "Select a date"
+msgstr "Seleccionar una fecha"
 
 #: templates/bookings/config/transport.html:6
-msgid ""
-"Book your transport to and from the airport according to your preferences:"
-msgstr ""
+msgid "Book your transport to and from the airport according to your preferences:"
+msgstr "Reserva tu transporte de ida y vuelta al aeropuerto según tus preferencias:"
 
-#: templates/bookings/config/transport.html:31
+#: templates/bookings/config/transport.html:41
 msgid "Return"
 msgstr "Volver"
 
-#: templates/bookings/config/transport.html:62
+#: templates/bookings/config/transport.html:75
 msgid "Remove vehicle"
 msgstr "Quitar vehículo"
 
-#: templates/bookings/config/transport.html:64
+#: templates/bookings/config/transport.html:77
 msgid "Add vehicle"
 msgstr "Agregar vehículo"
 
-#: templates/bookings/config/transport.html:70
+#: templates/bookings/config/transport.html:83
 msgid "Service summary"
 msgstr "Resumen del servicio"
 
-#: templates/bookings/config/transport.html:81
+#: templates/bookings/config/transport.html:94
 msgid "Passengers"
 msgstr "Pasajeros"
 
-#: templates/bookings/config/transport.html:88
+#: templates/bookings/config/transport.html:101
 msgid "Suitcases"
 msgstr "Maletas"
 
@@ -850,73 +1195,63 @@ msgstr "Maletas"
 msgid "Booking confirmed"
 msgstr "Reserva confirmada"
 
-#: templates/bookings/confirmation.html:9
+#: templates/bookings/confirmation.html:8
 msgid "Hello!"
 msgstr "¡Hola!"
 
-#: templates/bookings/confirmation.html:10
+#: templates/bookings/confirmation.html:9
 #: templates/bookings/email/confirmation.html:31
 msgid "Thank you for choosing Wynwood House"
 msgstr "Gracias por elegir Wynwood House"
 
-#: templates/bookings/confirmation.html:10
+#: templates/bookings/confirmation.html:9
 msgid "for your next stay"
 msgstr "para tu próxima estadía"
 
-#: templates/bookings/confirmation.html:16
-msgid ""
-"We are delighted to accompany you on this new adventure. Get ready to live a "
-"unique experience in one of our exclusive destinations, where every detail "
-"is designed to make you feel at home."
-msgstr ""
-"Estamos encantados de acompañarte en esta nueva aventura. Prepárate para "
-"vivir una experiencia única en uno de nuestros destinos exclusivos, donde "
-"cada detalle está pensado para que te sientas como en casa."
+#: templates/bookings/confirmation.html:15
+msgid "We are delighted to accompany you on this new adventure. Get ready to live a unique experience in one of our exclusive destinations, where every detail is designed to make you feel at home."
+msgstr "Estamos encantados de acompañarte en esta nueva aventura. Prepárate para vivir una experiencia única en uno de nuestros destinos exclusivos, donde cada detalle está pensado para que te sientas como en casa."
 
-#: templates/bookings/confirmation.html:17
+#: templates/bookings/confirmation.html:16
 msgid "Chat with us 24/7"
 msgstr "Conversa con nosotros 24/7"
 
-#: templates/bookings/confirmation.html:22
+#: templates/bookings/confirmation.html:21
 #, python-format
 msgid "%(points)s Wynwood Points!"
 msgstr "¡%(points)s Wynwood Points!"
 
-#: templates/bookings/confirmation.html:23
+#: templates/bookings/confirmation.html:22
 #: templates/bookings/email/confirmation.html:75
 msgid "Discover your benefits"
 msgstr "Descubre tus beneficios"
 
-#: templates/bookings/confirmation.html:33
+#: templates/bookings/confirmation.html:32
 #: templates/bookings/email/confirmation.html:98
 msgid "Nights"
 msgstr "Noches"
 
-#: templates/bookings/confirmation.html:61
-msgid ""
-"To make the most of your Wynwood experience, we invite you to explore our "
-"additional services to maximise and personalise your stay:"
-msgstr ""
-"Para aprovechar al máximo tu experiencia en Wynwood, te invitamos a explorar "
-"nuestros servicios adicionales para maximizar y personalizar tu estadía:"
+#: templates/bookings/confirmation.html:60
+msgid "To make the most of your Wynwood experience, we invite you to explore our additional services to maximise and personalise your stay:"
+msgstr "Para aprovechar al máximo tu experiencia en Wynwood, te invitamos a explorar nuestros servicios adicionales para maximizar y personalizar tu estadía:"
 
-#: templates/bookings/confirmation.html:65
+#: templates/bookings/confirmation.html:64
 msgid "Additional cleaning"
 msgstr "Limpieza adicional"
 
-#: templates/bookings/confirmation.html:69
+#: templates/bookings/confirmation.html:68
 msgid "Private transport"
 msgstr "Transporte privado"
 
-#: templates/bookings/confirmation.html:73
+#: templates/bookings/confirmation.html:72
 msgid "Late check-out"
 msgstr "Late check-out"
 
-#: templates/bookings/confirmation.html:77
+#: templates/bookings/confirmation.html:76
 msgid "Travel insurance"
 msgstr "Seguro de viajes"
 
-#: templates/bookings/confirmation.html:80
+#: templates/bookings/confirmation.html:79
 #: templates/bookings/email/confirmation.html:210
 msgid "Cancellation policies"
 msgstr "Políticas de cancelación"
@@ -941,16 +1276,12 @@ msgid "You are ready to begin your Wynwood Experience!"
 msgstr "¡Ya estás listo para comenzar tu Wynwood Experience!"
 
 #: templates/bookings/email/confirmation.html:46
-msgid ""
-"Your reservation is confirmed and we look forward to welcoming you soon."
+msgid "Your reservation is confirmed and we look forward to welcoming you soon."
 msgstr "Tu reserva ha sido confirmada y esperamos recibirte muy pronto."
 
 #: templates/bookings/email/confirmation.html:47
-msgid ""
-"Before your arrival you will receive all the check-in information by email."
-msgstr ""
-"Previo a tu llegada recibirás en tu correo toda la información para el "
-"ingreso."
+msgid "Before your arrival you will receive all the check-in information by email."
+msgstr "Previo a tu llegada recibirás en tu correo toda la información para el ingreso."
 
 #: templates/bookings/email/confirmation.html:48
 msgid "If you have any questions, do not hesitate to contact us."
@@ -977,33 +1308,44 @@ msgstr "Resumen de tu reserva"
 msgid "Amount invoiced"
 msgstr "Monto facturado"
 
-#: templates/bookings/email/confirmation.html:123
-msgid "VAT"
-msgstr "IVA"
-
 #: templates/bookings/email/confirmation.html:146
 msgid "Other destinations"
 msgstr "Otros destinos"
+
+#: templates/bookings/email/confirmation.html:154
+#: templates/bookings/email/confirmation.html:155
+msgid "Mexico"
+msgstr "México"
+
+#: templates/bookings/email/confirmation.html:158
+#: templates/bookings/email/confirmation.html:159
+msgid "Peru"
+msgstr "Perú"
+
+#: templates/bookings/email/confirmation.html:162
+#: templates/bookings/email/confirmation.html:163
+msgid "Panama"
+msgstr "Panamá"
+
+#: templates/bookings/email/confirmation.html:166
+#: templates/bookings/email/confirmation.html:167 templates/core/home.html:84
+msgid "Spain"
+msgstr "España"
 
 #: templates/bookings/email/confirmation.html:178
 msgid "Explore your destination with confidence with our city guides."
 msgstr "Explora tu destino con confianza con nuestras guías de ciudades."
 
 #: templates/bookings/email/confirmation.html:183
-msgid ""
-"Do not settle for the basics. Download <strong>our app</strong>, personalize "
-"your stay with <strong>additional services</strong> and enjoy a new way to "
-"travel."
-msgstr ""
-"No te conformes con lo básico. Descarga <strong>nuestra app</strong>, "
-"personaliza tu estancia con <strong>servicios adicionales</strong> y "
-"disfruta de la nueva forma de viajar."
+msgid "Do not settle for the basics. Download <strong>our app</strong>, personalize your stay with <strong>additional services</strong> and enjoy a new way to travel."
+msgstr "No te conformes con lo básico. Descarga <strong>nuestra app</strong>, personaliza tu estancia con <strong>servicios adicionales</strong> y disfruta de la nueva forma de viajar."
 
 #: templates/bookings/email/confirmation.html:209
 msgid "Support 24/7"
 msgstr "Soporte 24/7"
 
 #: templates/bookings/email/confirmation.txt:1
+#, python-format
 msgid "Hello %(name)s,"
 msgstr "¡Hola %(name)s!"
 
@@ -1039,38 +1381,41 @@ msgstr "Tus próximas estadías aparecerán aquí."
 msgid "Explore homes"
 msgstr "Explorar propiedades"
 
-#: templates/bookings/services.html:14
+#: templates/bookings/services.html:14 templates/payments/checkout.html:15
 #, python-format
 msgid "WELCOME TO WYNWOOD HOUSE %(name)s!"
 msgstr "¡BIENVENIDO A WYNWOOD HOUSE %(name)s!"
 
-#: templates/bookings/services.html:15
-msgid ""
-"Select your additional services and payment method to continue with the "
-"reservation"
+#: templates/bookings/services.html:15 templates/payments/checkout.html:16
+msgid "Select your additional services and payment method to continue with the reservation"
 msgstr "Selecciona tus servicios adicionales y método de pago para continuar con la reserva."
 
 #: templates/bookings/services.html:19
 msgid "ELEVA TU ESTADÍA CON SERVICIOS ADICIONALES"
 msgstr "ELEVA TU ESTADÍA CON SERVICIOS ADICIONALES"
 
-#: templates/bookings/services.html:34
+#: templates/bookings/services.html:31
+msgid "Configure"
+msgstr "Configurar"
+
+#: templates/bookings/services.html:35 templates/payments/checkout.html:33
 msgid "Remove"
 msgstr "Quitar"
 
-#: templates/bookings/services.html:46
+#: templates/bookings/services.html:54
 msgid "Continue to payment"
 msgstr "Continuar al pago"
 
 #: templates/components/main_links.html:5
-msgid "Publica tu propiedad"
+msgid "List your property"
 msgstr "Publica tu propiedad"
 
 #: templates/components/main_links.html:6
-msgid "Invierte en Bienes Raíces"
-msgstr "Invierte en Bienes Raíces"
+msgid "Invest in real estate"
+msgstr "Invierte en bienes raíces"
 
 #: templates/components/property_card.html:5
+#: templates/properties/results.html:95
 msgid "From"
 msgstr "Desde"
 
@@ -1078,24 +1423,226 @@ msgstr "Desde"
 msgid "bedrooms"
 msgstr "habitaciones"
 
-#: templates/components/search_form.html:15
-msgid "Add dates"
-msgstr "Agregar fechas"
+#: templates/components/search_form.html:4
+#: templates/components/search_form.html:11
+#: templates/components/search_form.html:12
+#: templates/components/search_form.html:62
+#: templates/components/search_form.html:68
+#: templates/components/search_form.html:69
+#: templates/properties/results.html:12 templates/properties/results.html:24
+msgid "City or destination"
+msgstr "Ciudad o destino"
 
-#: templates/components/search_form.html:16 templates/properties/detail.html:51
-#: templates/properties/results.html:19
+#: templates/components/search_form.html:4
+#: templates/components/search_form.html:62
+#: templates/properties/results.html:12
+msgid "District"
+msgstr "Distrito"
+
+#: templates/components/search_form.html:5
+#: templates/components/search_form.html:63
+#: templates/properties/results.html:13
+msgid "district"
+msgstr "distrito"
+
+#: templates/components/search_form.html:5
+#: templates/components/search_form.html:63
+#: templates/components/search_form.html:81
+#: templates/properties/results.html:13 templates/properties/results.html:40
+msgid "Districts"
+msgstr "Distritos"
+
+#: templates/components/search_form.html:8
+msgid "Destination"
+msgstr "Destino"
+
+#: templates/components/search_form.html:25
+#: templates/components/search_form.html:33
+#: templates/components/search_form.html:91
+#: templates/components/search_form.html:95 templates/properties/detail.html:65
+#: templates/properties/detail.html:68
 msgid "Arrival - Departure"
 msgstr "Llegada - Salida"
 
-#: templates/core/home.html:47
+#: templates/components/search_form.html:26
+#: templates/components/search_form.html:30
+msgid "Add dates"
+msgstr "Agregar fechas"
+
+#: templates/components/search_form.html:58
+#: templates/components/search_form.html:124
+msgid "Search"
+msgstr "Buscar"
+
+#: templates/components/search_form.html:83
+#: templates/properties/results.html:16 templates/properties/results.html:51
+msgid "Select a city first"
+msgstr "Selecciona primero una ciudad"
+
+#: templates/components/search_form.html:110
+msgid "Number of guests"
+msgstr "Número de huéspedes"
+
+#: templates/core/home.html:9
+#, python-format
+msgid "¡Aprovecha el 20 %% de descuento en todas las estadías! Solo quedan"
+msgstr "¡Aprovecha el 20 %% de descuento en todas las estadías! Solo quedan"
+
+#: templates/core/home.html:11
+#, python-format
+msgid "Hurry! 20%% off all stays. Only"
+msgstr "¡Aprovecha el 20%% de descuento en todas las estadías! Solo quedan"
+
+#: templates/core/home.html:17
+msgid "HOME EXPERIENCE, HOTEL QUALITY"
+msgstr "EXPERIENCIA DE HOGAR, CALIDAD DE HOTEL"
+
+#: templates/core/home.html:18
+msgid "BEST OF BOTH WORLDS"
+msgstr "LO MEJOR DE DOS MUNDOS"
+
+#: templates/core/home.html:25
+msgid "Discover our destinations"
+msgstr "Descubre nuestros destinos"
+
+#: templates/core/home.html:27
+msgid "Previous"
+msgstr "Anterior"
+
+#: templates/core/home.html:32
+msgid "Next"
+msgstr "Siguiente"
+
+#: templates/core/home.html:48
 msgid "Featured homes"
 msgstr "Propiedades destacadas"
 
-#: templates/core/home.html:70 templates/properties/results.html:57
+#: templates/core/home.html:49
+msgid "Explore our exclusive homes and discover your preferred destination your way. Find your ideal stay and start a unique experience."
+msgstr "Descubre nuestra selección exclusiva de propiedades y conoce tu destino preferido a tu manera. Encuentra tu estadía ideal y empieza a vivir una experiencia única."
+
+#: templates/core/home.html:53
+msgid "All properties"
+msgstr "Todas las propiedades"
+
+#: templates/core/home.html:71 templates/properties/_results_list.html:11
+#: templates/properties/results.html:149
 msgid "night"
 msgstr "noche"
 
+#: templates/core/home.html:87
+msgid "Why travel to Spain?"
+msgstr "¿Por qué viajar a España?"
+
+#: templates/core/home.html:88
+msgid "Discover a country where historic streets, remarkable architecture, regional cuisine and Mediterranean coastlines make every city a different experience. Stay close to local life and explore Spain at your own pace."
+msgstr "Descubre un país donde las calles históricas, la arquitectura, la gastronomía regional y las costas mediterráneas hacen de cada ciudad una experiencia distinta. Alójate cerca de la vida local y explora España a tu propio ritmo."
+
+#: templates/core/home.html:89
+msgid "Explore stays in Spain"
+msgstr "Descubre alojamientos en España"
+
+#: templates/core/home.html:95
+msgid "Services at Wynwood House"
+msgstr "Servicios en Wynwood House"
+
+#: templates/core/home.html:96
+msgid "Discover the services our properties offer to make your stay the most comfortable and exciting experience you can imagine."
+msgstr "Descubre los servicios que ofrecen nuestras propiedades para hacer de tu estadía la experiencia más cómoda y emocionante que puedas imaginar."
+
+#: templates/core/home.html:99
+msgid "CONTACTLESS CHECK-IN"
+msgstr "CHECK-IN SIN CONTACTO"
+
+#: templates/core/home.html:100
+msgid "PROFESSIONAL CLEANING"
+msgstr "LIMPIEZA PROFESIONAL"
+
+#: templates/core/home.html:102
+msgid "BATHROOM KIT"
+msgstr "KIT DE BAÑO"
+
+#: templates/core/home.html:103
+msgid "FULLY EQUIPPED KITCHEN"
+msgstr "COCINA EQUIPADA"
+
+#: templates/core/home.html:104
+msgid "PET FRIENDLY"
+msgstr "PET FRIENDLY"
+
+#: templates/core/home.html:105
+msgid "24/7 SUPPORT"
+msgstr "SOPORTE 24/7"
+
+#: templates/core/home.html:106
+msgid "WYNWOOD BED"
+msgstr "CAMA WYNWOOD"
+
+#: templates/core/home.html:116
+msgid "Enjoy our events!"
+msgstr "¡Disfruta de nuestros eventos!"
+
+#: templates/core/home.html:117
+msgid "Live your experience to the fullest as you dive into the vibrant world of our Wynwood events. Enjoy art, culture, and inspiration like never before."
+msgstr "Vive tu experiencia al máximo mientras te sumerges en el vibrante mundo de los eventos Wynwood. Disfruta de arte, cultura e inspiración como nunca antes."
+
+#: templates/core/home.html:118
+msgid "View all events"
+msgstr "Ver todos los eventos"
+
+#: templates/core/home.html:123
+msgid "Benefits of Wynwood House"
+msgstr "Beneficios de Wynwood House"
+
+#: templates/core/home.html:126
+msgid "City guides"
+msgstr "Guías de ciudades"
+
+#: templates/core/home.html:127
+msgid "Get to know each destination with local recommendations for places to visit, eat and explore."
+msgstr "Conoce cada destino con recomendaciones locales de lugares para visitar, comer y explorar."
+
+#: templates/core/home.html:128
+msgid "Explore destinations"
+msgstr "Explora los destinos"
+
+#: templates/core/home.html:132
+msgid "EXTRA SERVICES"
+msgstr "SERVICIOS ADICIONALES"
+
+#: templates/core/home.html:136
+msgid "REWARDS PROGRAM"
+msgstr "PROGRAMA DE REWARDS"
+
+#: templates/core/home.html:151
+msgid "Long-term rentals"
+msgstr "Alquileres a largo plazo"
+
+#: templates/core/home.html:153
+msgid "LONG STAYS"
+msgstr "ALQUILERES A LARGO PLAZO"
+
+#: templates/core/home.html:154
+msgid "Enjoy the comfort of an extended stay and special rates designed for longer visits."
+msgstr "Disfruta del confort de una estadía prolongada y de tarifas especiales diseñadas para visitas largas."
+
+#: templates/core/home.html:155
+msgid "CONTACT US"
+msgstr "CONTÁCTANOS"
+
+#: templates/core/home.html:167
+msgid "INVEST IN REAL ESTATE"
+msgstr "INVIERTE EN BIENES RAÍCES"
+
 #: templates/core/home.html:168
+msgid "Buy or sell your property with professional guidance and a smooth experience."
+msgstr "Compra o vende tu propiedad con asesoramiento profesional y una experiencia sencilla."
+
+#: templates/core/home.html:170
+msgid "LEARN MORE"
+msgstr "SABER MÁS"
+
+#: templates/core/home.html:174
 msgid "Featured in"
 msgstr "Destacado en"
 
@@ -1107,56 +1654,182 @@ msgstr "Tu información está segura. Vuelve al inicio e inténtalo de nuevo."
 msgid "Go home"
 msgstr "Volver al inicio"
 
-#: templates/properties/detail.html:8
+#: templates/payments/checkout.html:3
+msgid "Payment information"
+msgstr "Información de pago"
+
+#: templates/payments/checkout.html:22
+msgid "Enjoy a hassle-free stay with our additional services."
+msgstr "Disfruta de una estadía sin complicaciones con nuestros servicios adicionales."
+
+#: templates/payments/checkout.html:47
+msgid "PAYMENT METHOD"
+msgstr "MÉTODO DE PAGO"
+
+#: templates/payments/checkout.html:50
+msgid "Debit / credit card"
+msgstr "Tarjeta de débito / crédito"
+
+#: templates/payments/checkout.html:58
+msgid "PAYMENT INFORMATION"
+msgstr "INFORMACIÓN DE PAGO"
+
+#: templates/payments/checkout.html:59
+msgid "Review your reservation details to continue."
+msgstr "Revisa la información de tu reservación para continuar."
+
+#: templates/payments/checkout.html:61
+msgid "Change"
+msgstr "Cambiar"
+
+#: templates/payments/checkout.html:67
+msgid "Secure simulated payment"
+msgstr "Pago simulado seguro"
+
+#: templates/payments/checkout.html:81
+msgid "BILLING INFORMATION"
+msgstr "DATOS DE FACTURACIÓN"
+
+#: templates/payments/checkout.html:97
+msgid "By selecting I agree and continue, you accept"
+msgstr "Al seleccionar Acepto y continúo, aceptas"
+
+#: templates/payments/checkout.html:97
+msgid "and"
+msgstr "y"
+
+#: templates/payments/checkout.html:97
+msgid "You also agree to pay the total amount shown."
+msgstr "También estás de acuerdo en pagar la cantidad total mostrada."
+
+#: templates/payments/checkout.html:99
+msgid "COMPLETE RESERVATION"
+msgstr "COMPLETAR RESERVA"
+
+#: templates/properties/_results_list.html:13
+msgid "beds"
+msgstr "camas"
+
+#: templates/properties/_results_list.html:17
+msgid "No homes match this search"
+msgstr "No hay hogares para esta búsqueda"
+
+#: templates/properties/_results_list.html:17
+msgid "Try different dates, fewer guests or another destination."
+msgstr "Prueba otras fechas, menos huéspedes u otro destino."
+
+#: templates/properties/_results_list.html:17
+msgid "Start a new search"
+msgstr "Iniciar otra búsqueda"
+
+#: templates/properties/_results_list.html:21
+msgid "Pagination"
+msgstr "Paginación"
+
+#: templates/properties/_results_list.html:24
+#: templates/properties/_results_list.html:26
+#, python-format
+msgid "Page %(number)s"
+msgstr "Página %(number)s"
+
+#: templates/properties/detail.html:12
 msgid "Property photos"
 msgstr "Fotos de la propiedad"
 
-#: templates/properties/detail.html:21
+#: templates/properties/detail.html:25
 msgctxt "property detail facts"
 msgid "guests"
 msgstr "invitados"
 
-#: templates/properties/detail.html:21
+#: templates/properties/detail.html:25
 msgid "bedroom"
 msgstr "habitación"
 
-#: templates/properties/detail.html:21
+#: templates/properties/detail.html:25
 msgid "bed"
 msgstr "cama"
 
-#: templates/properties/detail.html:21
+#: templates/properties/detail.html:25
 msgid "bathroom"
 msgstr "baño"
 
-#: templates/properties/detail.html:48
+#: templates/properties/detail.html:34
+msgid "No amenities are listed for this property."
+msgstr "Esta propiedad no tiene comodidades registradas."
+
+#: templates/properties/detail.html:38
+msgid "Bedrooms"
+msgstr "Habitaciones"
+
+#: templates/properties/detail.html:40
+msgid "Bedroom 1"
+msgstr "Habitación 1"
+
+#: templates/properties/detail.html:42
+msgid "1 Queen Bed"
+msgstr "1 cama queen"
+
+#: templates/properties/detail.html:51
 msgid "per night"
 msgstr "por noche"
 
-#: templates/properties/detail.html:59
-msgid "Email address"
-msgstr "Correo electrónico"
+#: templates/properties/detail.html:52
+msgid "per month"
+msgstr "por mes"
 
-#: templates/properties/detail.html:65
+#: templates/properties/detail.html:57 templates/properties/detail.html:97
+msgid "Email address is missing"
+msgstr "Falta tu correo electrónico"
+
+#: templates/properties/detail.html:58 templates/properties/detail.html:98
+msgid "Enter a valid email address"
+msgstr "Ingresa un correo electrónico válido"
+
+#: templates/properties/detail.html:59 templates/properties/detail.html:100
+msgid "Your phone number is missing"
+msgstr "Falta tu número de teléfono"
+
+#: templates/properties/detail.html:60 templates/properties/detail.html:101
+msgid "Your phone number is invalid"
+msgstr "Ingresa un número de teléfono válido"
+
+#: templates/properties/detail.html:61
+msgid "Arrival date is missing"
+msgstr "Falta la fecha de llegada"
+
+#: templates/properties/detail.html:62
+msgid "Departure date is missing"
+msgstr "Falta la fecha de salida"
+
+#: templates/properties/detail.html:63
+msgid "Departure date must be after arrival date"
+msgstr "La fecha de salida debe ser posterior a la fecha de llegada"
+
+#: templates/properties/detail.html:83 templates/properties/detail.html:113
 msgid "Country code"
 msgstr "Código de país"
 
-#: templates/properties/detail.html:66
+#: templates/properties/detail.html:84 templates/properties/detail.html:114
 msgid "Phone number"
 msgstr "Número de teléfono"
 
-#: templates/properties/detail.html:70
+#: templates/properties/detail.html:88
 msgid "Discount code"
 msgstr "Código de descuento"
 
-#: templates/properties/detail.html:74
-msgid "Book now"
-msgstr "Reservar ahora"
+#: templates/properties/detail.html:99
+msgid "Your name is missing"
+msgstr "Falta tu nombre"
 
-#: templates/properties/detail.html:78
+#: templates/properties/detail.html:117
+msgid "Send request"
+msgstr "Enviar solicitud"
+
+#: templates/properties/detail.html:122
 msgid "Location"
 msgstr "Ubicación"
 
-#: templates/properties/detail.html:78
+#: templates/properties/detail.html:126
 msgid "Property location map"
 msgstr "Mapa de la ubicación"
 
@@ -1164,54 +1837,105 @@ msgstr "Mapa de la ubicación"
 msgid "Search results"
 msgstr "Resultados de búsqueda"
 
-#: templates/properties/results.html:10
-msgid "City"
-msgstr "Ciudad"
+#: templates/properties/results.html:14
+msgid "amenity"
+msgstr "comodidad"
 
-#: templates/properties/results.html:15
-msgid "District"
-msgstr "Distrito"
+#: templates/properties/results.html:14
+msgid "amenities"
+msgstr "comodidades"
 
-#: templates/properties/results.html:29
-msgid "Price range"
-msgstr "Rango de precio"
+#: templates/properties/results.html:15 templates/properties/results.html:73
+msgid "Guest"
+msgstr "Huésped"
 
-#: templates/properties/results.html:33
-msgid "Amenities"
-msgstr "Comodidades"
+#: templates/properties/results.html:16
+msgid "No districts available"
+msgstr "No hay distritos disponibles"
 
-#: templates/properties/results.html:36
+#: templates/properties/results.html:60 templates/properties/results.html:61
+msgid "Stay dates"
+msgstr "Fechas de la estadía"
+
+#: templates/properties/results.html:93
+msgid "Up to"
+msgstr "Hasta"
+
+#: templates/properties/results.html:104
+msgid "Price per night"
+msgstr "Precio por noche"
+
+#: templates/properties/results.html:105
+msgid "Nightly price range"
+msgstr "Rango de precio por noche"
+
+#: templates/properties/results.html:135
 msgid "Apply filters"
 msgstr "Aplicar filtros"
 
-#: templates/properties/results.html:59
-msgid "beds"
-msgstr "camas"
+#: templates/properties/results.html:149
+msgid "View property"
+msgstr "Ver propiedad"
 
-#: templates/properties/results.html:63
-msgid "No homes match this search"
-msgstr "No hay hogares para esta búsqueda"
+#~ msgid "Argentina"
+#~ msgstr "Argentina"
 
-#: templates/properties/results.html:63
-msgid "Try different dates, fewer guests or another destination."
-msgstr "Prueba otras fechas, menos huéspedes u otro destino."
+#~ msgid "Chile"
+#~ msgstr "Chile"
 
-#: templates/properties/results.html:63
-msgid "Start a new search"
-msgstr "Iniciar otra búsqueda"
+#~ msgid "Colombia"
+#~ msgstr "Colombia"
 
-#: templates/properties/results.html:67
-msgid "Pagination"
-msgstr "Paginación"
+#~ msgid "Ecuador"
+#~ msgstr "Ecuador"
 
-#: templates/properties/results.html:70 templates/properties/results.html:72
-#, python-format
-msgid "Page %(number)s"
-msgstr "Página %(number)s"
+#~ msgid "Italy"
+#~ msgstr "Italia"
 
-#: templates/properties/results.html:78
-msgid "Map of available properties"
-msgstr "Mapa de propiedades disponibles"
+#~ msgid "United States"
+#~ msgstr "Estados Unidos"
+
+#~ msgid "Enter your date of birth"
+#~ msgstr "Ingresa tu fecha de nacimiento"
+
+#~ msgid "The password must be at least 8 characters long."
+#~ msgstr "La contraseña debe tener al menos 8 caracteres."
+
+#~ msgid "The password must contain a number or symbol."
+#~ msgstr "La contraseña debe incluir un número o símbolo."
+
+#~ msgid "The password cannot contain your name or email address."
+#~ msgstr "La contraseña no puede contener tu nombre ni tu correo electrónico."
+
+#~ msgid "Payments are temporarily unavailable. Your card was not charged."
+#~ msgstr "Los pagos no están disponibles por el momento. No se realizó ningún cargo en tu tarjeta.Los pagos no están disponibles por el momento. No se realizó ningún cargo en tu tarjeta.Los pagos no están disponibles temporalmente. No se realizó ningún cargo."
+
+#~ msgid "We are still verifying your payment. Please try again shortly."
+#~ msgstr "Todavía estamos verificando tu pago. Vuelve a intentarlo en unos minutos.Todavía estamos verificando tu pago. Vuelve a intentarlo en unos minutos.Aún estamos verificando tu pago. Inténtalo nuevamente en unos instantes."
+
+#~ msgid "Where do you want to stay?"
+#~ msgstr "¿Dónde quieres hospedarte?"
+
+#~ msgid "Iniciar sesión"
+#~ msgstr "Iniciar sesión"
+
+#~ msgid "Flexible check-in & check-out"
+#~ msgstr "Check-in & Check-out flexible"
+
+#~ msgid "Stock your fridge"
+#~ msgstr "Llena tu nevera"
+
+#~ msgid "Publica tu propiedad"
+#~ msgstr "Publica tu propiedad"
+
+#~ msgid "Invierte en Bienes Raíces"
+#~ msgstr "Invierte en Bienes Raíces"
+
+#~ msgid "Price range"
+#~ msgstr "Rango de precio"
+
+#~ msgid "Map of available properties"
+#~ msgstr "Mapa de propiedades disponibles"
 
 #~ msgid "Long stays"
 #~ msgstr "Largas estadías"
@@ -1267,10 +1991,8 @@ msgstr "Mapa de propiedades disponibles"
 #~ msgid "A home for your next chapter"
 #~ msgstr "Un hogar para tu próximo capítulo"
 
-#~ msgid ""
-#~ "Flexible stays, fully equipped homes and support whenever you need it."
-#~ msgstr ""
-#~ "Estadías flexibles, hogares equipados y soporte cuando lo necesites."
+#~ msgid "Flexible stays, fully equipped homes and support whenever you need it."
+#~ msgstr "Estadías flexibles, hogares equipados y soporte cuando lo necesites."
 
 #~ msgid "Explore long stays"
 #~ msgstr "Explorar largas estadías"
@@ -1362,498 +2084,59 @@ msgstr "Mapa de propiedades disponibles"
 #~ msgid "New password confirmation"
 #~ msgstr "Confirmar nueva contraseña"
 
-#: bookings/services.py
-msgid "Monthly stays require a minimum of 30 nights."
-msgstr "Las estadías mensuales requieren un mínimo de 30 noches."
+#~ msgid "Cardholder name"
+#~ msgstr "Nombre del titular"
 
-#: templates/properties/detail.html
-msgid "per month"
-msgstr "por mes"
+#~ msgid "PAYMENT DETAILS"
+#~ msgstr "INFORMACIÓN DE PAGO"
 
-#: templates/bookings/checkout.html templates/bookings/_reservation_sidebar.html
-msgid "month"
-msgstr "mes"
+#~ msgid "Test payment simulation · No real charge will be made."
+#~ msgstr "Simulación de pago de prueba · No se realizará ningún cargo real."
 
-#: templates/bookings/checkout.html templates/bookings/_reservation_sidebar.html
-msgid "nights"
-msgstr "noches"
+#~ msgid "Test payment"
+#~ msgstr "Pago de prueba"
 
-#: bookings/models.py
-msgid "Daily"
-msgstr "Diario"
+#~ msgid "Test cards"
+#~ msgstr "Tarjetas de prueba"
 
-#: bookings/models.py
-msgid "Monthly"
-msgstr "Mensual"
+#~ msgid "Taxes"
+#~ msgstr "Impuestos"
 
-msgid "Email address is missing"
-msgstr "Falta tu correo electrónico"
+#~ msgid "Approved test card"
+#~ msgstr "Tarjeta de prueba aprobada"
 
-msgid "Enter a valid email address"
-msgstr "Ingresa un correo electrónico válido"
+#~ msgid "Declined test card"
+#~ msgstr "Tarjeta de prueba rechazada"
 
-msgid "Your phone number is missing"
-msgstr "Falta tu número de teléfono"
+#~ msgid "Use any future expiration date and CVV 123."
+#~ msgstr "Usa cualquier vencimiento futuro y el CVV 123."
 
-msgid "Your phone number is invalid"
-msgstr "Ingresa un número de teléfono válido"
+#~ msgid "BACK"
+#~ msgstr "VOLVER"
 
-msgid "Arrival date is missing"
-msgstr "Falta la fecha de llegada"
+msgid "This command deletes all database records. Run it with --yes to confirm."
+msgstr "Este comando elimina todos los registros de la base de datos. Ejecútalo con --yes para confirmar."
 
-msgid "Departure date is missing"
-msgstr "Falta la fecha de salida"
+msgid "Database reset is only supported for PostgreSQL."
+msgstr "El reinicio de la base de datos solo está disponible para PostgreSQL."
 
-msgid "Departure date must be after arrival date"
-msgstr "La fecha de salida debe ser posterior a la fecha de llegada"
+msgid "Database reset and demo data loaded."
+msgstr "Base de datos reiniciada y datos de ejemplo cargados."
 
-msgid "Your name is missing"
-msgstr "Falta tu nombre"
+msgid "Select a supported service configuration before activating this service."
+msgstr "Selecciona una configuración de servicio válida antes de activar este servicio."
 
-msgid "Send request"
-msgstr "Enviar solicitud"
+msgid "Choose the charge type that matches the service configuration."
+msgstr "Elige el tipo de cargo que corresponde a la configuración del servicio."
 
-msgid "Enter your full name."
-msgstr "Ingresa tu nombre completo."
+msgid "This service is no longer available. Remove it from your reservation to continue."
+msgstr "Este servicio ya no está disponible. Quítalo de tu reserva para continuar."
 
-msgid "Enter your name, email address and phone number."
-msgstr "Ingresa tu nombre, correo electrónico y número de teléfono."
+msgid "An active service already uses this charge type."
+msgstr "Ya existe un servicio activo con este tipo de cargo."
 
-msgid "Monthly stay inquiry: %(property)s"
-msgstr "Solicitud de estadía mensual: %(property)s"
+msgid "Select an existing image for this service."
+msgstr "Selecciona una imagen existente para este servicio."
 
-msgid "Property"
-msgstr "Alojamiento"
-
-msgid "Name"
-msgstr "Nombre"
-
-msgid "Property link"
-msgstr "Enlace del alojamiento"
-
-msgid "Your information was sent to our reservations team."
-msgstr "Tu información fue enviada a nuestro personal de reservas."
-
-msgid "We could not send your request. Please try again."
-msgstr "No pudimos enviar tu solicitud. Inténtalo de nuevo."
-
-msgid "Monthly stays are handled by our reservations team."
-msgstr "Las estadías mensuales son gestionadas por nuestro equipo de reservas."
-
-msgid "Complete your email address, phone number, arrival date and departure date to continue."
-msgstr "Completa tu correo, número de teléfono, fecha de llegada y fecha de salida para continuar."
-
-msgid "Select valid check-in and check-out dates."
-msgstr "Selecciona fechas válidas de llegada y salida."
-
-msgid "Unable to update this stay."
-msgstr "No se pudo actualizar la estadía."
-
-msgid "Your stay details were updated."
-msgstr "Los datos de tu estadía fueron actualizados."
-
-msgid "Update stay"
-msgstr "Actualizar estadía"
-
-msgid "Cardholder name"
-msgstr "Nombre del titular"
-
-msgid "Card number"
-msgstr "Número de tarjeta"
-
-msgid "Expiration date"
-msgstr "Caducidad"
-
-msgid "Security code (CVV)"
-msgstr "Código CVV"
-
-msgid "Installments"
-msgstr "Cuotas"
-
-msgid "Address"
-msgstr "Dirección"
-
-msgid "Address 2 (optional)"
-msgstr "Dirección 2 (opcional)"
-
-msgid "State / Region"
-msgstr "Estado / Región"
-
-msgid "Postal code"
-msgstr "Código postal"
-
-msgid "MM/YYYY"
-msgstr "MM/AAAA"
-
-msgid "Select number of installments"
-msgstr "Seleccionar número de cuotas"
-
-msgid "Enter your address"
-msgstr "Ingresa tu dirección"
-
-msgid "Enter your state"
-msgstr "Ingresa tu estado"
-
-msgid "Enter city name"
-msgstr "Ingresa el nombre de la ciudad"
-
-msgid "and"
-msgstr "y"
-
-msgid "The cardholder is the person making this reservation."
-msgstr "El titular de la tarjeta es la persona que realiza la reserva."
-
-msgid "Enter a valid test card number."
-msgstr "Ingresa un número de tarjeta de prueba válido."
-
-msgid "Enter the expiration date as MM/YYYY."
-msgstr "Ingresa el vencimiento en formato MM/AAAA."
-
-msgid "The card has expired."
-msgstr "La tarjeta está vencida."
-
-msgid "Enter a valid security code."
-msgstr "Ingresa un código de seguridad válido."
-
-msgid "Payment information"
-msgstr "Información de pago"
-
-msgid "PAYMENT INFORMATION"
-msgstr "INFORMACIÓN DE PAGO"
-
-msgid "Review your reservation details to continue."
-msgstr "Revisa la información de tu reservación para continuar."
-
-msgid "PAYMENT METHOD"
-msgstr "MÉTODO DE PAGO"
-
-msgid "Debit / credit card"
-msgstr "Tarjeta de débito / crédito"
-
-msgid "Change"
-msgstr "Cambiar"
-
-msgid "Secure simulated payment"
-msgstr "Pago simulado seguro"
-
-msgid "PAYMENT DETAILS"
-msgstr "INFORMACIÓN DE PAGO"
-
-msgid "Test payment simulation · No real charge will be made."
-msgstr "Simulación de pago de prueba · No se realizará ningún cargo real."
-
-msgid "Test payment"
-msgstr "Pago de prueba"
-
-msgid "Test cards"
-msgstr "Tarjetas de prueba"
-
-msgid "Enjoy a hassle-free stay with our additional services."
-msgstr "Disfruta de una estadía sin complicaciones con nuestros servicios adicionales."
-
-msgid "Taxes"
-msgstr "Impuestos"
-
-msgid "Taxes included"
-msgstr "Impuestos incluidos"
-
-msgid "Need help completing your reservation?"
-msgstr "¿Necesitas ayuda para completar tu reserva?"
-
-msgid "IVA"
-msgstr "IVA"
-
-msgid "IGV"
-msgstr "IGV"
-
-msgid "ITBMS"
-msgstr "ITBMS"
-
-msgid "Approved test card"
-msgstr "Tarjeta de prueba aprobada"
-
-msgid "Declined test card"
-msgstr "Tarjeta de prueba rechazada"
-
-msgid "Use any future expiration date and CVV 123."
-msgstr "Usa cualquier vencimiento futuro y el CVV 123."
-
-msgid "BILLING INFORMATION"
-msgstr "DATOS DE FACTURACIÓN"
-
-msgid "By selecting I agree and continue, you accept"
-msgstr "Al seleccionar Acepto y continúo, aceptas"
-
-msgid "You also agree to pay the total amount shown."
-msgstr "También estás de acuerdo en pagar la cantidad total mostrada."
-
-msgid "BACK"
-msgstr "VOLVER"
-
-msgid "COMPLETE RESERVATION"
-msgstr "COMPLETAR RESERVA"
-
-msgid "The reservation hold has expired. Please start a new reservation."
-msgstr "La retención de la reserva venció. Inicia una nueva reserva."
-
-msgid "The test card was declined. Use the approved test card or try again."
-msgstr "La tarjeta de prueba fue rechazada. Usa la tarjeta aprobada o inténtalo de nuevo."
-
-msgid "Reservations"
-msgstr "Reservas"
-
-msgid "Services"
-msgstr "Servicios"
-
-msgid "Groups & Long Stays"
-msgstr "Grupos & Largas Estadías"
-
-msgid "Events & Productions"
-msgstr "Eventos & Producciones"
-
-msgid "About us"
-msgstr "Nosotros"
-
-msgid "Who are we?"
-msgstr "¿Quiénes somos?"
-
-msgid "Blog & News"
-msgstr "Blog y noticias"
-
-msgid "Casa Wynwood"
-msgstr "Casa Wynwood"
-
-msgid "Work with us"
-msgstr "Trabaja con nosotros"
-
-msgid "Owners & Investors"
-msgstr "Propietarios & Inversionistas"
-
-msgid "Wynwood Real Estate"
-msgstr "Bienes raíces Wynwood"
-
-msgid "Owners"
-msgstr "Propietarios"
-
-msgid "Benefits"
-msgstr "Beneficios"
-
-msgid "Guides"
-msgstr "Guías"
-
-msgid "Rewards Program"
-msgstr "Programa de Rewards"
-
-msgid "Destinations"
-msgstr "Destinos"
-
-msgid "Terms & Conditions"
-msgstr "Términos y condiciones"
-
-msgid "Contact us"
-msgstr "Contáctanos"
-
-msgid "Write to us"
-msgstr "Escríbenos"
-
-msgid "FAQ"
-msgstr "Preguntas frecuentes"
-
-msgid "WhatsApp"
-msgstr "WhatsApp"
-
-msgid "Download our app for free"
-msgstr "Descarga nuestra app gratis"
-
-msgid "Download on the App Store"
-msgstr "Descargar en App Store"
-
-msgid "Get it on Google Play"
-msgstr "Descargar en Google Play"
-
-msgid "Destination"
-msgstr "Destino"
-
-msgid "City or destination"
-msgstr "Ciudad o destino"
-
-msgid "Number of guests"
-msgstr "Número de huéspedes"
-
-msgid "Search"
-msgstr "Buscar"
-
-msgid "Image files cannot exceed 12 MB."
-msgstr "Las imágenes no pueden superar los 12 MB."
-
-msgid "The uploaded file is not a valid image."
-msgstr "El archivo cargado no es una imagen válida."
-
-msgid "Hurry! 20% off all stays. Only"
-msgstr "¡Aprovecha el 20% de descuento en todas las estadías! Quedan solo"
-
-msgid "Discover our destinations"
-msgstr "Descubre nuestros destinos"
-
-msgid "Previous"
-msgstr "Anterior"
-
-msgid "Next"
-msgstr "Siguiente"
-
-msgid "Explore our exclusive homes and discover your preferred destination your way. Find your ideal stay and start a unique experience."
-msgstr "Descubre nuestra selección exclusiva de propiedades y conoce tu destino preferido a tu manera. Encuentra tu estadía ideal y empieza a vivir una experiencia única."
-
-msgid "All properties"
-msgstr "Todas las propiedades"
-
-msgid "The Collection"
-msgstr "La Colección"
-
-msgid "Why travel to Spain?"
-msgstr "¿Por qué viajar a España?"
-
-msgid "Discover a country where historic streets, remarkable architecture, regional cuisine and Mediterranean coastlines make every city a different experience. Stay close to local life and explore Spain at your own pace."
-msgstr "Descubre un país donde las calles históricas, la arquitectura, la gastronomía regional y las costas mediterráneas hacen de cada ciudad una experiencia distinta. Alójate cerca de la vida local y explora España a tu propio ritmo."
-
-msgid "Explore stays in Spain"
-msgstr "Descubre alojamientos en España"
-
-msgid "Services at Wynwood House"
-msgstr "Servicios en Wynwood House"
-
-msgid "Discover the services our properties offer to make your stay the most comfortable and exciting experience you can imagine."
-msgstr "Descubre los servicios que ofrecen nuestras propiedades para hacer de tu estadía la experiencia más cómoda y emocionante que puedas imaginar."
-
-msgid "CONTACTLESS CHECK-IN"
-msgstr "CHECK-IN SIN CONTACTO"
-
-msgid "PROFESSIONAL CLEANING"
-msgstr "LIMPIEZA PROFESIONAL"
-
-msgid "BATHROOM KIT"
-msgstr "KIT DE BAÑO"
-
-msgid "FULLY EQUIPPED KITCHEN"
-msgstr "COCINA EQUIPADA"
-
-msgid "PET FRIENDLY"
-msgstr "PET FRIENDLY"
-
-msgid "24/7 SUPPORT"
-msgstr "SOPORTE 24/7"
-
-msgid "WYNWOOD BED"
-msgstr "CAMA WYNWOOD"
-
-msgid "Enjoy our events!"
-msgstr "¡Disfruta de nuestros eventos!"
-
-msgid "Live your experience to the fullest as you dive into the vibrant world of our Wynwood events. Enjoy art, culture, and inspiration like never before."
-msgstr "Vive tu experiencia al máximo mientras te sumerges en el vibrante mundo de los eventos Wynwood. Disfruta de arte, cultura e inspiración como nunca antes."
-
-msgid "View all events"
-msgstr "Ver todos los eventos"
-
-msgid "Benefits of Wynwood House"
-msgstr "Beneficios de Wynwood House"
-
-msgid "City guides"
-msgstr "Guías de ciudades"
-
-msgid "Get to know each destination with local recommendations for places to visit, eat and explore."
-msgstr "Conoce cada destino con recomendaciones locales de lugares para visitar, comer y explorar."
-
-msgid "Explore destinations"
-msgstr "Explora los destinos"
-
-msgid "EXTRA SERVICES"
-msgstr "SERVICIOS ADICIONALES"
-
-msgid "REWARDS PROGRAM"
-msgstr "PROGRAMA DE REWARDS"
-
-msgid "Long-term rentals"
-msgstr "Alquileres a largo plazo"
-
-msgid "LONG STAYS"
-msgstr "ALQUILERES A LARGO PLAZO"
-
-msgid "Enjoy the comfort of an extended stay and special rates designed for longer visits."
-msgstr "Disfruta del confort de una estadía prolongada y de tarifas especiales diseñadas para visitas largas."
-
-msgid "CONTACT US"
-msgstr "CONTÁCTANOS"
-
-msgid "INVEST IN REAL ESTATE"
-msgstr "INVIERTE EN BIENES RAÍCES"
-
-msgid "Buy or sell your property with professional guidance and a smooth experience."
-msgstr "Compra o vende tu propiedad con asesoramiento profesional y una experiencia sencilla."
-
-msgid "LEARN MORE"
-msgstr "SABER MÁS"
-
-msgid "HOME EXPERIENCE, HOTEL QUALITY"
-msgstr "EXPERIENCIA DE HOGAR, CALIDAD DE HOTEL"
-
-msgid "BEST OF BOTH WORLDS"
-msgstr "LO MEJOR DE DOS MUNDOS"
-
-msgid "Remove guest"
-msgstr "Quitar huésped"
-
-msgid "Add guest"
-msgstr "Agregar huésped"
-
-msgid "Sign in"
-msgstr "Iniciar sesión"
-
-msgid "List your property"
-msgstr "Publica tu propiedad"
-
-msgid "Invest in real estate"
-msgstr "Invierte en bienes raíces"
-
-msgid "Guest"
-msgstr "Huésped"
-
-msgid "Up to"
-msgstr "Hasta"
-
-msgid "Price per night"
-msgstr "Precio por noche"
-
-msgid "Nightly price range"
-msgstr "Rango de precio por noche"
-
-msgid "Minimum price"
-msgstr "Precio mínimo"
-
-msgid "Maximum price"
-msgstr "Precio máximo"
-
-msgid "district"
-msgstr "distrito"
-
-msgid "amenity"
-msgstr "comodidad"
-
-msgid "amenities"
-msgstr "comodidades"
-
-msgid "View property"
-msgstr "Ver propiedad"
-
-msgid "Bedrooms"
-msgstr "Habitaciones"
-
-msgid "Bedroom 1"
-msgstr "Habitación 1"
-
-msgid "1 Queen Bed"
-msgstr "1 cama queen"
-
-msgid "No amenities are listed for this property."
-msgstr "Esta propiedad no tiene comodidades registradas."
-
+msgid "Select an existing destination image before showing it on the home page."
+msgstr "Selecciona una imagen de destino existente antes de mostrarlo en el inicio."

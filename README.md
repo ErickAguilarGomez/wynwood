@@ -1,184 +1,143 @@
 # Wynwood House
 
-## Entrega
+Aplicación de reservas con Django 5.2, Python 3.14, Bootstrap, PostgreSQL y Redis/Celery. La interfaz está disponible en español e inglés y los pagos son simulados.
 
-- Repositorio: [github.com/ErickAguilarGomez/wynwood](https://github.com/ErickAguilarGomez/wynwood)
-- Aplicación: [wynwood-production-e22b.up.railway.app](https://wynwood-production-e22b.up.railway.app/)
+- [Aplicación desplegada](https://wynwood-production-e22b.up.railway.app/)
+- [Repositorio](https://github.com/ErickAguilarGomez/wynwood)
 
-## Requisitos
+## Inicio local con Docker y PostgreSQL
 
-- Docker Desktop con Docker Compose
-- OpenSSL para generar los secretos
-- Git (solo para clonar el proyecto)
-
-El proyecto usa PostgreSQL porque la base de datos aplica una restricción de exclusión para impedir reservas solapadas incluso ante solicitudes simultáneas. SQLite no soporta esa restricción; no se debe usar para ejecutar ni validar el flujo de reservas.
-
-## Configuración
-
-Desde la carpeta del proyecto, copia la plantilla de variables:
+Necesitas Docker Desktop con Docker Compose y OpenSSL. Desde la carpeta del proyecto:
 
 ```bash
 cp .env.example .env
-```
-
-En `.env`, configura estos valores para el entorno local:
-
-```dotenv
-DJANGO_SECRET_KEY=pega-aqui-un-secreto-aleatorio
-DJANGO_DEBUG=True
-DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
-DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8000
-DJANGO_SECURE_SSL_REDIRECT=False
-
-POSTGRES_DB=wynwood
-POSTGRES_USER=wynwood
-POSTGRES_PASSWORD=pega-aqui-una-contrasena-segura
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-DATABASE_SSLMODE=prefer
-
-REDIS_URL=redis://redis:6379/0
-```
-
-Genera un valor distinto para `DJANGO_SECRET_KEY` y `POSTGRES_PASSWORD` ejecutando dos veces:
-
-```bash
+openssl rand -hex 32
 openssl rand -hex 32
 ```
 
-`POSTGRES_PASSWORD` es obligatorio.
-
-## Iniciar la aplicación
-
-Construye la imagen e inicia los servicios:
+Copia el primer resultado en `DJANGO_SECRET_KEY` y el segundo en `POSTGRES_PASSWORD` dentro de `.env`. Conserva los demás valores locales de la plantilla y ejecuta:
 
 ```bash
-docker compose up --build
+docker compose up --build -d
+docker compose logs -f web worker
 ```
 
-Espera a que termine el inicio y abre [http://localhost:8000](http://localhost:8000). Para iniciar en segundo plano, usa `make up`. La aplicación migra la base de datos y recopila los archivos estáticos al arrancar. Con `DJANGO_DEBUG=True`, carga alojamientos e imágenes de demostración si la base de datos todavía no tiene alojamientos.
+Abre [localhost:8000](http://localhost:8000) cuando web termine de iniciar. El arranque instala las migraciones, recopila los estáticos y, con `DJANGO_DEBUG=True`, carga datos de ejemplo si aún no hay alojamientos. El worker procesa los correos; por defecto se muestran en sus logs, sin necesitar cuentas externas. Las imágenes se guardan en el volumen local `media`.
 
-Para trabajar sin Docker, instala Python 3.14, crea un entorno virtual, instala `requirements.txt` y configura una instancia de PostgreSQL 17. Define `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST` y `POSTGRES_PORT` (o `DATABASE_URL`), además de `DJANGO_SECRET_KEY`. Luego ejecuta `python manage.py migrate`, `python manage.py seed_demo` y `python manage.py runserver`. Redis y Celery son necesarios para procesar los correos de confirmación en segundo plano; el servidor puede iniciar sin ellos, pero el envío de tareas no funcionará.
-
-Para actualizar las imágenes de demostración:
+Comprueba que la aplicación y la base de datos responden:
 
 ```bash
-make seed
+curl --fail http://localhost:8000/health/ready/
 ```
 
-## Verificar el proyecto
+Debe devolver `{"status": "ok"}`. PostgreSQL y Redis se ejecutan dentro de Docker y no necesitan instalarse ni publicar puertos en tu máquina.
 
-`make test` usa PostgreSQL real y no SQLite. `make lint` revisa estilo y errores estáticos; `make check` ejecuta las comprobaciones de despliegue con `DEBUG=False` y redirección HTTPS activa.
-
-```bash
-make test
-make lint
-make check
-```
-
-Para preparar Ruff:
-
-```bash
-python3.14 -m venv .venv
-.venv/bin/pip install -r requirements-dev.txt
-```
-
-## Pagos de demostración
-
-El checkout simula el resultado del pago y no realiza cargos reales. Usa una fecha de vencimiento futura y el CVV `123`.
-
-| Número de tarjeta | Resultado |
-| --- | --- |
-| `4242 4242 4242 4242` | Pago aprobado |
-| `4000 0000 0000 0002` | Pago rechazado; se puede reintentar mientras la reserva siga vigente |
-
-## Configuración opcional de `.env`
-### Moneda, impuestos, puntos y enlaces de correo
-
-```dotenv
-BOOKING_CURRENCY=USD
-BOOKING_TAX_RATE=0
-WYNWOOD_POINTS_RATE=0.41
-PUBLIC_BASE_URL=http://localhost:8000
-```
-
-`BOOKING_TAX_RATE` es la tasa de respaldo para países que no tienen una tasa específica configurada. `PUBLIC_BASE_URL` se usa para los enlaces incluidos en los correos.
-
-### Envío de correos con Resend
-
-Configura Resend en los servicios web y worker con una clave de API de envío y una dirección de un dominio verificado:
-
-```dotenv
-EMAIL_BACKEND=bookings.email_backends.ResendEmailBackend
-RESEND_API_KEY=replace-with-your-resend-api-key
-EMAIL_FROM_EMAIL=reservas@erickaguilargomez.me
-EMAIL_FROM_NAME=Wynwood House
-```
-
-El valor de `RESEND_API_KEY` es un marcador de ejemplo, no una clave oficial ni funcional. Crea tu propia clave de envío en Resend y reemplázalo. `EMAIL_FROM_EMAIL` debe pertenecer a un dominio verificado en esa cuenta. Configura estas variables en los servicios web y worker.
-
-
-### Imágenes con Cloudinary
-
-Completa las credenciales desde el panel de Cloudinary:
-
-```dotenv
-USE_CLOUDINARY=True
-CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
-CLOUDINARY_API_KEY=your-cloudinary-api-key
-CLOUDINARY_API_SECRET=replace-with-your-cloudinary-api-secret
-```
-
-Los valores son marcadores de ejemplo, no credenciales oficiales ni funcionales. Reemplázalos con las credenciales de tu cuenta de Cloudinary. Las cuotas de almacenamiento y transformaciones dependen del plan y la cuenta. Si Cloudinary no está habilitado, los medios se guardan en el volumen local `media`.
-
-### GlitchTip
-
-Genera valores nuevos para `GLITCHTIP_SECRET_KEY` y `GLITCHTIP_DB_PASSWORD` con `openssl rand -hex 32`. Para recibir errores de la aplicación en GlitchTip, copia el DSN del proyecto en `GLITCHTIP_DSN`.
-
-```dotenv
-GLITCHTIP_DSN=
-GLITCHTIP_TRACES_SAMPLE_RATE=1.0
-GLITCHTIP_SECRET_KEY=
-GLITCHTIP_DB_PASSWORD=
-GLITCHTIP_DOMAIN=http://localhost:8080
-GLITCHTIP_ALLOWED_HOSTS=localhost,127.0.0.1
-GLITCHTIP_CSRF_TRUSTED_ORIGINS=http://localhost:8080
-GLITCHTIP_ENABLE_REGISTRATION=True
-GLITCHTIP_RETENTION_DAYS=30
-APP_ENV=development
-APP_RELEASE=local
-```
-
-Después ejecuta `make observability`. El panel queda disponible en [http://localhost:8080](http://localhost:8080).
-
-### Nivel de registro
-
-Para cambiar el detalle de los logs del sitio y del worker:
-
-```dotenv
-LOG_LEVEL=INFO
-```
-
-## Administración
-
-Crea un usuario administrador:
+## Administración y datos de ejemplo
 
 ```bash
 docker compose exec web python manage.py createsuperuser
 ```
 
-Abre el panel en [http://localhost:8000/admin/](http://localhost:8000/admin/).
+Entra en [localhost:8000/admin/](http://localhost:8000/admin/) para administrar países, destinos, aeropuertos, alojamientos, imágenes, comodidades y servicios con sus precios y textos bilingües.
 
-## Detener el entorno
+Para cargar los datos de ejemplo manualmente:
 
-Detén los servicios y conserva los datos:
+```bash
+docker compose exec web python manage.py seed_demo
+```
+
+El comando carga países e impuestos, destinos, aeropuertos, comodidades, alojamientos, imágenes y servicios con sus tarifas. Se puede repetir sin duplicar datos; conserva los cambios administrativos de países y servicios y completa los registros faltantes. Con `DJANGO_DEBUG=False`, ejecútalo después de migrar una base vacía.
+
+`make seed` también renueva las imágenes de ejemplo. Con Cloudinary actualiza sus referencias sin borrar los originales remotos. Cada imagen subida se valida, convierte a WebP y reduce a un máximo de 1200 × 1200 px conservando sus proporciones. El seeder carga datos; Resend y Cloudinary requieren las variables de sus respectivas cuentas.
+
+### Reiniciar una base PostgreSQL existente
+
+Las migraciones iniciales consolidadas requieren una base nueva. Si ya instalaste una versión anterior y puedes descartar sus datos, despliega primero el código actualizado y detén temporalmente el worker. En la consola del servicio web ejecuta:
+
+```bash
+celery -A config purge -f
+python manage.py reset_database --yes
+python manage.py createsuperuser
+```
+
+El comando elimina todos los datos del esquema `public` de la base configurada, aplica las migraciones y carga los datos de ejemplo. Si una migración o el seeder falla, PostgreSQL revierte el cambio completo. Los archivos de imágenes no se borran. Reactiva el worker al terminar. Ejecuta este reinicio una sola vez; en los siguientes despliegues usa el arranque normal.
+
+## Alternativa local con SQLite
+
+También puedes usar SQLite para desarrollo local. Necesitas Python 3.14 y las dependencias del proyecto:
+
+```bash
+python3.14 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+export DATABASE_URL=sqlite:///db.sqlite3
+export DJANGO_SECRET_KEY=$(openssl rand -hex 32)
+export DJANGO_DEBUG=True
+export DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+export DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:8000
+export DJANGO_SECURE_SSL_REDIRECT=False
+export EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+python manage.py migrate
+python manage.py seed_demo
+python manage.py runserver
+```
+
+La base `db.sqlite3` se crea en el proyecto. Las variables se leen del entorno del proceso; Django no carga `.env` automáticamente fuera de Docker. Si cambias traducciones, instala GNU gettext y ejecuta `python manage.py compilemessages`.
+
+Para procesar correos usando SQLite, instala Redis e inícialo con `redis-server`. En otra terminal con el mismo entorno virtual y las mismas variables, ejecuta:
+
+```bash
+export REDIS_URL=redis://localhost:6379/0
+celery -A config worker --loglevel=INFO
+```
+
+PostgreSQL impide reservas solapadas mediante una restricción de exclusión; SQLite utiliza triggers. SQLite serializa las escrituras y se limita al desarrollo local de una sola instancia. Usa PostgreSQL para producción y para la suite principal de pruebas.
+
+## Probar una reserva
+
+Busca un alojamiento, selecciona fechas futuras y huéspedes, completa el registro y configura los servicios que agregues. En el pago usa vencimiento futuro y CVV `123`:
+
+| Tarjeta | Resultado |
+| --- | --- |
+| `4242 4242 4242 4242` | Aprueba y confirma la reserva |
+| `4000 0000 0000 0002` | Rechaza y permite reintentar durante la retención |
+
+Las retenciones duran 20 minutos. Solo un pago aprobado confirma la reserva y encola su correo. No se realizan cargos reales ni se almacenan los datos de tarjeta.
+
+## Verificaciones
+
+Con Docker en marcha:
+
+```bash
+make test
+make check
+```
+
+Para ejecutar Ruff en tu máquina:
+
+```bash
+python3.14 -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt
+make lint
+```
+
+`make test` usa una base PostgreSQL de pruebas separada; `make check` revisa la configuración de despliegue.
+
+## Producción y servicios opcionales
+
+En Railway despliega el mismo repositorio como servicio web (`APP_ROLE=web`) y worker (`APP_ROLE=worker`), compartiendo PostgreSQL, Redis y las variables de correo y Cloudinary. Configura `DJANGO_DEBUG=False`, una clave propia en `DJANGO_SECRET_KEY`, `APP_ENV=production`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, `DJANGO_SECURE_SSL_REDIRECT=True` y `PUBLIC_BASE_URL` con el origen público HTTPS. Usa `/health/ready/` como health check. Railway proporciona `PORT`.
+
+- **PostgreSQL y Redis:** asigna `DATABASE_URL` y `REDIS_URL` a las referencias de esos servicios. Fuera de Railway, PostgreSQL también acepta las variables `POSTGRES_*` de la plantilla.
+- **Resend:** en web y worker, configura `EMAIL_BACKEND=bookings.email_backends.ResendEmailBackend`, `RESEND_API_KEY`, `EMAIL_FROM_EMAIL` con una dirección de tu dominio verificado y `EMAIL_FROM_NAME`.
+- **Cloudinary:** para medios persistentes en Railway, configura `USE_CLOUDINARY=True`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` y `CLOUDINARY_API_SECRET` en ambos servicios. Las URLs entregan WebP de hasta 1200 px. Con almacenamiento local y `DEBUG=False`, el servidor de despliegue debe servir `/media/` desde un volumen persistente.
+- **GlitchTip:** es opcional; asigna `GLITCHTIP_DSN` para reportar excepciones. Para el stack local configura sus secretos en `.env` y ejecuta `make observability`.
+
+Las claves de `.env.example` son marcadores. Reemplázalas por credenciales propias cuando actives un proveedor; el inicio local no requiere Resend ni Cloudinary. Los cambios de traducciones se compilan al construir la imagen Docker.
+
+## Detener el proyecto
 
 ```bash
 docker compose down
 ```
 
-Para borrar también las bases de datos y los demás volúmenes:
-
-```bash
-docker compose down -v
-```
+Este comando conserva las bases de datos y los archivos subidos en sus volúmenes.

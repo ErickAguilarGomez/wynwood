@@ -48,8 +48,8 @@
                 <button type="button" data-booking-tab="monthly">{% trans 'Monthly' %}</button>
             </div>
             <p class="booking-rate" data-booking-rate>
-                <span data-rate-daily>{{ booking_currency }} {{ property.price_per_night|floatformat:0 }} {% trans 'per night' %}</span>
-                <span data-rate-monthly hidden>{{ booking_currency }} {{ property.effective_price_per_month|floatformat:0 }} {% trans 'per month' %}</span>
+                <span data-rate-daily>{{ booking_currency }} {{ property.price_per_night|floatformat:'-2'  }} {% trans 'per night' %}</span>
+                <span data-rate-monthly hidden>{{ booking_currency }} {{ property.effective_price_per_month|floatformat:'-2'  }} {% trans 'per month' %}</span>
             </p>
             <form action="{% url 'bookings:checkout' property.slug %}" method="get" data-booking-daily-form novalidate>
                 <input type="hidden" name="booking_type" value="daily" data-booking-type-input>
@@ -121,7 +121,7 @@
     <section class="detail-location-section">
         <h2>{% trans 'Location' %}</h2>
         {% if property.latitude and property.longitude %}
-        <div id="detail-map" class="detail-map-canvas" data-detail-map data-lat="{{ property.latitude|unlocalize }}" data-lng="{{ property.longitude|unlocalize }}" data-title="{{ property.title }}" data-price="{{ property.price_per_night|floatformat:0 }}" data-currency="{{ booking_currency }}"></div>
+        <div id="detail-map" class="detail-map-canvas" data-detail-map data-lat="{{ property.latitude|unlocalize }}" data-lng="{{ property.longitude|unlocalize }}" data-title="{{ property.title }}" data-price="{{ property.price_per_night|floatformat:'-2'  }}" data-currency="{{ booking_currency }}"></div>
         {% else %}
         <img src="{% static 'design/figma/detail/map.png' %}" alt="{% trans 'Property location map' %}">
         {% endif %}

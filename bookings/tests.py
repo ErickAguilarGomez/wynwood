@@ -435,3 +435,44 @@ class ServiceConfigurationInputTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn("return_time", form.errors)
+
+
+@override_settings(EMAIL_BACKEND="bookings.email_backends.ResendEmailBackend", RESEND_API_KEY="test-only-key")
+class ResendConfirmationTests(TestCase):
+    def setUp(self):
+        self.user = create_user()
+        property = create_property()
+        check_in, check_out = future_dates()
+        self.reservation = ReservationService.create(
+            user=self.user, property_id=property.pk, check_in=check_in, check_out=check_out, guests=2,
+        )
+        Reservation.objects.filter(pk=self.reservation.pk).update(status=Reservation.Status.CONFIRMED)
+
+    def test_provider_receives_the_confirmation_content_and_repeated_tasks_do_not_send_again(self):
+        from unittest.mock import patch
+
+        with patch("bookings.email_backends.requests.post") as request:
+            send_confirmation_email(self.reservation.pk)
+            send_confirmation_email(self.reservation.pk)
+        request.assert_called_once()
+        self.assertEqual(request.call_args.args[0], "https://api.resend.com/emails")
+        payload = request.call_args.kwargs["json"]
+        self.assertEqual(payload["to"], [self.user.email])
+        self.assertIn("Casa Central", payload["html"])
+        self.assertIn(str(self.reservation.public_id), payload["text"])
+        self.assertEqual(request.call_args.kwargs["headers"]["Authorization"], "Bearer test-only-key")
+        self.reservation.refresh_from_db()
+        self.assertIsNotNone(self.reservation.confirmation_sent_at)
+
+    def test_provider_failure_keeps_the_confirmation_pending_for_retry(self):
+        from unittest.mock import patch
+
+        import requests
+
+        from .email_backends import ResendEmailError
+
+        with patch("bookings.email_backends.requests.post", side_effect=requests.Timeout("timeout")):
+            with self.assertRaises(ResendEmailError):
+                send_confirmation_email(self.reservation.pk)
+        self.reservation.refresh_from_db()
+        self.assertIsNone(self.reservation.confirmation_sent_at)

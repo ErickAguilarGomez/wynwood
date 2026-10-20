@@ -27,7 +27,7 @@
                             <p class="svc-card-text">{{ entry.service.description }}</p>
                             {% if entry.charge %}
                                 <div class="svc-card-actions">
-                                    <span class="svc-added">✓ {% trans 'Added' %} · {{ currency_symbol }} {{ entry.charge.amount|floatformat:0 }}</span>
+                                    <span class="svc-added">✓ {% trans 'Added' %} · {{ currency_symbol }} {{ entry.charge.amount|floatformat:'-2'  }}</span>
                                     <a class="svc-remove" href="{% url 'bookings:service_detail' reservation.public_id entry.service.key %}">{% trans 'Configure' %}</a>
                                     <form method="post" action="{% url 'bookings:service_detail' reservation.public_id entry.service.key %}">
                                         {% csrf_token %}

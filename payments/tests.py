@@ -1,11 +1,12 @@
 from unittest.mock import patch
 
-from django.test import SimpleTestCase, TestCase
+from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
 from bookings.models import Reservation
 from bookings.services import ReservationService
+from core.demo_data import seed_catalogs
 from core.tests.factories import create_property, create_user, future_dates
 
 from .forms import SimulatedPaymentForm
@@ -30,7 +31,11 @@ def payment_data(card_number):
     }
 
 
-class SimulatedPaymentFormTests(SimpleTestCase):
+class SimulatedPaymentFormTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        seed_catalogs()
+
     def test_approved_test_card_is_normalized_and_accepted(self):
         form = SimulatedPaymentForm(payment_data("4242 4242 4242 4242"))
 

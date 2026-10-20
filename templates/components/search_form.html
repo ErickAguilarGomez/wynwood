@@ -6,14 +6,14 @@
     <div class="search-destination" data-city-picker>
         <img src="{% static 'design/figma/ui/icon-search.svg' %}" alt="" class="field-icon">
         <span>{% trans 'Destination' %}</span>
-        <input type="hidden" name="country" value="{{ footer_destination.country|default:'' }}" data-city-country>
+        <input type="hidden" name="country" value="{{ footer_destination.country_code|default:'' }}" data-city-country>
         <input type="hidden" name="destination" value="{{ footer_destination.pk|default:'' }}" data-city-input>
         <button type="button" class="city-trigger" data-city-trigger aria-haspopup="listbox" aria-expanded="false"><span data-city-label>{% if footer_destination %}{{ footer_destination.name }}, {{ footer_destination.country }}{% else %}{% trans 'City or destination' %}{% endif %}</span></button>
         <div class="city-panel" data-city-panel hidden role="listbox" aria-label="{% trans 'City or destination' %}">
             {% for country, destinations in footer_destinations_by_country.items %}
                 <p class="city-country">{{ country }}</p>
                 {% for destination in destinations %}
-                    <button type="button" data-city-option data-city-id="{{ destination.pk }}" data-city-country="{{ country }}" data-city-name="{{ destination.name }}">{{ destination.name }}</button>
+                    <button type="button" data-city-option data-city-id="{{ destination.pk }}" data-city-country="{{ destination.country_code }}" data-city-name="{{ destination.name }}">{{ destination.name }}</button>
                 {% endfor %}
             {% endfor %}
         </div>
@@ -67,10 +67,10 @@
         <input type="hidden" name="destination" value="{{ search_form.destination.value|default:'' }}" data-city-input>
         <button type="button" class="city-trigger" data-city-trigger aria-haspopup="listbox" aria-expanded="false"><span data-city-label>{% if search_form.destination.value %}{{ search_form.destination.value }}{% else %}{% trans 'City or destination' %}{% endif %}</span></button>
         <div class="city-panel" data-city-panel hidden role="listbox" aria-label="{% trans 'City or destination' %}">
-            {% for country, destinations in destinations_by_country.items %}
+            {% for country, destinations in footer_destinations_by_country.items %}
                 <p class="city-country">{{ country }}</p>
                 {% for destination in destinations %}
-                    <button type="button" data-city-option data-city-id="{{ destination.pk }}" data-city-country="{{ country }}" data-city-name="{{ destination.name }}">{{ destination.name }}</button>
+                    <button type="button" data-city-option data-city-id="{{ destination.pk }}" data-city-country="{{ destination.country_code }}" data-city-name="{{ destination.name }}">{{ destination.name }}</button>
                 {% endfor %}
             {% endfor %}
         </div>

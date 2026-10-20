@@ -15,7 +15,7 @@ const parseServiceNumber = (value) => {
 
 const serviceMoney = (value) => {
   const amount = parseServiceNumber(value)
-  return Number.isFinite(amount) ? String(Math.round(amount)) : "0"
+  return Number.isFinite(amount) ? String(Number(amount.toFixed(2))) : "0"
 }
 
 document.querySelectorAll(".svc-stepper").forEach((stepper) => {
@@ -60,10 +60,9 @@ document.querySelectorAll('[data-service="transport"]').forEach((form) => {
     if (!vehicle) return
     const roundTrip = isRoundTrip()
     const qty = Math.max(1, Number(quantity.value || 1))
-    const trips = roundTrip ? 2 : 1
     const passengers = Number(vehicle.dataset.passengers || 0) * qty
     const bags = Number(vehicle.dataset.bags || 0) * qty
-    const total = Number(vehicle.dataset.oneWay || 0) * trips * qty
+    const total = parseServiceNumber(roundTrip ? vehicle.dataset.roundTrip : vehicle.dataset.oneWay) * qty
 
     setText(quote.querySelector("[data-quote-vehicle]"), vehicle.dataset.name || vehicle.value)
     setText(quote.querySelector("[data-quote-quantity]"), qty)

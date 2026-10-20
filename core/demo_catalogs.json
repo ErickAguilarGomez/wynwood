@@ -1,0 +1,349 @@
+{
+  "countries": [
+    {
+      "code": "AR",
+      "name_es": "Argentina",
+      "name_en": "Argentina",
+      "phone_prefix": "+54",
+      "home_image": "",
+      "show_on_home": false,
+      "sort_order": 1,
+      "tax_rate": "0.21"
+    },
+    {
+      "code": "CL",
+      "name_es": "Chile",
+      "name_en": "Chile",
+      "phone_prefix": "+56",
+      "home_image": "",
+      "show_on_home": false,
+      "sort_order": 2,
+      "tax_rate": "0.19"
+    },
+    {
+      "code": "CO",
+      "name_es": "Colombia",
+      "name_en": "Colombia",
+      "phone_prefix": "+57",
+      "home_image": "design/figma/home/destination-colombia.png",
+      "show_on_home": true,
+      "sort_order": 3,
+      "tax_rate": "0.19"
+    },
+    {
+      "code": "EC",
+      "name_es": "Ecuador",
+      "name_en": "Ecuador",
+      "phone_prefix": "+593",
+      "home_image": "",
+      "show_on_home": false,
+      "sort_order": 4,
+      "tax_rate": "0.15"
+    },
+    {
+      "code": "ES",
+      "name_es": "España",
+      "name_en": "Spain",
+      "phone_prefix": "+34",
+      "home_image": "design/figma/home/destination-spain.png",
+      "show_on_home": true,
+      "sort_order": 5,
+      "tax_rate": "0.21"
+    },
+    {
+      "code": "IT",
+      "name_es": "Italia",
+      "name_en": "Italy",
+      "phone_prefix": "+39",
+      "home_image": "",
+      "show_on_home": false,
+      "sort_order": 6,
+      "tax_rate": null
+    },
+    {
+      "code": "MX",
+      "name_es": "México",
+      "name_en": "Mexico",
+      "phone_prefix": "+52",
+      "home_image": "design/figma/home/destination-mexico.png",
+      "show_on_home": true,
+      "sort_order": 7,
+      "tax_rate": "0.16"
+    },
+    {
+      "code": "PA",
+      "name_es": "Panamá",
+      "name_en": "Panama",
+      "phone_prefix": "+507",
+      "home_image": "design/figma/home/destination-panama.png",
+      "show_on_home": true,
+      "sort_order": 8,
+      "tax_rate": "0.07"
+    },
+    {
+      "code": "PE",
+      "name_es": "Perú",
+      "name_en": "Peru",
+      "phone_prefix": "+51",
+      "home_image": "design/figma/home/destination-peru.png",
+      "show_on_home": true,
+      "sort_order": 9,
+      "tax_rate": "0.18"
+    },
+    {
+      "code": "US",
+      "name_es": "Estados Unidos",
+      "name_en": "United States",
+      "phone_prefix": "+1",
+      "home_image": "",
+      "show_on_home": false,
+      "sort_order": 10,
+      "tax_rate": null
+    }
+  ],
+  "services": [
+    {
+      "key": "flexible-checkin",
+      "category": "service",
+      "kind": "early_check_in",
+      "name_es": "Check-in & Check-out flexible",
+      "name_en": "Flexible check-in & check-out",
+      "description_es": "Ofrecemos flexibilidad para early check-in o late check-out. ¡Nos adaptamos a tus necesidades!",
+      "description_en": "We offer flexibility for early check-in or late check-out. We adapt to what you need!",
+      "detail_es": "Disfruta de la comodidad de tu espacio desde que llegas a tu destino y aprovecha cada momento de tu estadía.",
+      "detail_en": "Enjoy the comfort of your space from the moment you arrive at your destination and make the most of every moment of your stay.",
+      "detail_key": "flexible_checkin",
+      "image": "design/figma/home/service-checkin.png",
+      "checkout_image": "design/figma/checkout/service-checkin.jpg",
+      "price": "26.00",
+      "sort_order": 0
+    },
+    {
+      "key": "transport",
+      "category": "service",
+      "kind": "transport",
+      "name_es": "Servicio de transporte",
+      "name_en": "Transport service",
+      "description_es": "Agenda con nosotros los transportes que necesites para tu estadía y muévete seguro.",
+      "description_en": "Book the transfers you need for your stay and move around safely.",
+      "detail_es": "Organiza tu transporte con Wynwood House y disfruta de un viaje seguro y cómodo.",
+      "detail_en": "Arrange your transport with Wynwood House and enjoy a safe, comfortable trip.",
+      "detail_key": "transport",
+      "image": "design/figma/confirmation/service-transport.jpg",
+      "checkout_image": "design/figma/checkout/service-transport.jpg",
+      "price": "13.00",
+      "sort_order": 1
+    },
+    {
+      "key": "groceries",
+      "category": "service",
+      "kind": "grocery",
+      "name_es": "Llena tu nevera",
+      "name_en": "Stock your fridge",
+      "description_es": "Explora nuestras opciones y cuéntanos qué te gustaría tener en tu nevera.",
+      "description_en": "Explore our options and tell us what you would like in your fridge.",
+      "detail_es": "Elige el pack que mejor acompañe tu ocasión y nosotros lo dejamos listo antes de que llegues.",
+      "detail_en": "Choose the pack that best suits your occasion and we will have it ready before you arrive.",
+      "detail_key": "groceries",
+      "image": "design/figma/home/service-kitchen.png",
+      "checkout_image": "design/figma/checkout/service-fridge.jpg",
+      "price": "18.00",
+      "sort_order": 2
+    },
+    {
+      "key": "baby-crib",
+      "category": "service",
+      "kind": "crib",
+      "name_es": "Cuna para bebé",
+      "name_en": "Baby crib",
+      "description_es": "Dejamos una cuna lista y preparada en tu habitación antes de tu llegada.",
+      "description_en": "We set up a baby crib ready in your room before you arrive.",
+      "detail_es": "Viaja con bebés sin cargar con todo: dejamos una cuna lista en tu habitación.",
+      "detail_en": "Travel with babies without carrying everything: we set up a crib in your room.",
+      "detail_key": "crib",
+      "image": "design/figma/home/service-bed.png",
+      "checkout_image": "design/figma/checkout/service-crib.jpg",
+      "price": "15.00",
+      "sort_order": 3
+    },
+    {
+      "key": "suv",
+      "group_key": "transport",
+      "category": "vehicle",
+      "name_es": "SUV",
+      "name_en": "SUV",
+      "price": "13.00",
+      "secondary_price": "26.00",
+      "passengers": 4,
+      "bags": 3
+    },
+    {
+      "key": "van",
+      "group_key": "transport",
+      "category": "vehicle",
+      "name_es": "Van",
+      "name_en": "Van",
+      "price": "18.00",
+      "secondary_price": "36.00",
+      "passengers": 7,
+      "bags": 6,
+      "sort_order": 1
+    },
+    {
+      "key": "breakfast",
+      "group_key": "groceries",
+      "category": "grocery",
+      "name_es": "Pack desayuno",
+      "name_en": "Breakfast pack",
+      "description_es": "Café, jugo, frutas, pan y huevos para empezar el día sin salir.",
+      "description_en": "Coffee, juice, fruit, bread and eggs to start the day in.",
+      "price": "18.00"
+    },
+    {
+      "key": "dinner",
+      "group_key": "groceries",
+      "category": "grocery",
+      "name_es": "Pack cena",
+      "name_en": "Dinner pack",
+      "description_es": "Una cena lista para preparar con productos locales y una botella de vino.",
+      "description_en": "A ready-to-cook dinner with local produce and a bottle of wine.",
+      "price": "24.00",
+      "sort_order": 1
+    },
+    {
+      "key": "celebration",
+      "group_key": "groceries",
+      "category": "grocery",
+      "name_es": "Pack celebración",
+      "name_en": "Celebration pack",
+      "description_es": "Burbujas, tabla de quesos y dulces para sorprender a quien viaja contigo.",
+      "description_en": "Bubbles, a cheese board and sweets to surprise your travel companions.",
+      "price": "32.00",
+      "sort_order": 2
+    }
+  ],
+  "airports": {
+    "anapoima": [
+      [
+        "BOG",
+        "Aeropuerto Internacional El Dorado",
+        "El Dorado International Airport"
+      ]
+    ],
+    "bogota": [
+      [
+        "BOG",
+        "Aeropuerto Internacional El Dorado",
+        "El Dorado International Airport"
+      ]
+    ],
+    "cartagena": [
+      [
+        "CTG",
+        "Aeropuerto Internacional Rafael Núñez",
+        "Rafael Núñez International Airport"
+      ]
+    ],
+    "guatape": [
+      [
+        "MDE",
+        "Aeropuerto Internacional José María Córdova",
+        "José María Córdova International Airport"
+      ]
+    ],
+    "medellin": [
+      [
+        "MDE",
+        "Aeropuerto Internacional José María Córdova",
+        "José María Córdova International Airport"
+      ],
+      [
+        "EOH",
+        "Aeropuerto Olaya Herrera",
+        "Olaya Herrera Airport"
+      ]
+    ],
+    "madrid": [
+      [
+        "MAD",
+        "Aeropuerto Adolfo Suárez Madrid-Barajas",
+        "Adolfo Suárez Madrid–Barajas Airport"
+      ]
+    ],
+    "barcelona": [
+      [
+        "BCN",
+        "Aeropuerto Josep Tarradellas Barcelona-El Prat",
+        "Barcelona–El Prat Airport"
+      ]
+    ],
+    "firenze": [
+      [
+        "FLR",
+        "Aeropuerto de Florencia",
+        "Florence Airport"
+      ]
+    ],
+    "milano": [
+      [
+        "MXP",
+        "Aeropuerto de Milán-Malpensa",
+        "Milan Malpensa Airport"
+      ],
+      [
+        "LIN",
+        "Aeropuerto de Milán-Linate",
+        "Milan Linate Airport"
+      ]
+    ],
+    "cdmx": [
+      [
+        "MEX",
+        "Aeropuerto Internacional de la Ciudad de México",
+        "Mexico City International Airport"
+      ]
+    ],
+    "ciudad-de-panama": [
+      [
+        "PTY",
+        "Aeropuerto Internacional de Tocumen",
+        "Tocumen International Airport"
+      ]
+    ],
+    "cusco": [
+      [
+        "CUZ",
+        "Aeropuerto Internacional Alejandro Velasco Astete",
+        "Alejandro Velasco Astete International Airport"
+      ]
+    ],
+    "lima": [
+      [
+        "LIM",
+        "Aeropuerto Internacional Jorge Chávez",
+        "Jorge Chávez International Airport"
+      ]
+    ],
+    "mancora": [
+      [
+        "TYL",
+        "Aeropuerto Cap. FAP Víctor Montes Arias",
+        "Cap. FAP Víctor Montes Arias International Airport"
+      ]
+    ],
+    "paracas": [
+      [
+        "PIO",
+        "Aeropuerto de Pisco",
+        "Pisco Airport"
+      ]
+    ],
+    "miami": [
+      [
+        "MIA",
+        "Aeropuerto Internacional de Miami",
+        "Miami International Airport"
+      ]
+    ]
+  }
+}

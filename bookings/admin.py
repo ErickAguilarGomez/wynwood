@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Reservation, ReservationCharge
+from .models import Reservation, ReservationCharge, ServiceCatalog
 
 
 class ReservationChargeInline(admin.TabularInline):
@@ -26,3 +26,10 @@ class ReservationAdmin(admin.ModelAdmin):
         "confirmation_sent_at",
     )
     inlines = (ReservationChargeInline,)
+
+
+@admin.register(ServiceCatalog)
+class ServiceCatalogAdmin(admin.ModelAdmin):
+    list_display = ("key", "name_es", "name_en", "category", "price", "is_active", "sort_order")
+    list_filter = ("category", "is_active", "group_key")
+    search_fields = ("key", "name_es", "name_en", "description_es", "description_en")

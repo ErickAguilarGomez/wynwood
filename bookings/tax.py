@@ -1,35 +1,15 @@
-
-
-
-
-
-
-
-
-
-
-
-
 from decimal import ROUND_HALF_UP, Decimal
 
 from django.conf import settings
 
-TAX_RATES = {
-    "AR": Decimal("0.21"),
-    "CL": Decimal("0.19"),
-    "CO": Decimal("0.19"),
-    "EC": Decimal("0.15"),
-    "ES": Decimal("0.21"),
-    "MX": Decimal("0.16"),
-    "PA": Decimal("0.07"),
-    "PE": Decimal("0.18"),
-}
+from properties.models import Country
 
 
 def resolve_tax_rate(property):
 
     country_code = (property.destination.country_code or "").upper()
-    return TAX_RATES.get(country_code, Decimal(str(settings.BOOKING_TAX_RATE)))
+    rate = Country.objects.filter(code=country_code).values_list("tax_rate", flat=True).first()
+    return rate if rate is not None else Decimal(str(settings.BOOKING_TAX_RATE))
 
 
 def included_tax_amount(total, rate):

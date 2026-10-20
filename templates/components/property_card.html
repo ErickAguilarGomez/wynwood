@@ -2,7 +2,7 @@
 <article class="property-card">
     <a class="property-image" href="{{ property.get_absolute_url }}">
         {% with photo=property.primary_image %}{% if photo %}<img src="{{ photo.image.url }}" alt="{{ photo.alt }}" loading="lazy" width="600" height="400">{% endif %}{% endwith %}
-        <span class="card-badge">{% trans 'From' %} {{ booking_currency }} {{ property.price_per_night|floatformat:0 }}</span>
+        <span class="card-badge">{% trans 'From' %} {{ booking_currency }} {{ property.price_per_night|floatformat:'-2'  }}</span>
     </a>
     <div class="property-copy">
         <p class="eyebrow">{{ property.destination.name }}</p>

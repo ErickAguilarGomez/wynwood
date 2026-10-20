@@ -3,7 +3,9 @@ from datetime import timedelta
 from django.utils import timezone
 
 from accounts.models import User
-from properties.models import Destination, Property
+from bookings.models import ServiceCatalog
+from core.demo_data import seed_catalogs
+from properties.models import Country, Destination, Property
 
 
 def create_user(email="guest@example.com"):
@@ -11,6 +13,8 @@ def create_user(email="guest@example.com"):
 
 
 def create_property(slug="central-home", **overrides):
+    if not Country.objects.exists() or not ServiceCatalog.objects.exists():
+        seed_catalogs()
     destination, _ = Destination.objects.get_or_create(
         slug="madrid",
         defaults={"name_es": "Madrid", "name_en": "Madrid", "country_code": "ES"},

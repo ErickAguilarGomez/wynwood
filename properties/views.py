@@ -1,17 +1,17 @@
-from calendar import month_abbr
 from decimal import Decimal
 
 from django.db.models import Max, Min, Prefetch, Q
 from django.http import JsonResponse
 from django.utils import timezone
-from django.utils.dateparse import parse_date
+from django.utils.formats import date_format
 from django.views.generic import DetailView, ListView
 
-from bookings.forms import COUNTRY_PHONE_PREFIXES, ReservationForm, parse_phone
+from bookings.forms import ReservationForm, country_phone_prefix, parse_phone
 from bookings.models import Reservation
+from core.dates import parse_date
 
 from .forms import PropertySearchForm
-from .models import Amenity, Destination, Property, PropertyImage
+from .models import Amenity, Country, Destination, Property, PropertyImage
 
 
 class PropertyListView(ListView):
@@ -29,23 +29,31 @@ class PropertyListView(ListView):
         queryset = Property.objects.filter(is_active=True).select_related("destination").prefetch_related(
             Prefetch("images", queryset=PropertyImage.objects.order_by("sort_order")),
             "amenities",
-        )
+        ).order_by("-is_featured", "title_es", "pk")
         query_params = self.request.GET.copy()
         raw_check_in = (query_params.get("check_in") or "").strip()
         raw_check_out = (query_params.get("check_out") or "").strip()
 
-        if not raw_check_in and not raw_check_out:
+        if not raw_check_in and not raw_check_out and ("check_in" in query_params or "check_out" in query_params):
+            self.request.session.pop("search_check_in", None)
+            self.request.session.pop("search_check_out", None)
+        elif not raw_check_in and not raw_check_out:
             saved_in = self.request.session.get("search_check_in")
             saved_out = self.request.session.get("search_check_out")
-            if saved_in and saved_out:
+            parsed_in = parse_date(saved_in)
+            parsed_out = parse_date(saved_out)
+            if parsed_in and parsed_out and parsed_in >= timezone.localdate() and parsed_out > parsed_in:
                 query_params["check_in"] = saved_in
                 query_params["check_out"] = saved_out
+            else:
+                self.request.session.pop("search_check_in", None)
+                self.request.session.pop("search_check_out", None)
 
         if not query_params.get("guests") and self.request.session.get("search_guests"):
             query_params["guests"] = str(self.request.session.get("search_guests"))
 
         self.query_params = query_params
-        self.form = PropertySearchForm(query_params or None)
+        self.form = PropertySearchForm(query_params)
         if not self.form.is_valid():
             return queryset.none()
         data = self.form.cleaned_data
@@ -74,7 +82,12 @@ class PropertyListView(ListView):
 
         country = data.get("country")
         if country:
-            queryset = queryset.filter(Q(country__iexact=country) | Q(destination__country_code__iexact=country))
+            country_codes = Country.objects.filter(
+                Q(code__iexact=country) | Q(name_es__iexact=country) | Q(name_en__iexact=country)
+            ).values("code")
+            queryset = queryset.filter(
+                Q(country__iexact=country) | Q(destination__country_code__in=country_codes)
+            )
 
 
         province = data.get("province")
@@ -90,7 +103,7 @@ class PropertyListView(ListView):
         if districts:
             district_q = Q()
             for d in districts:
-                district_q |= Q(district__iexact=d) | Q(district__icontains=d)
+                district_q |= Q(district__iexact=d)
             queryset = queryset.filter(district_q)
 
 
@@ -131,20 +144,6 @@ class PropertyListView(ListView):
         context["search_data"] = data
 
 
-        destinations = Destination.objects.all().order_by("country_code", "sort_order", "name_es")
-        by_country = {}
-        for d in destinations:
-            by_country.setdefault(d.country, []).append(d)
-        context["destinations_by_country"] = by_country
-
-
-        districts_map = {}
-        for prop in Property.objects.filter(is_active=True).exclude(district=""):
-            districts_map.setdefault(str(prop.destination_id), set()).add(prop.district)
-            districts_map.setdefault(prop.destination.slug, set()).add(prop.district)
-        context["districts_by_destination"] = {k: sorted(v) for k, v in districts_map.items()}
-
-
         selected_dest = data.get("destination")
         if selected_dest:
             selected_dest = Destination.objects.filter(
@@ -166,7 +165,6 @@ class PropertyListView(ListView):
         )
         context["price_floor"] = price_bounds["minimum"] or Decimal("0")
         context["price_ceiling"] = price_bounds["maximum"] or Decimal("0")
-
 
 
         query_params = getattr(self, "query_params", self.request.GET)
@@ -228,8 +226,7 @@ class PropertyDetailView(DetailView):
             initial["check_in"] = check_in
             initial["check_out"] = check_out
             date_range_label = (
-                f"{month_abbr[check_in.month]} {check_in.day}/{check_in:%Y} - "
-                f"{month_abbr[check_out.month]} {check_out.day}/{check_out:%Y}"
+                f"{date_format(check_in, 'd M Y')} - {date_format(check_out, 'd M Y')}"
             )
         context["reservation_form"] = ReservationForm(
             property=self.object,
@@ -241,7 +238,7 @@ class PropertyDetailView(DetailView):
         phone_code, phone_number = parse_phone(
             getattr(user, "phone", "") if user.is_authenticated else "",
             country=getattr(user, "country", None) or dest_country,
-            default_prefix=COUNTRY_PHONE_PREFIXES.get(dest_country, "+57"),
+            default_prefix=country_phone_prefix(dest_country, "+57"),
         )
         context["user_phone_code"] = phone_code
         context["user_phone_number"] = phone_number
@@ -263,7 +260,10 @@ def location_cities(request):
     country = (request.GET.get("country") or "").strip()
     cities = Destination.objects.filter(properties__is_active=True)
     if country:
-        cities = cities.filter(properties__country=country)
+        country_codes = Country.objects.filter(
+            Q(code__iexact=country) | Q(name_es__iexact=country) | Q(name_en__iexact=country)
+        ).values("code")
+        cities = cities.filter(Q(properties__country__iexact=country) | Q(country_code__in=country_codes))
     cities = cities.distinct().order_by("name_es")
     return JsonResponse({"cities": [{"id": city.pk, "name": city.name, "slug": city.slug} for city in cities]})
 
@@ -273,8 +273,12 @@ def location_districts(request):
     destination_id = request.GET.get("destination")
     districts = Property.objects.filter(is_active=True).exclude(district="")
     if destination_id:
-        if str(destination_id).isdigit():
-            districts = districts.filter(destination_id=int(destination_id))
+        if str(destination_id).isdecimal():
+            districts = (
+                districts.filter(destination_id=int(destination_id))
+                if len(destination_id) <= 19 and int(destination_id) <= 9223372036854775807
+                else districts.none()
+            )
         else:
             districts = districts.filter(destination__slug=destination_id)
     names = districts.order_by("district").values_list("district", flat=True).distinct()

@@ -290,7 +290,7 @@ document.querySelectorAll("[data-results-filters]").forEach((form) => {
     if (!cityInput?.value) {
       const empty = document.createElement("p")
       empty.className = "district-empty"
-      empty.textContent = "Selecciona una ciudad primero"
+      empty.textContent = form.dataset.selectCityLabel
       districtOptions.append(empty)
       updateDistrictLabel()
       return
@@ -303,7 +303,7 @@ document.querySelectorAll("[data-results-filters]").forEach((form) => {
     if (!data.districts.length) {
       const empty = document.createElement("p")
       empty.className = "district-empty"
-      empty.textContent = "No hay distritos disponibles"
+      empty.textContent = form.dataset.noDistrictsLabel
       districtOptions.append(empty)
     }
     data.districts.forEach((district, index) => {
@@ -341,7 +341,7 @@ document.querySelectorAll("[data-results-filters]").forEach((form) => {
       if (option && cityInput && countryInput && cityLabel) {
         cityInput.value = option.dataset.id
         countryInput.value = option.dataset.country
-        cityLabel.textContent = `${option.dataset.name}, ${option.dataset.country}`
+        cityLabel.textContent = `${option.dataset.name}, ${option.dataset.countryLabel}`
         closeScopes()
         loadDistricts({ reset: true })
         form.dispatchEvent(new Event("change", { bubbles: true }))
@@ -384,10 +384,10 @@ document.querySelectorAll("[data-results-filters]").forEach((form) => {
       ? new URLSearchParams(new URL(url, window.location.origin).searchParams)
       : new URLSearchParams(new FormData(form))
     for (const [key, value] of [...query.entries()]) {
-      if (!value) query.delete(key)
+      if (!value && !["check_in", "check_out"].includes(key)) query.delete(key)
     }
     query.set("partial", "1")
-    query.delete("page")
+    if (!url) query.delete("page")
     if (controller) controller.abort()
     controller = new AbortController()
     try {
@@ -409,6 +409,13 @@ document.querySelectorAll("[data-results-filters]").forEach((form) => {
     updateResults()
   })
   form.addEventListener("change", () => updateResults())
+  form.querySelectorAll("[data-date-range]").forEach((picker) => {
+    picker.addEventListener("daterangechange", () => {
+      const start = picker.querySelector('[name="check_in"]')
+      const end = picker.querySelector('[name="check_out"]')
+      if (start && end && Boolean(start.value) === Boolean(end.value)) updateResults()
+    })
+  })
   form.addEventListener("input", (event) => {
     if (!event.target.matches('input[type="number"], input[type="date"]')) return
     clearTimeout(timer)
@@ -826,7 +833,7 @@ document.querySelectorAll("[data-guest-picker]").forEach((picker) => {
 const registroForm = document.querySelector("[data-registro-form]")
 
 if (registroForm) {
-  const PASSWORD_MIN_LENGTH = 8
+  const PASSWORD_MIN_LENGTH = 10
   const NAME_TOKEN_MIN_LENGTH = 3
   const PASSWORD_SYMBOLS = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -834,7 +841,6 @@ if (registroForm) {
   const passwordInput = registroForm.querySelector("[data-password-input]")
   const rulesList = registroForm.querySelector("[data-password-rules]")
   const strengthLabel = registroForm.querySelector("[data-strength-label]")
-  const submitButton = registroForm.querySelector("[data-registro-submit]")
   const emailInput = registroForm.querySelector('[name="email"]')
   const fullNameInput = registroForm.querySelector('[name="full_name"]')
   const toggleButton = registroForm.querySelector("[data-password-toggle]")
@@ -969,7 +975,7 @@ if (registroForm) {
           const label = document.createElement("span")
           const price = document.createElement("span")
           label.textContent = button.dataset.serviceLabel || button.textContent.trim()
-          price.textContent = `${currency} ${Math.round(amount)}`
+          price.textContent = `${currency} ${Number((amount).toFixed(2))}`
           line.append(label, price)
           serviceLinesEl.appendChild(line)
         }
@@ -978,7 +984,7 @@ if (registroForm) {
       if (serviceLinesEl) serviceLinesEl.hidden = servicesTotal === 0
       const total = baseTotal + servicesTotal
       const pointsRate = Number(pointsEl && pointsEl.dataset.pointsRate) || 0
-      if (totalEl) totalEl.textContent = `${currency} ${Math.round(total)}`
+      if (totalEl) totalEl.textContent = `${currency} ${Number((total).toFixed(2))}`
       if (pointsEl) pointsEl.textContent = `${Math.max(0, Math.round(total * pointsRate))} Wynwood Points`
     }
 
@@ -994,8 +1000,8 @@ if (registroForm) {
       const subtotal = nightlyRate * nights
       const total = subtotal + cleaningFee
 
-      if (rateLabel) rateLabel.textContent = `${currency} ${Math.round(nightlyRate)} x ${nights}`
-      if (subtotalEl) subtotalEl.textContent = `${currency} ${Math.round(subtotal)}`
+      if (rateLabel) rateLabel.textContent = `${currency} ${Number((nightlyRate).toFixed(2))} x ${nights}`
+      if (subtotalEl) subtotalEl.textContent = `${currency} ${Number((subtotal).toFixed(2))}`
       renderTotal(total, nights)
     }
 
@@ -1034,7 +1040,6 @@ if (registroForm) {
         const nights = start && end && end > start ? Math.max(1, Math.round((end - start) / 86400000)) : 1
         renderTotal(nightlyRate * nights + cleaningFee, nights)
 
-        if (added && submitButton) registroForm.requestSubmit(submitButton)
       })
     })
 
@@ -1069,7 +1074,7 @@ if (registroForm) {
         current = Math.min(maxGuests, Math.max(1, current + step))
         countEl.textContent = String(current)
         if (labelEl) {
-          labelEl.textContent = current === 1 ? "1 persona" : `${current} personas`
+          labelEl.textContent = `${current} ${current === 1 ? checkoutGuestPicker.dataset.personSingular : checkoutGuestPicker.dataset.personPlural}`
         }
         if (hiddenGuests) hiddenGuests.value = String(current)
       })
@@ -1286,6 +1291,7 @@ initPromoCountdown()
 
   const renderResultsMarkers = () => {
     if (!resultsMapInstance || !markersGroup || !window.L) return
+    const mapEl = document.getElementById("results-map")
     markersGroup.clearLayers()
     markerById.clear()
 
@@ -1307,9 +1313,14 @@ initPromoCountdown()
     properties.forEach((prop) => {
       if (typeof prop.lat !== "number" || typeof prop.lng !== "number") return
 
-      const badgeHtml = `<div class="map-price-badge" data-marker-id="${prop.id}"><span>${prop.currency} ${Math.round(prop.price)}</span></div>`
+      const badge = document.createElement("div")
+      badge.className = "map-price-badge"
+      badge.dataset.markerId = String(prop.id)
+      const badgeText = document.createElement("span")
+      badgeText.textContent = `${prop.currency} ${Number((prop.price).toFixed(2))}`
+      badge.append(badgeText)
       const icon = window.L.divIcon({
-        html: badgeHtml,
+        html: badge,
         className: "map-custom-marker-icon",
         iconSize: [80, 32],
         iconAnchor: [40, 16],
@@ -1318,16 +1329,27 @@ initPromoCountdown()
 
       const marker = window.L.marker([prop.lat, prop.lng], { icon: icon })
 
-      const popupHtml = `
-        <div class="map-popup-card">
-          ${prop.image ? `<img src="${prop.image}" alt="${prop.title}">` : ""}
-          <h4>${prop.title}</h4>
-          <p>${prop.district ? `${prop.district}, ` : ""}${prop.destination}</p>
-          <strong>${prop.currency} ${Math.round(prop.price)} / ${mapEl.dataset.nightLabel}</strong>
-          <div><a href="${prop.url}">${mapEl.dataset.viewProperty}</a></div>
-        </div>
-      `
-      marker.bindPopup(popupHtml)
+      const popup = document.createElement("div")
+      popup.className = "map-popup-card"
+      if (prop.image) {
+        const image = document.createElement("img")
+        image.src = prop.image
+        image.alt = prop.title
+        popup.append(image)
+      }
+      const heading = document.createElement("h4")
+      heading.textContent = prop.title
+      const location = document.createElement("p")
+      location.textContent = `${prop.district ? `${prop.district}, ` : ""}${prop.destination}`
+      const price = document.createElement("strong")
+      price.textContent = `${prop.currency} ${Number((prop.price).toFixed(2))} / ${mapEl.dataset.nightLabel}`
+      const linkWrapper = document.createElement("div")
+      const link = document.createElement("a")
+      link.href = prop.url
+      link.textContent = mapEl.dataset.viewProperty
+      linkWrapper.append(link)
+      popup.append(heading, location, price, linkWrapper)
+      marker.bindPopup(popup)
 
       marker.on("click", () => {
         const card = document.querySelector(`.result-card[data-property-id="${prop.id}"]`)
@@ -1410,7 +1432,9 @@ initPromoCountdown()
 
     const marker = window.L.marker([lat, lng], { icon: icon }).addTo(map)
     if (title) {
-      marker.bindTooltip(title, { permanent: false, direction: "top" })
+      const tooltip = document.createElement("span")
+      tooltip.textContent = title
+      marker.bindTooltip(tooltip, { permanent: false, direction: "top" })
     }
 
     setTimeout(() => map.invalidateSize(), 200)
@@ -1436,4 +1460,11 @@ initPromoCountdown()
     startMaps()
   }
 })()
+
+document.querySelectorAll(".language-switcher").forEach((form) => {
+  form.addEventListener("submit", () => {
+    const next = form.querySelector('[name="next"]')
+    if (next) next.value = `${window.location.pathname}${window.location.search}${window.location.hash}`
+  })
+})
 

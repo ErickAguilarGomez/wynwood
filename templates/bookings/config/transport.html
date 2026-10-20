@@ -58,7 +58,8 @@
             <label class="svc-radio">
                 <input type="radio" name="vehicle" value="{{ vehicle.key }}"
                        data-name="{{ vehicle.name }}"
-                       data-one-way="{{ vehicle.one_way_price }}"
+                       data-one-way="{{ vehicle.one_way_price|unlocalize }}"
+                       data-round-trip="{{ vehicle.round_trip_price|unlocalize }}"
                        data-passengers="{{ vehicle.passengers }}"
                        data-bags="{{ vehicle.bags }}"
                        {% if form.vehicle.value == vehicle.key or not form.vehicle.value and forloop.first %}checked{% endif %}>
@@ -83,7 +84,7 @@
         <div class="svc-quote-line">
             <span class="svc-quote-key">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11m-14 0h14a2 2 0 0 1 2 2v4h-2a2 2 0 0 1-4 0H9a2 2 0 0 1-4 0H3v-4a2 2 0 0 1 2-2zm2.5 5a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm9 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
-                <span data-quote-vehicle>{{ quote.vehicle_name|default:'Suv' }}</span>
+                <span data-quote-vehicle>{{ quote.vehicle_name }}</span>
             </span>
             <strong data-quote-quantity>{{ quote.quantity|default:1 }}</strong>
         </div>
@@ -92,18 +93,18 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-4 0-8 2-8 4.5V21h16v-2.5C20 16 16 14 12 14z"/></svg>
                 {% trans 'Passengers' %}
             </span>
-            <strong data-quote-passengers>{{ quote.passengers|default:4 }}</strong>
+            <strong data-quote-passengers>{{ quote.passengers }}</strong>
         </div>
         <div class="svc-quote-line">
             <span class="svc-quote-key">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l1 2h3v14H5V6h3l1-2zm3 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
                 {% trans 'Suitcases' %}
             </span>
-            <strong data-quote-bags>{{ quote.bags|default:3 }}</strong>
+            <strong data-quote-bags>{{ quote.bags }}</strong>
         </div>
         <div class="svc-quote-line svc-quote-total">
             <span>{% trans 'TOTAL:' %}</span>
-            <strong>{{ currency_symbol }} <span data-quote-total>{{ quote.amount|floatformat:0 }}</span></strong>
+            <strong>{{ currency_symbol }} <span data-quote-total>{{ quote.amount|floatformat:'-2'  }}</span></strong>
         </div>
     </div>
 

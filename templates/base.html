@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{% trans 'Curated homes for exceptional stays.' %}">
     <title>{% block title %}Wynwood House{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{% static 'design/figma/ui/icon-star.svg' %}">
     <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/site.css' %}">
     {% block extra_head %}{% endblock %}
@@ -33,7 +34,7 @@
                 {% else %}
                     <a href="{% url 'accounts:login' %}">{% trans 'Sign in' %}</a>
                 {% endif %}
-                <a class="reserve-now" href="#booking">{% trans 'Book now' %}</a>
+                <a class="reserve-now" href="{% if request.resolver_match.view_name == 'properties:detail' %}#booking{% elif property %}{{ property.get_absolute_url }}#booking{% else %}{% url 'properties:results' %}{% endif %}">{% trans 'Book now' %}</a>
             </div>
             <nav id="main-navigation" class="main-nav detail-nav" aria-label="{% trans 'Main navigation' %}">
                 {% include 'components/main_links.html' %}
@@ -91,7 +92,7 @@
             <div><h3>{% trans 'Owners & Investors' %}</h3><a href="{% url 'core:home' %}#real-estate">{% trans 'Wynwood Real Estate' %}</a><span>{% trans 'Owners' %}</span></div>
             <div><h3>{% trans 'Benefits' %}</h3><span>{% trans 'Guides' %}</span><span>{% trans 'Rewards Program' %}</span></div>
 
-            <div><h3>{% trans 'Destinations' %}</h3><span>{% trans 'Peru' %}</span><span>{% trans 'Mexico' %}</span><span>{% trans 'Panama' %}</span><span>{% trans 'Colombia' %}</span></div>
+            <div><h3>{% trans 'Destinations' %}</h3>{% for country in footer_countries %}<a href="{% url 'properties:results' %}?country={{ country.code }}">{{ country.name }}</a>{% endfor %}</div>
             <div><h3>{% trans 'Terms & Conditions' %}</h3><a href="https://wynwood-house.com/terms-of-service/" target="_blank" rel="noopener">{% trans 'Terms of service' %}</a><a href="https://wynwood-house.com/privacy-policy/" target="_blank" rel="noopener">{% trans 'Privacy policy' %}</a><a href="https://wynwood-house.com/cancellation-policy/" target="_blank" rel="noopener">{% trans 'Cancellation policy' %}</a></div>
             <div><h3>{% trans 'Contact us' %}</h3><a href="https://wynwood-house.com/contact/" target="_blank" rel="noopener">{% trans 'Write to us' %}</a><a href="https://wynwood-house.com/faq/" target="_blank" rel="noopener">{% trans 'FAQ' %}</a><a href="tel:+12536423881" class="footer-contact-link"><img src="{% static 'design/figma/ui/icon-phone.svg' %}" alt="" class="footer-phone-icon"> +1 (253) 642-3881</a><a href="mailto:sales@wynwoodhouse.com">sales@wynwoodhouse.com</a></div>
             <div><h3>{% trans 'WhatsApp' %}</h3>

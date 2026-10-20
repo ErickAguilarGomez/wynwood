@@ -24,7 +24,7 @@
                     <span class="svc-pack-name">{{ pack.name }}</span>
                     <span class="svc-pack-text">{{ pack.description }}</span>
                 </span>
-                <strong class="svc-pack-price">{{ currency_symbol }} {{ pack.price|floatformat:0 }}</strong>
+                <strong class="svc-pack-price">{{ currency_symbol }} {{ pack.price|floatformat:'-2'  }}</strong>
             </label>
         {% endfor %}
         {% for error in form.pack.errors %}<small class="svc-error">{{ error }}</small>{% endfor %}
@@ -32,7 +32,7 @@
 
     <div class="svc-summary-row">
         <span class="svc-summary-total-label">{% trans 'TOTAL:' %}</span>
-        <strong class="svc-summary-total">{{ currency_symbol }} <span data-quote-total>{{ quote.amount|floatformat:0 }}</span></strong>
+        <strong class="svc-summary-total">{{ currency_symbol }} <span data-quote-total>{{ quote.amount|floatformat:'-2'  }}</span></strong>
     </div>
 
     {% include 'bookings/config/_actions.html' %}

@@ -15,6 +15,9 @@
         {{ form.check_in.as_hidden }}{{ form.check_out.as_hidden }}{{ form.guests.as_hidden }}{{ form.booking_type.as_hidden }}
         {% for service_key in selected_service_keys %}<input type="hidden" name="selected_services" value="{{ service_key }}">{% endfor %}
         {% if form.non_field_errors %}<div class="registro-form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form.hidden_fields %}
+            {% if field.errors and field.name != 'birth_date' %}<div class="registro-form-errors">{{ field.errors }}</div>{% endif %}
+        {% endfor %}
 
         <h1 class="registro-heading">{% trans 'Registration' %}</h1>
         <p class="registro-intro">{% trans 'We will email the confirmation of your reservation.' %}</p>
@@ -38,7 +41,7 @@
             <ul class="registro-rules" data-password-rules data-label-strong="{% trans 'Strong' %}" data-label-weak="{% trans 'Weak' %}"{% if not form.password.errors %} hidden{% endif %}>
                 <li data-rule="strength"><span class="registro-rule-mark" aria-hidden="true">✓</span><span>{% trans 'Password strength:' %} <b data-strength-label>{% trans 'Weak' %}</b></span></li>
                 <li data-rule="name"><span class="registro-rule-mark" aria-hidden="true">✓</span><span>{% trans 'It cannot contain your name or email address' %}</span></li>
-                <li data-rule="length"><span class="registro-rule-mark" aria-hidden="true">✓</span><span>{% trans 'At least 8 characters' %}</span></li>
+                <li data-rule="length"><span class="registro-rule-mark" aria-hidden="true">✓</span><span>{% trans 'At least 10 characters' %}</span></li>
                 <li data-rule="symbol"><span class="registro-rule-mark" aria-hidden="true">✓</span><span>{% trans 'It does not contain a number or symbol' %}</span></li>
             </ul>
             {% for error in form.password.errors %}<p class="registro-error">{{ error }}</p>{% endfor %}
@@ -89,30 +92,14 @@
         <h2 class="registro-heading">{% trans 'Additional services' %}</h2>
         <p class="registro-subtitle">{% trans 'Personalize your trip with additional services' %}</p>
         <div class="registro-services">
+            {% for service in services %}
             <article class="registro-service">
-                <img src="{% static 'design/figma/checkout/service-checkin.jpg' %}" alt="" width="274" height="291">
-                <p>{% trans 'Flexible check-in & check-out' %}</p>
-                <span class="registro-service-price">USD 26</span>
-                <button class="registro-service-add{% if 'flexible-checkin' in selected_service_keys %} is-added{% endif %}" type="button" data-service-add data-service-key="flexible-checkin" data-service-label="{% trans 'Flexible check-in & check-out' %}" data-service-price="26" data-label-add="{% trans 'Add' %}" data-label-added="{% trans 'Added' %}" aria-pressed="{% if 'flexible-checkin' in selected_service_keys %}true{% else %}false{% endif %}">{% if 'flexible-checkin' in selected_service_keys %}{% trans 'Added' %}{% else %}+ {% trans 'Add' %}{% endif %}</button>
+                <img src="{% static service.checkout_image|default:service.image %}" alt="" width="274" height="291">
+                <p>{{ service.name }}</p>
+                <span class="registro-service-price">{{ service.price_label }}</span>
+                <button class="registro-service-add{% if service.key in selected_service_keys %} is-added{% endif %}" type="button" data-service-add data-service-key="{{ service.key }}" data-service-label="{{ service.name }}" data-service-price="{{ service.starting_price|unlocalize }}"{% if service.detail == 'crib' %} data-service-unit="night"{% endif %} data-label-add="{% trans 'Add' %}" data-label-added="{% trans 'Added' %}" aria-pressed="{% if service.key in selected_service_keys %}true{% else %}false{% endif %}">{% if service.key in selected_service_keys %}{% trans 'Added' %}{% else %}+ {% trans 'Add' %}{% endif %}</button>
             </article>
-            <article class="registro-service">
-                <img src="{% static 'design/figma/checkout/service-transport.jpg' %}" alt="" width="274" height="291">
-                <p>{% trans 'Transport service' %}</p>
-                <span class="registro-service-price">{% trans 'From' %} USD 13</span>
-                <button class="registro-service-add{% if 'transport' in selected_service_keys %} is-added{% endif %}" type="button" data-service-add data-service-key="transport" data-service-label="{% trans 'Transport service' %}" data-service-price="13" data-label-add="{% trans 'Add' %}" data-label-added="{% trans 'Added' %}" aria-pressed="{% if 'transport' in selected_service_keys %}true{% else %}false{% endif %}">{% if 'transport' in selected_service_keys %}{% trans 'Added' %}{% else %}+ {% trans 'Add' %}{% endif %}</button>
-            </article>
-            <article class="registro-service">
-                <img src="{% static 'design/figma/checkout/service-fridge.jpg' %}" alt="" width="274" height="291">
-                <p>{% trans 'Stock your fridge' %}</p>
-                <span class="registro-service-price">{% trans 'From' %} USD 18</span>
-                <button class="registro-service-add{% if 'groceries' in selected_service_keys %} is-added{% endif %}" type="button" data-service-add data-service-key="groceries" data-service-label="{% trans 'Stock your fridge' %}" data-service-price="18" data-label-add="{% trans 'Add' %}" data-label-added="{% trans 'Added' %}" aria-pressed="{% if 'groceries' in selected_service_keys %}true{% else %}false{% endif %}">{% if 'groceries' in selected_service_keys %}{% trans 'Added' %}{% else %}+ {% trans 'Add' %}{% endif %}</button>
-            </article>
-            <article class="registro-service">
-                <img src="{% static 'design/figma/checkout/service-crib.jpg' %}" alt="" width="274" height="291">
-                <p>{% trans 'Baby crib' %}</p>
-                <span class="registro-service-price">USD 15 / {% trans 'night' %}</span>
-                <button class="registro-service-add{% if 'baby-crib' in selected_service_keys %} is-added{% endif %}" type="button" data-service-add data-service-key="baby-crib" data-service-label="{% trans 'Baby crib' %}" data-service-price="15" data-service-unit="night" data-label-add="{% trans 'Add' %}" data-label-added="{% trans 'Added' %}" aria-pressed="{% if 'baby-crib' in selected_service_keys %}true{% else %}false{% endif %}">{% if 'baby-crib' in selected_service_keys %}{% trans 'Added' %}{% else %}+ {% trans 'Add' %}{% endif %}</button>
-            </article>
+            {% endfor %}
         </div>
 
         {% blocktrans with cancel_url="https://wynwood-house.com/cancellation-policy/" terms_url="https://wynwood-house.com/terms-of-service/" privacy_url="https://wynwood-house.com/privacy-policy/" %}By selecting continue, you accept the <a href="{{ cancel_url }}" target="_blank" rel="noopener">Cancellation Policy</a>, <a href="{{ terms_url }}" target="_blank" rel="noopener">Terms of Service</a> and <a href="{{ privacy_url }}" target="_blank" rel="noopener">Privacy Policies</a>. You also agree to pay the total amount shown.{% endblocktrans %}
@@ -152,7 +139,7 @@
                 <input type="hidden" name="check_in" value="{{ check_in|date:'Y-m-d' }}">
                 <input type="hidden" name="check_out" value="{{ check_out|date:'Y-m-d' }}">
             </div>
-            <div class="registro-stay registro-stay-guests" data-checkout-guest-picker data-max-guests="{{ property.max_guests }}">
+            <div class="registro-stay registro-stay-guests" data-checkout-guest-picker data-max-guests="{{ property.max_guests }}" data-person-singular="{% trans 'person' %}" data-person-plural="{% trans 'people' %}">
                 <span class="registro-stay-label">{% trans 'Guests' %}</span>
                 <button type="button" class="registro-stay-value" data-checkout-guest-trigger aria-expanded="false">
                     <span data-checkout-guest-label>{% blocktrans count counter=guests %}{{ counter }} person{% plural %}{{ counter }} people{% endblocktrans %}</span>
@@ -169,20 +156,20 @@
 
             <dl class="registro-lines">
                 {% if booking_type == 'monthly' and monthly_rate %}
-                <div><dt data-line-rate-label>{{ currency_symbol }} {{ monthly_rate|floatformat:0 }} / {% trans 'month' %} ({{ nights }} {% trans 'nights' %})</dt><dd data-line-subtotal>{{ currency_symbol }} {{ subtotal|floatformat:'0' }}</dd></div>
+                <div><dt data-line-rate-label>{{ currency_symbol }} {{ monthly_rate|floatformat:'-2'  }} / {% trans 'month' %} ({{ nights }} {% trans 'nights' %})</dt><dd data-line-subtotal>{{ currency_symbol }} {{ subtotal|floatformat:'-2'  }}</dd></div>
                 {% else %}
-                <div><dt data-line-rate-label>{{ currency_symbol }} {{ nightly_rate|floatformat:0 }} x {{ nights }}</dt><dd data-line-subtotal>{{ currency_symbol }} {{ subtotal|floatformat:'0' }}</dd></div>
+                <div><dt data-line-rate-label>{{ currency_symbol }} {{ nightly_rate|floatformat:'-2'  }} x {{ nights }}</dt><dd data-line-subtotal>{{ currency_symbol }} {{ subtotal|floatformat:'-2'  }}</dd></div>
                 {% endif %}
-                <div><dt>{% trans 'Cleaning fee' %}</dt><dd data-line-cleaning>{{ currency_symbol }} {{ cleaning_fee|floatformat:'0' }}</dd></div>
+                <div><dt>{% trans 'Cleaning fee' %}</dt><dd data-line-cleaning>{{ currency_symbol }} {{ cleaning_fee|floatformat:'-2'  }}</dd></div>
             </dl>
             <div class="registro-lines-service" data-service-lines aria-live="polite" hidden></div>
             <hr class="registro-panel-rule">
             {% if discount_amount %}
             <dl class="registro-lines">
-                <div><dt>{% trans 'Wynwood Points discount' %}</dt><dd>{{ currency_symbol }} -{{ discount_amount|floatformat:'0' }}</dd></div>
+                <div><dt>{% trans 'Wynwood Points discount' %}</dt><dd>{{ currency_symbol }} -{{ discount_amount|floatformat:'-2'  }}</dd></div>
             </dl>
             {% endif %}
-            <p class="registro-total"><span>{% trans 'Total' %}</span><span data-line-total>{{ currency_symbol }} {{ total|floatformat:'0' }}</span></p>
+            <p class="registro-total"><span>{% trans 'Total' %}</span><span data-line-total>{{ currency_symbol }} {{ total|floatformat:'-2'  }}</span></p>
         </div>
 
         <p class="registro-points-label">{% trans 'With this reservation you are generating' %}</p>
