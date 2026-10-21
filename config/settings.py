@@ -182,7 +182,6 @@ EMAIL_BACKEND = env("EMAIL_BACKEND", "bookings.email_backends.ResendEmailBackend
 RESEND_API_KEY = env("RESEND_API_KEY", "")
 EMAIL_FROM_EMAIL = env("EMAIL_FROM_EMAIL", "")
 EMAIL_FROM_NAME = env("EMAIL_FROM_NAME", "Wynwood House")
-EMAIL_LOGO_URL = env("EMAIL_LOGO_URL", "")
 DEFAULT_FROM_EMAIL = (
     f"{EMAIL_FROM_NAME} <{EMAIL_FROM_EMAIL}>"
     if EMAIL_FROM_EMAIL

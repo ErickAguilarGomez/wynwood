@@ -14,11 +14,11 @@ h3{font-weight:400}
 .container-wide{width:min(1341px,calc(100% - 99px));margin-inline:auto}
 .site-header{position:relative;z-index:30;height:73px;background:#fff}
 .site-header-inner{display:flex;align-items:center;width:min(1367px,calc(100% - 73px));height:100%;margin:auto}
-.nav-toggle{display:none;align-items:center;justify-content:center;width:28px;height:28px;margin:0 18px 0 0;padding:0;border:0;background:transparent}
+.nav-toggle{display:none;flex:0 0 28px;align-items:center;justify-content:center;width:28px;height:28px;margin:0 18px 0 0;padding:0;border:0;background:transparent}
 .nav-toggle img{width:28px;height:28px}
-.brand{display:block;width:162px;height:43px}
+.brand{display:block;flex:0 0 162px;width:162px;height:43px}
 .brand img{width:162px;height:43px;object-fit:contain}
-.main-nav{display:flex;align-items:center;gap:29px;margin-left:auto;font-size:14px;white-space:nowrap}
+.main-nav{display:flex;flex:0 0 auto;align-items:center;gap:29px;margin-left:auto;font-size:14px;white-space:nowrap}
 .main-nav a,.nav-link{padding:8px 0;border:0;background:transparent}
 .main-nav form{margin:0}
 .nav-divider{width:1px;height:19px;background:#b6b6b6}
@@ -452,6 +452,14 @@ h3{font-weight:400}
 .section{padding:80px 0}
 .empty-state{grid-column:1/-1;padding:60px 20px;text-align:center}
 
+@media(max-width:1500px){
+  .main-nav{gap:clamp(10px,1.4vw,21px);font-size:clamp(11px,.9vw,14px)}
+}
+
+@media(max-width:1280px){
+  .site-header-inner{width:calc(100% - 48px)}.nav-toggle{display:flex}.main-nav{display:none;position:absolute;top:73px;right:0;left:0;flex-direction:column;align-items:flex-start;gap:7px;padding:24px;background:#fff;box-shadow:var(--shadow)}.main-nav.is-open{display:flex}.nav-divider{display:none}
+}
+
 @media(max-width:1180px){
   .main-nav{gap:16px;font-size:12px}.container-wide{width:calc(100% - 48px)}
   .home-hero-copy h1{font-size:76px}.home-search{width:calc(100% - 48px)}
@@ -463,7 +471,7 @@ h3{font-weight:400}
 }
 
 @media(max-width:900px){
-  .site-header-inner{width:calc(100% - 32px)}.nav-toggle{display:flex}.main-nav{display:none;position:absolute;top:73px;right:0;left:0;flex-direction:column;align-items:flex-start;gap:7px;padding:24px;background:#fff;box-shadow:var(--shadow)}.main-nav.is-open{display:flex}.nav-divider{display:none}
+  .site-header-inner{width:calc(100% - 32px)}
   .home-hero{height:760px}.home-hero-copy{top:260px;white-space:normal}.home-hero-copy h1{font-size:68px}.home-search{top:auto;bottom:34px}
   .search-bar{grid-template-columns:1fr 1fr;height:auto;border-radius:20px}.search-bar label{min-height:62px;border-bottom:1px solid #b3b3b3}.search-bar .search-destination{grid-column:1/-1}.search-button{grid-column:1/-1;width:auto;margin:12px;height:42px}
   .search-bar-hero{grid-template-columns:1fr 1fr;height:auto;padding:0 12px;border-radius:22px}.search-bar-hero .search-col{height:56px;padding:0 12px;border-right:0;border-bottom:1px solid #e2e2e2}.search-bar-hero .search-destination{grid-column:1/-1}.search-bar-hero .search-button{grid-column:1/-1;width:auto;height:44px;margin:12px 0}
@@ -480,7 +488,7 @@ h3{font-weight:400}
 }
 
 @media(max-width:560px){
-  body{font-size:14px}.container-wide{width:calc(100% - 28px)}.site-header{height:68px}.site-header-inner{width:calc(100% - 24px)}.brand,.brand img{width:142px}.nav-toggle{width:23px;margin-right:10px}.nav-toggle img{width:23px}
+  body{font-size:14px}.container-wide{width:calc(100% - 28px)}.site-header{height:68px}.site-header-inner{width:calc(100% - 24px)}.brand{flex-basis:142px}.brand,.brand img{width:142px}.nav-toggle{flex-basis:23px;width:23px;margin-right:10px}.nav-toggle img{width:23px}
   .promo-ribbon{top:0;height:52px;gap:8px;padding:0 10px;font-size:10px}.promo-ribbon span:first-child{max-width:150px}.home-hero{height:720px}.home-hero-image{object-position:58% center}.home-hero-copy{top:220px;width:calc(100% - 28px)}.home-hero-copy h1{font-size:56px;line-height:.82}.home-hero-copy p{font-size:10px;letter-spacing:7px}.home-search{bottom:18px;width:calc(100% - 28px)}
   .search-bar{grid-template-columns:1fr}.search-bar .search-destination{grid-column:auto}.date-fields{gap:2px}.date-fields input{font-size:11px}.search-bar label{min-height:55px;padding:9px 18px}.search-button{grid-column:auto}
   .search-bar-hero{grid-template-columns:1fr}.search-bar-hero .search-destination{grid-column:auto}.search-bar-hero .search-button{grid-column:auto;margin:10px 0}
